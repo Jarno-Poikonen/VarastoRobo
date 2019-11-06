@@ -54,16 +54,21 @@ class Liner:
 		self.current_location = Point(0, 0)
 		self.current_orientation = 0
 		self.pointList = []
+		self.force_reverse = False
 		self.log_on = log_on
 		if self.log_on:
 			self.view()
 
 	def update(self, deg, dist, mode):
-		deg %= 360 # always positive
+		deg = (deg + self.current_orientation) % 360 # always positive
 		movement = Movement(deg, dist)
-		point = movement.convertToPoint(mode)
-		print("x: " + str(point.x) + "(DEBUG Point())")
-		print("y: " + str(point.y) + "(DEBUG Point())")
+		if self.force_reverse:
+			point = movement.convertToPoint("reverse")
+			self.force_reverse = False
+		else:
+			point = movement.convertToPoint(mode)
+		print("DEBUG x: " + str(point.x) + "(Point)")
+		print("DEBUG y: " + str(point.y) + "(Point)")
 		self.current_location += point;
 		self.current_orientation = deg # always positive
 		if self.log_on:
@@ -97,21 +102,30 @@ class Liner:
 			print("warning: 'end' is smaller or equal to 'begin', returning Movement(0, 0)")
 			return Movement(0, 0)
 		delta_point = self.pointList[end] - self.pointList[begin]
+		print("DEBUG x: " + str(delta_point.x) + ", y: " + str(delta_point.y) + " ('delta' Point)")
 		opposite_point = delta_point.getOppositePoint()
+		print("DEBUG x: " + str(opposite_point.x) + ", y: " + str(opposite_point.y) + " ('opposite' Point)")
 		if opposite_point.x == 0 and opposite_point.y == 0:
 			return Movement(0, 0)
 		else:
 			dist = math.sqrt(math.pow(opposite_point.x, 2) + math.pow(opposite_point.y, 2))
 			angle = (math.atan2(opposite_point.y, opposite_point.x) / math.pi * 180) % 360 # always positive
+			print("DEBUG angle: " + str(angle))
 			deg = angle - self.current_orientation
 			if deg > 180:
 				deg -= 360
 			elif deg < -180:
 				deg += 360
+			elif deg == 0 and opposite_point.x < 0:
+				deg = 90
+				self.force_reverse = True
+			elif deg == 0 and opposite_point.x > 0:
+				deg = -90
+				self.force_reverse = True
 			return Movement(deg, dist)
 
 liner = Liner(True)
-liner.save(), liner.update(0, 10, "reverse"), liner.update(45, 10, "reverse"), liner.update(135, 10, "reverse"), liner.save()
+liner.save(), liner.update(0, 10, "reverse"), liner.update(90, 10, "reverse"), liner.update(90, 10, "reverse"), liner.save()
 movement = liner.getMovement(0, 1)
 
-liner.update(movement.deg + 135, movement.dist, "conventional")
+liner.update(movement.deg, movement.dist, "conventional")
