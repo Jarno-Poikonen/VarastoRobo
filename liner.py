@@ -37,9 +37,15 @@ class Movement:
 	def toRad(self, deg):
 		return deg / 180.0 * math.pi
 
-	def convertToPoint(self):
-		x = round(math.sin(self.rad) * self.dist, 14)
-		y = round(math.cos(self.rad) * self.dist, 14)
+	def convertToPoint(self, mode):
+		if mode == "conventional":
+			x = round(math.cos(self.rad) * self.dist, 14)
+			y = round(math.sin(self.rad) * self.dist, 14)
+		
+		elif mode == "reverse":	
+			x = round(math.sin(self.rad) * self.dist, 14)
+			y = round(math.cos(self.rad) * self.dist, 14)
+
 		return Point(x, y)
 
 
@@ -52,10 +58,12 @@ class Liner:
 		if self.log_on:
 			self.view()
 
-	def update(self, deg, dist):
+	def update(self, deg, dist, mode):
 		deg %= 360 # always positive
 		movement = Movement(deg, dist)
-		point = movement.convertToPoint()
+		point = movement.convertToPoint(mode)
+		print("x: " + str(point.x) + "(DEBUG Point())")
+		print("y: " + str(point.y) + "(DEBUG Point())")
 		self.current_location += point;
 		self.current_orientation = deg # always positive
 		if self.log_on:
@@ -101,3 +109,9 @@ class Liner:
 			elif deg < -180:
 				deg += 360
 			return Movement(deg, dist)
+
+liner = Liner(True)
+liner.save(), liner.update(0, 10, "reverse"), liner.update(45, 10, "reverse"), liner.update(135, 10, "reverse"), liner.save()
+movement = liner.getMovement(0, 1)
+
+liner.update(movement.deg + 135, movement.dist, "conventional")
