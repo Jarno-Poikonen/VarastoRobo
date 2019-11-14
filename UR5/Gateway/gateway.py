@@ -78,7 +78,24 @@ def Master_communication(viestit):
 		yhteys, osoite = MasterSocket.accept()
 		with yhteys:
 			print(yhteys)
+			
+			
+			viesti = "2" # new connection message
+			
+			tyyppi = "3"	# UR5
+			id = "55"		# Ur5:n ainoa ID
+			tila = "2"		# Normaali toiminta
+			
+			pituus = len(tyyppi) + len(id) + len(tila)
+			pituus = "000" + str(pituus)
+			
+			viesti.append(pituus)
+			viesti.append(tyyppi, id, "0", "0", "0", tila)
+			# 							x 	y 	rotation
+			
+			yhteys.sendall(viesti)
 			while True:
+				data = yhteys.recv(512)
 				if viestit[0][1] == "Seis":
 					# Ei ehkä tarpeellinen.
 					yhteys.sendall("Seis")
@@ -105,6 +122,7 @@ def UR5_communication(viestit):
 		yhteys, osoite = URsocket.accept()
 		with yhteys:
 			print(yhteys)
+			
 			while True:
 				# Mitä yhteydellä tehdään.
 				
@@ -120,6 +138,10 @@ def UR5_communication(viestit):
 
 yhteysMasteriin = False
 seis = False
+
+tyyppi = "3"	# UR5
+id = "55"		# Ur5:n ainoa ID
+tila = "2"		# Normaali toiminta
 
 # Main säie huolehtii logiikasta.
 if __name__ == "__main__":
