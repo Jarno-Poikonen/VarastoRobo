@@ -1,7 +1,0 @@
-#Tue Nov 12 08:52:33 EET 2019
-base.0=C\:\\GitHub\\VarastoRobo\\Drone\\P4MissionsDemo\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\1
-path.1=classes.dex
-renamed.1=classes2.dex
-path.0=classes.dex
-renamed.0=classes.dex
-base.1=C\:\\GitHub\\VarastoRobo\\Drone\\P4MissionsDemo\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0

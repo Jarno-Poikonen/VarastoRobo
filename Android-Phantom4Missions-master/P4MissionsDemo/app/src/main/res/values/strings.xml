@@ -1,0 +1,8 @@
+
+
+<resources>
+    <string name="app_name">Alert bot</string>
+	<string name="push_info">Push Info</string>
+	<string name="title_activity_tracking_test">Tracking screen</string>
+	<string name="title_activity_mainactivity">Alert bot</string>
+</resources>
