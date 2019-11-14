@@ -39,7 +39,7 @@ def Broadcast_communication(viestit):
 			system_status = int(message[2])
 			master_id = int(message[3])
 			wait_for_message = False
-			if not yhteysMasteriin: viestit.append(master_address)
+			if not yhteysMasteriin: viestit.append((1, "IP", master_address))
 	
 	# Luetaan broadcast viestejä ja reagoidaan hätäseis käskyyn.
 	while True:
@@ -57,16 +57,19 @@ def Master_communication(viestit):
 	Mip = ""
 	Mport = None
 	
-	while len(viestit) == 0:
-		pass
+	while True:
 	
-	Mip = viestit[0][0]
-	Mport = viestit[0][1]
-	viestit.pop(0)
-	
-	MasterSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	MasterSocket.bind(Mip, Mport)
-	MasterSocket.listen()
+		while len(viestit) == 0:
+			pass
+		
+		if viestit[0][0] == 0 and viestit[0][1] == "IP":
+			Mip = viestit[0][2][0]
+			Mport = viestit[0][2][1]
+			viestit.pop(0)
+		
+		MasterSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		MasterSocket.bind(Mip, Mport)
+		MasterSocket.listen()
 	
 	# Lähetetään New Connection Message
 	
@@ -75,10 +78,12 @@ def Master_communication(viestit):
 		yhteys, osoite = MasterSocket.accept()
 		with yhteys:
 			print(yhteys)
+			while True:
+				if viestit[0][1] == "Seis":
+					# Ei ehkä tarpeellinen.
+					yhteys.sendall("Seis")
+					break
 			
-			
-		
-	
 def UR5_communication(viestit):
 	#Gateway laitteen IP ja portti UR5:en suuntaan
 	URip = "192.168.100.11"
@@ -96,11 +101,16 @@ def UR5_communication(viestit):
 		if len(viestit) == 0:
 			continue
 		
+		
 		yhteys, osoite = URsocket.accept()
 		with yhteys:
 			print(yhteys)
 			while True:
 				# Mitä yhteydellä tehdään.
+				
+				if viestit[0][1] == "Seis":
+					yhteys.sendall("Seis")
+					break
 				
 				# data = yhteys.recv(512)
 				# print("UR5: ", data)
@@ -122,6 +132,10 @@ if __name__ == "__main__":
 	]
 
 	# Luodaan viestimis listat, säikeet ja käynnistetään säikeet.
+	# viestien rakenne = (0/1, "nimi", data)
+	# 0/1 kummasta suunnasta viesti tulee. 0 = main, 1 = säie
+	# "nimi" käskyn nimi minkä mukaan tehdään päätöksiä.
+	# data viestin data esim. IP osoite.
 	broadcast_viestit = []
 	master_viestit = []
 	ur5_viestit = []
@@ -135,19 +149,47 @@ if __name__ == "__main__":
 	ur5_saie = threading.Thread(target=UR5_communication, args=(ur5_viestit,))
 	ur5_saie.start()
 	
+	'''
 	# Odotetaan että broadcast_saie saa masterin IP:n selville.
 	while len(broadcast_viestit) == 0:
 		pass
 	
 	master_viestit.append(broadcast_viestit[0])
 	broadcast_viestit.pop(0)
+	'''
 	
 	while True:
+		# Käydään läpi broadcast viestit.
 		if len(broadcast_viestit) != 0:
-			# Käydään läpi broadcast viestit.
+			if broadcast_viestit[0][0] == 1:
+				# Tarkista tämän toimivuus.
+				viesti = broadcast_viestit[0]
+				print("Broadcast viesti: ", viesti)
+				broadcast_viestit.pop(broadcast_viestit.index(viesti))
+				if viesti[1] == "IP":
+					master_viestit.append((0, "IP", viesti[2]))
+					
+		# Käydään läpi master viestit.
 		if len(master_viestit) != 0:
-			# Käydään läpi master viestit.
+			if master_viestit[0] == 1:
+				viesti = master_viestit[0]
+				print("Master viesti: ", viesti)
+				pass
+		# Käydään läpi UR5 viestejä.
 		if len(ur5_viestit) != 0:
-			# Käydään läpi UR5 viestejä.
+			if ur5_viestit[0] == 1:
+				viesti = ur5_viestit[0]
+				print("UR5 viesti: ", viesti)
+				pass
+		# Kaikki seis.
 		if seis:
-			# Kaikki seis.
+			print("SEIS")
+			# Broadcast osa turha koska se sulkee itsensä hätä seis viestin jälkeen.
+			#broadcast_viestit.clear()
+			#broadcast_viestit.append((0, "Seis", 0))
+			master_viestit.clear()
+			master_viestit.append((0, "Seis", 0))
+			ur5_viestit.clear()
+			ur5_viestit.append((0, "Seis", 0))
+			break
+			
