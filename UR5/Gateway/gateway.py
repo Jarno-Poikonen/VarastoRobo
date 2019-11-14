@@ -3,6 +3,23 @@ import socket
 from time import sleep
 import threading
 
+'''
+Käynnistys:
+- Luodaan yhteys UR5:een ja aletaan kuuntelemaan broadcast viestejä.
+- Broadcast viestistä luetaan masterin ip osoite ja lähetetään se master säikeelle.
+- Master säie luo yhteyden Masteriin ja alkaa kuuntelemaan sen viestejä välittäen ne UR5 säikeelle.
+
+Case 1 - Anna paketti:
+- Saadaan Masterilta viesti "Anna paketti x paikkaan y"
+- Välitetaan viesti viesti taulukoita käyttäen UR5 säikeelle
+- Odotetaan "valmis" viestiä UR5:lta.
+- Lähetetään "valmis" viesti Masterille.
+
+Case 2 - Seis:
+- Broadcast viesteistä saadaan seis käsky.
+- Pysäytetään kaikki.
+'''
+
 # Säie/funktio joka kuuntelee broadcast viestejä.
 def Broadcast_communication(viestit):
 	# Luodaan socket broadcastia varten.
@@ -96,6 +113,14 @@ seis = False
 
 # Main säie huolehtii logiikasta.
 if __name__ == "__main__":
+	# Käsien paikat.
+	paikat = [
+	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
+	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
+	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
+	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)")
+	]
+
 	# Luodaan viestimis listat, säikeet ja käynnistetään säikeet.
 	broadcast_viestit = []
 	master_viestit = []
