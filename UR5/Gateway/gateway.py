@@ -20,6 +20,53 @@ Case 2 - Seis:
 - Pysäytetään kaikki.
 '''
 
+# Luetaan annetusta jonosta uusin viesti ja poistetaan se.
+def Lue_viesti(jono, paikka=0):
+	viesti = jono[paikka]
+	jono.pop(jono.index(viesti))
+	return viesti
+
+# Mahdollista tehdä paremmin.
+# Muutetaan viestin pituus esitettäväksi neljällä bytellä
+def Laske_pituus(viesti, pituus=4):
+	
+	palautus = bytearray([])
+	
+	for x in range(pituus-1):
+		palautus.append(0)
+	
+	palautus.append(viesti)
+	
+	return palautus
+
+# Luodaan WFM viesti annetuista parametreista.
+def Luo_WFM(vastaukseksi, virhe, suoritus, tila):
+	viesti = bytearray([4])
+	viestin_loppu = bytearray([vastaukseksi, virhe, suoritus, 0, 0, 0, tila])
+	pituus = Laske_pituus(len(viestin_loppu))
+	
+	for b in pituus:
+		viesti.append(b)
+		
+	for b in viestin_loppu:
+		viesti.append(b)
+	
+	return viesti
+
+# Luodaan NCM viesti annetuista parametreista.
+def Luo_NCM(tyyppi, id, tila):
+	viesti = bytearray([2])
+	viestin_loppu = bytearray([tyyppi, id, 0, 0, 0, tila])
+	pituus = Laske_pituus(len(viestin_loppu))
+	
+	for b in pituus:
+		viesti.append(b)
+		
+	for b in viestin_loppu:
+		viesti.append(b)
+	
+	return viesti
+
 # Säie/funktio joka kuuntelee broadcast viestejä.
 def Broadcast_communication(viestit):
 	# Luodaan socket broadcastia varten.
@@ -52,13 +99,15 @@ def Broadcast_communication(viestit):
 				break
 	
 # Säie/funktio joka huolehtii masterille ja UR5:lle kommunikoinnista.
-def Master_communication(viestit):	
+def Master_communication(viestit):
+	kaskyKesken = False
+	
 	#Mestarin IP ja portti
 	Mip = ""
 	Mport = None
 	
+	# Odotetaan Masterin IP
 	while True:
-	
 		while len(viestit) == 0:
 			pass
 		
@@ -71,31 +120,35 @@ def Master_communication(viestit):
 		MasterSocket.bind(Mip, Mport)
 		MasterSocket.listen()
 	
-	# Lähetetään New Connection Message
-	
 	while True:
-		# Kuunnellaan masteria.
 		yhteys, osoite = MasterSocket.accept()
 		with yhteys:
 			print(yhteys)
 			
+			yhteys.sendall(Luo_NCM(3, 55, 2))
 			
-			viesti = "2" # new connection message
-			
-			tyyppi = "3"	# UR5
-			id = "55"		# Ur5:n ainoa ID
-			tila = "2"		# Normaali toiminta
-			
-			pituus = len(tyyppi) + len(id) + len(tila)
-			pituus = "000" + str(pituus)
-			
-			viesti.append(pituus)
-			viesti.append(tyyppi, id, "0", "0", "0", tila)
-			# 							x 	y 	rotation
-			
-			yhteys.sendall(viesti)
 			while True:
 				data = yhteys.recv(512)
+				
+				if data[0] == 3: # Setup Connection Message
+					id = str(data[6])
+					yhteys.sendall(Luo_WFM(data[0], 0, 1, 1))
+				
+				if data[0] == 12: # Move Product Message
+					tuote = data[5]
+					paamaara = data[6]
+					
+					viestit.append([1, "Tuote", tuote, paamaara])
+					kaskyKesken = True
+				
+				if viestit[0][0] == 0 and viestit[0][1] == "Tuote":
+					viesti = Lue_viesti(viestit)
+					if viesti[2] == "Valmis":
+						yhteys.sendall(Luo_WFM(12, 0, 1, 1))
+					elif viesti[2] == "Fail": # Pakettia ei löytynyt
+						yhteys.sendall(Luo_WFM(12, 4, 0, 1))
+					kaskyKesken = False
+				
 				if viestit[0][1] == "Seis":
 					# Ei ehkä tarpeellinen.
 					yhteys.sendall("Seis")
@@ -126,6 +179,8 @@ def UR5_communication(viestit):
 			while True:
 				# Mitä yhteydellä tehdään.
 				
+				data = yhteys.recv(512)
+				
 				if viestit[0][1] == "Seis":
 					yhteys.sendall("Seis")
 					break
@@ -139,15 +194,10 @@ def UR5_communication(viestit):
 yhteysMasteriin = False
 seis = False
 
-tyyppi = "3"	# UR5
-id = "55"		# Ur5:n ainoa ID
-tila = "2"		# Normaali toiminta
-
 # Main säie huolehtii logiikasta.
 if __name__ == "__main__":
 	# Käsien paikat.
 	paikat = [
-	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
 	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
 	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
 	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)")
@@ -185,22 +235,25 @@ if __name__ == "__main__":
 		if len(broadcast_viestit) != 0:
 			if broadcast_viestit[0][0] == 1:
 				# Tarkista tämän toimivuus.
-				viesti = broadcast_viestit[0]
+				viesti = Lue_viesti(broadcast_viestit)
 				print("Broadcast viesti: ", viesti)
-				broadcast_viestit.pop(broadcast_viestit.index(viesti))
 				if viesti[1] == "IP":
 					master_viestit.append((0, "IP", viesti[2]))
 					
 		# Käydään läpi master viestit.
 		if len(master_viestit) != 0:
-			if master_viestit[0] == 1:
-				viesti = master_viestit[0]
+			if master_viestit[0][0] == 1:
+				viesti = Lue_viesti(master_viestit)
 				print("Master viesti: ", viesti)
-				pass
+				
+				if viesti[1] == "Tuote":
+					#ur5_viestit.append([0, "Tuote", viesti[2], paikat[viesti[3]])
+				
+					pass
 		# Käydään läpi UR5 viestejä.
 		if len(ur5_viestit) != 0:
 			if ur5_viestit[0] == 1:
-				viesti = ur5_viestit[0]
+				viesti = Lue_viesti(ur5_viestit)
 				print("UR5 viesti: ", viesti)
 				pass
 		# Kaikki seis.
