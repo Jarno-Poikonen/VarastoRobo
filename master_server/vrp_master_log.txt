@@ -1,0 +1,516 @@
+2019-11-17 13:40:26 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 13:41:09 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 14:25:01 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 14:25:04 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:04 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:25:05 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 14:27:04 Device 3 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 4 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 5 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 2 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 13 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 1 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 8 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 7 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 9 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 19 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 16 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 14 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 20 disconnected from address 192.168.1.86
+2019-11-17 14:27:04 Device 15 disconnected from address 192.168.1.86
+2019-11-17 14:27:05 Device 18 disconnected from address 192.168.1.86
+2019-11-17 14:27:05 Device 10 disconnected from address 192.168.1.86
+2019-11-17 14:27:05 Device 11 disconnected from address 192.168.1.86
+2019-11-17 14:27:05 Device 6 disconnected from address 192.168.1.86
+2019-11-17 14:27:05 Device 17 disconnected from address 192.168.1.86
+2019-11-17 14:27:05 Device 12 disconnected from address 192.168.1.86
+2019-11-17 16:14:35 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 16:14:38 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:38 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:39 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:39 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:14:39 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 16:16:39 Device 1 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 5 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 18 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 2 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 8 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 13 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 11 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 10 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 7 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 17 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 14 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 15 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 4 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 16 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 3 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 6 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 9 disconnected from address 192.168.1.86
+2019-11-17 16:16:39 Device 20 disconnected from address 192.168.1.86
+2019-11-17 16:16:40 Device 19 disconnected from address 192.168.1.86
+2019-11-17 16:16:40 Device 12 disconnected from address 192.168.1.86
+2019-11-17 17:30:59 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 17:31:54 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 17:51:52 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 17:52:06 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 17:52:09 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:09 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:10 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:10 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:52:10 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 17:54:10 Device 8 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 9 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 5 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 3 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 19 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 16 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 17 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 14 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 2 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 18 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 13 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 7 disconnected from address 192.168.1.86
+2019-11-17 17:54:10 Device 6 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 11 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 1 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 12 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 4 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 10 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 15 disconnected from address 192.168.1.86
+2019-11-17 17:54:11 Device 20 disconnected from address 192.168.1.86
+2019-11-17 18:21:02 Device 255 connection failed and disconnected from address 192.168.1.105
+2019-11-17 18:24:02 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:24:05 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:24:05 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:26 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:26:29 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:29 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:30 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:30 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:30 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:30 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:30 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:26:30 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:27:12 Device 255(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 18:31:02 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:31:02 Device 255(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 18:31:05 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:05 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:06 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:31:06 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:24 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:32:27 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:27 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:32:31 Device 255(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 18:33:20 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:33:23 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:23 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:24 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:24 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:33:28 Device 255(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 18:34:43 Device 255 connection failed and disconnected from address 192.168.1.105
+2019-11-17 18:36:54 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:36:57 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:57 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:58 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:58 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:58 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:36:58 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:37:02 Device 255(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 18:37:07 Received command 10 from device 255 at address 192.168.1.105
+2019-11-17 18:37:07 Device 255 connection failed and disconnected from address 192.168.1.105
+2019-11-17 18:38:09 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 18:38:12 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:12 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 18:38:29 Device 255(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 18:38:29 Received command 10 from device 255 at address 192.168.1.105
+2019-11-17 18:38:29 Device 255 connection failed and disconnected from address 192.168.1.105
+2019-11-17 19:01:42 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:01:45 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:45 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:46 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:46 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:46 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:46 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:01:46 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 19:02:02 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:02:02 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:02:02 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:02:02 Device 100 connection failed and disconnected from address 192.168.1.105
+2019-11-17 19:06:19 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:06:27 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:06:27 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:06:27 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:06:27 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:07:01 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:07:01 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:07:01 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:07:01 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:07:56 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:08:08 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:08:08 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:08:08 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:08:08 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:12:09 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:12:22 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:12:22 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:12:22 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:12:22 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:12:58 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:12:58 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:12:58 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:12:58 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:14:31 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:15:04 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:15:04 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:15:04 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:15:04 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:17:05 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:17:17 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:17:17 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:19:40 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:19:50 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:19:50 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:20:37 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:20:46 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:20:46 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:26:03 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:26:07 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:26:07 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:32:42 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:32:58 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:32:59 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:40:50 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:41:30 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:41:31 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:42:09 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:42:09 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:44:10 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:44:14 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:44:14 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:44:14 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:44:14 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 19:44:36 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:44:36 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:44:36 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:47:05 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:47:09 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:47:09 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:52:39 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:52:44 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:52:44 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:53:25 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 19:53:25 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 19:53:25 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 19:53:25 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 19:53:25 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:25:47 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 21:27:12 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 21:27:48 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 21:29:33 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:29:33 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:29:33 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:29:33 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:30:49 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:30:49 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:30:49 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:30:49 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:30:56 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:30:56 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:30:56 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:30:56 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:32:02 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:32:02 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:32:02 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:32:02 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:34:04 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 21:34:06 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:34:09 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:34:10 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:34:10 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:34:27 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:34:27 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:34:27 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:34:27 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:34:48 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:34:48 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:34:48 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:34:48 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:39:31 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:41:23 Device 100 connection failed and disconnected from address 192.168.1.105
+2019-11-17 21:41:40 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:41:40 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:41:40 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:41:40 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:42:31 Server started with status 1 and id 42 at address 192.168.1.86
+2019-11-17 21:42:34 Device 1 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 10 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 5 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 18 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 9 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 8 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 16 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 14 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 6 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 3 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 7 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 19 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 12 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 13 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 11 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 2 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 20 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:34 Device 15 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:35 Device 4 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:35 Device 17 connected with type 2 and status 1 from address 192.168.1.86
+2019-11-17 21:42:44 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.1.105
+2019-11-17 21:42:45 Received command 10 from device 100 at address 192.168.1.105
+2019-11-17 21:42:45 Received command 5 from device 100 at address 192.168.1.105
+2019-11-17 21:42:45 Device 100(QT-client) disconnected from address 192.168.1.105
+2019-11-17 21:44:34 Device 10 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 5 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 18 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 9 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 8 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 16 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 14 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 6 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 19 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 12 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 11 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 2 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 7 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 13 disconnected from address 192.168.1.86
+2019-11-17 21:44:34 Device 15 disconnected from address 192.168.1.86
+2019-11-17 21:44:35 Device 3 disconnected from address 192.168.1.86
+2019-11-17 21:44:35 Device 1 disconnected from address 192.168.1.86
+2019-11-17 21:44:35 Device 4 disconnected from address 192.168.1.86
+2019-11-17 21:44:35 Device 17 disconnected from address 192.168.1.86
+2019-11-17 21:44:35 Device 20 disconnected from address 192.168.1.86
+2019-11-17 22:38:24 Server started with status 1 and id 42 at address 192.168.56.1
+2019-11-17 22:38:27 Device 20 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 15 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 7 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 2 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 18 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 16 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 8 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 9 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 14 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 5 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 3 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 11 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 12 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:27 Device 6 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:28 Device 13 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:28 Device 4 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:28 Device 17 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:28 Device 19 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:28 Device 10 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:28 Device 1 connected with type 2 and status 1 from address 192.168.56.1
+2019-11-17 22:38:39 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.56.1
+2019-11-17 22:38:39 Received command 10 from device 100 at address 192.168.56.1
+2019-11-17 22:38:39 Received command 5 from device 100 at address 192.168.56.1
+2019-11-17 22:38:39 Device 100(QT-client) disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 15 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 7 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 2 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 16 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 8 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 9 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 14 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 5 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 3 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 12 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 6 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 20 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 13 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 4 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 17 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 19 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 18 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 10 disconnected from address 192.168.56.1
+2019-11-17 22:40:28 Device 11 disconnected from address 192.168.56.1
+2019-11-17 22:40:29 Device 1 disconnected from address 192.168.56.1
+2019-11-17 22:40:52 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.56.1
+2019-11-17 22:40:52 Received command 10 from device 100 at address 192.168.56.1
+2019-11-17 22:40:52 Received command 5 from device 100 at address 192.168.56.1
+2019-11-17 22:40:52 Device 100(QT-client) disconnected from address 192.168.56.1
+2019-11-17 22:42:19 Server started with status 1 and id 42 at address 192.168.56.1
+2019-11-17 22:42:25 Device 100(QT-client) connected with type 1 and status 255 from address 192.168.56.1
+2019-11-17 22:42:25 Received command 10 from device 100 at address 192.168.56.1
+2019-11-17 22:42:25 Received command 5 from device 100 at address 192.168.56.1
+2019-11-17 22:42:25 Device 100(QT-client) disconnected from address 192.168.56.1
