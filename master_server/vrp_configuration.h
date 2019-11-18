@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.3.0 2019-11-17 by Santtu Nyman.
+	VarastoRobo master server version 0.4.0 2019-11-18 by Santtu Nyman.
 */
 
 #ifndef VRP_CONFIGURATION_H
@@ -20,6 +20,8 @@ typedef struct vrp_configuration_t
 	uint32_t broadcast_ms_delay;
 	uint32_t io_ms_timeout;
 	uint32_t command_ms_timeout;
+	uint32_t on_wire_broadcast_ip_address;
+	uint32_t on_wire_server_ip_address;
 	uint8_t master_id;
 	uint8_t system_status;
 	uint8_t min_temporal_id;

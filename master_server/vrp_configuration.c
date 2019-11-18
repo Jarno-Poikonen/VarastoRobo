@@ -1,7 +1,10 @@
 /*
-	VarastoRobo master server version 0.3.0 2019-11-17 by Santtu Nyman.
+	VarastoRobo master server version 0.4.0 2019-11-18 by Santtu Nyman.
 */
 
+#include <Winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
 #include "vrp_configuration.h"
 
 static jsonpl_value_t* find_child_by_name(jsonpl_value_t* value_tree, const char* child_name)
@@ -65,6 +68,24 @@ static uint32_t read_command_timeout_from_json(const jsonpl_value_t* configurati
 	if (command_execution_ms_timeout && command_execution_ms_timeout->type == JSONPL_TYPE_NUMBER)
 		time = (uint32_t)command_execution_ms_timeout->number_value;
 	return time;
+}
+
+static uint32_t read_broadcast_ip_address_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t ip = INADDR_BROADCAST;
+	jsonpl_value_t* broadcast_ip_address = find_child_by_name(configuration, "broadcast_ip_address");
+	if (broadcast_ip_address && broadcast_ip_address->type == JSONPL_TYPE_STRING)
+		ip = (uint32_t)inet_addr(broadcast_ip_address->string.value);
+	return ip;
+}
+
+static uint32_t read_server_ip_address_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t ip = INADDR_ANY;
+	jsonpl_value_t* server_ip_address = find_child_by_name(configuration, "server_ip_address");
+	if (server_ip_address && server_ip_address->type == JSONPL_TYPE_STRING)
+		ip = (uint32_t)inet_addr(server_ip_address->string.value);
+	return ip;
 }
 
 static uint8_t read_master_id_from_json(const jsonpl_value_t* configuration)
@@ -193,6 +214,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint32_t broadcast_delay = read_broadcast_delay_from_json(json);
 	uint32_t io_timeout = read_io_timeout_from_json(json);
 	uint32_t command_timeout = read_command_timeout_from_json(json);
+	uint32_t on_wire_broadcast_ip_address = read_broadcast_ip_address_from_json(json);
+	uint32_t on_wire_server_ip_address = read_server_ip_address_from_json(json);
 	uint8_t system_status = read_system_status_from_json(json);
 	uint8_t master_id = read_master_id_from_json(json);
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
@@ -230,6 +253,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->broadcast_ms_delay = broadcast_delay;
 	configuration->io_ms_timeout = io_timeout;
 	configuration->command_ms_timeout = command_timeout;
+	configuration->on_wire_broadcast_ip_address = on_wire_broadcast_ip_address;
+	configuration->on_wire_server_ip_address = on_wire_server_ip_address;
 	configuration->master_id = master_id;
 	configuration->system_status = system_status;
 	configuration->min_temporal_id = min_temporal_id;

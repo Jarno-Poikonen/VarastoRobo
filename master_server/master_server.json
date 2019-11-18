@@ -1,5 +1,7 @@
 {
 	"broadcast_ms_delay" : 1000,
+	"server_ip_address" : null,
+	"broadcast_ip_address" : null,
 	"system_io_ms_timeout" : 16000,
 	"command_execution_ms_timeout" : 60000,
 	"debug_no_emergency_listen" : false,

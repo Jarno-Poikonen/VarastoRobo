@@ -1,6 +1,7 @@
 #example python script for receiving VarastoRobotti system broadcast message (SMB) by Santtu Nyman.
 
 import socket
+import math
 
 def find_master_server():
 
@@ -24,8 +25,8 @@ def find_master_server():
             map_width = int(message[5])
             block_count = int(message[6])
             device_count = int(message[7])
-    
-            map_size = ((map_height * map_width) + 7) / 8
+            
+            map_size = int(math.floor(((map_height * map_width) + 7) / 8))
             block_list_size = block_count * 2;
             device_list_size = device_count * 8;
             
@@ -38,7 +39,7 @@ def find_master_server():
                 configuration["master_device_address"] = str(master_address[0])
     
                 for i in range(map_height * map_width) :
-                    byte_index = 8 + (i / 8)
+                    byte_index = 8 + int(math.floor(i / 8))
                     bit_index = i % 8;
                     location_value = ((message[byte_index] >> bit_index) & 1) == 1
                     configuration["map"].append(location_value)
@@ -55,7 +56,7 @@ def find_master_server():
                     device_y = int(message[8 + map_size + block_list_size + (i * 8) + 3])
                     device_ip = str(int(message[8 + map_size + block_list_size + (i * 8) + 7])) + "." + str(int(message[8 + map_size + block_list_size + (i * 8) + 6])) + "." + str(int(message[8 + map_size + block_list_size + (i * 8) + 5])) + "." + str(int(message[8 + map_size + block_list_size + (i * 8) + 4]))
                     configuration["device_list"].append({ "type" : device_type, "id" : device_id, "x" : device_x, "y" : device_y, "ip" : device_ip })
-    
+                
                 wait_for_message = False
     
     return configuration
@@ -106,9 +107,9 @@ print(line)
   
 print("blocks(B)")
 for i in range(len(configuration["block_list"])) :
-	print("    Block found at coordinates x=" + str(configuration["block_list"][i]["x"]) + ",y=" + str(configuration["block_list"][i]["y"]) + "")
+    print("    Block found at coordinates x=" + str(configuration["block_list"][i]["x"]) + ",y=" + str(configuration["block_list"][i]["y"]) + "")
     
 print("devices(GoPiGo=G)")
 for i in range(len(configuration["device_list"])) :
-	print("    Device id=" + str(configuration["device_list"][i]["id"]) + " type=" + str(configuration["device_list"][i]["type"]) + " found at coordinates x=" + str(configuration["device_list"][i]["x"]) + ",y=" + str(configuration["device_list"][i]["y"]) + " and address " + str(configuration["device_list"][i]["ip"]) + "")
+    print("    Device id=" + str(configuration["device_list"][i]["id"]) + " type=" + str(configuration["device_list"][i]["type"]) + " found at coordinates x=" + str(configuration["device_list"][i]["x"]) + ",y=" + str(configuration["device_list"][i]["y"]) + " and address " + str(configuration["device_list"][i]["ip"]) + "")
 exit()

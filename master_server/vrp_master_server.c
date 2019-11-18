@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.3.0 2019-11-17 by Santtu Nyman.
+	VarastoRobo master server version 0.4.0 2019-11-18 by Santtu Nyman.
 */
 
 #ifndef _M_X64
@@ -454,31 +454,37 @@ DWORD vrp_server_setup(vrp_server_t* server)
 
 	server->broadcast_address.sin_family = AF_INET;
 	server->broadcast_address.sin_port = htons(1732);
-	server->broadcast_address.sin_addr.s_addr = INADDR_BROADCAST;
+	server->broadcast_address.sin_addr.s_addr = configuration->on_wire_broadcast_ip_address;
 
 	server->server_address.sin_family = AF_INET;
 	server->server_address.sin_port = htons(1739);
-	server->server_address.sin_addr.s_addr = INADDR_ANY;
+	server->server_address.sin_addr.s_addr = configuration->on_wire_server_ip_address;
 
 	server->emergency_address.sin_family = AF_INET;
 	server->emergency_address.sin_port = htons(1732);
 	server->emergency_address.sin_addr.s_addr = INADDR_ANY;
 
-	struct addrinfo host_address_hints;
-	memset(&host_address_hints, 0, sizeof(struct addrinfo));
-	host_address_hints.ai_family = AF_UNSPEC;
-	host_address_hints.ai_socktype = SOCK_STREAM;
-	host_address_hints.ai_protocol = IPPROTO_TCP;
-	struct addrinfo* host_address;
-	if (!getaddrinfo("", 0, &host_address_hints, &host_address))
+	if (server->server_address.sin_addr.s_addr == INADDR_ANY)
 	{
-		for (struct addrinfo* address = host_address; address; address = address ? address->ai_next : 0)
-			if (address->ai_family == AF_INET)
-			{
-				server->server_address.sin_addr = ((struct sockaddr_in*)address->ai_addr)->sin_addr;
-				address = 0;
-			}
-		freeaddrinfo(host_address);
+		if (server->broadcast_address.sin_addr.s_addr == INADDR_BROADCAST && server->server_address.sin_addr.s_addr == INADDR_ANY)
+			printf("default address configuration\n");
+
+		struct addrinfo host_address_hints;
+		memset(&host_address_hints, 0, sizeof(struct addrinfo));
+		host_address_hints.ai_family = AF_UNSPEC;
+		host_address_hints.ai_socktype = SOCK_STREAM;
+		host_address_hints.ai_protocol = IPPROTO_TCP;
+		struct addrinfo* host_address;
+		if (!getaddrinfo("", 0, &host_address_hints, &host_address))
+		{
+			for (struct addrinfo* address = host_address; address; address = address ? address->ai_next : 0)
+				if (address->ai_family == AF_INET)
+				{
+					server->server_address.sin_addr = ((struct sockaddr_in*)address->ai_addr)->sin_addr;
+					address = 0;
+				}
+			freeaddrinfo(host_address);
+		}
 	}
 
 	server->page_size = vrp_get_page_size();
@@ -1010,6 +1016,9 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 						}
 						else
 							wfm_error = VRP_ERROR_INVALID_PARAMETER;
+						sprintf(log_entry_buffer, "Received startup command from device %lu at address %lu.%lu.%lu.%lu", server->device_table[i].id,
+							((server->device_table[i].ip_address) >> 24) & 0xFF, ((server->device_table[i].ip_address) >> 16) & 0xFF, ((server->device_table[i].ip_address) >> 8) & 0xFF, ((server->device_table[i].ip_address) >> 0) & 0xFF);
+						vrp_write_log_entry(&server->log, log_entry_buffer);
 						break;
 					}
 					case VRP_MESSAGE_UFM:
@@ -1021,6 +1030,9 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 						}
 						else
 							wfm_error = VRP_ERROR_INVALID_PARAMETER;
+						sprintf(log_entry_buffer, "Received unfreeze command from device %lu at address %lu.%lu.%lu.%lu", server->device_table[i].id,
+							((server->device_table[i].ip_address) >> 24) & 0xFF, ((server->device_table[i].ip_address) >> 16) & 0xFF, ((server->device_table[i].ip_address) >> 8) & 0xFF, ((server->device_table[i].ip_address) >> 0) & 0xFF);
+						vrp_write_log_entry(&server->log, log_entry_buffer);
 						break;
 					}
 					case VRP_MESSAGE_SHM:
@@ -1032,6 +1044,9 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 						}
 						else
 							wfm_error = VRP_ERROR_INVALID_PARAMETER;
+						sprintf(log_entry_buffer, "Received shutdown command from device %lu at address %lu.%lu.%lu.%lu", server->device_table[i].id,
+							((server->device_table[i].ip_address) >> 24) & 0xFF, ((server->device_table[i].ip_address) >> 16) & 0xFF, ((server->device_table[i].ip_address) >> 8) & 0xFF, ((server->device_table[i].ip_address) >> 0) & 0xFF);
+						vrp_write_log_entry(&server->log, log_entry_buffer);
 						break;
 					}
 					default:
@@ -1097,7 +1112,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 
 int main(int argc, char* argv)
 {
-	printf("Starting VarastoRobo master 0.3.0...\n");
+	printf("Starting VarastoRobo master 0.4.0...\n");
 	vrp_server_t server;
 	DWORD error = vrp_server_setup(&server);
 
