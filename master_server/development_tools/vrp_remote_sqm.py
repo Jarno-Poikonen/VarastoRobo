@@ -78,19 +78,38 @@ print("Master device " + str(configuration["master_device_id"]) + " found at add
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #assume socket created
+
 sock.connect((configuration["master_device_address"], 1739))
 #assume connection created
+
 ncm_data = bytearray(b'\x02\x06\x00\x00\x00\x01\xFF\xFF\xFF\xFF\x01')
 sock.send(ncm_data)
+#assume ncm sent
+
 scm_data = bytearray(sock.recv(4096))
-#assume valid scm
-rlm_data = bytearray(b'\x0A\x06\x00\x00\x00\x01\x05\x00\x00\x00\x00')
-sock.send(rlm_data)
-rlm_wfm_data = bytearray(sock.recv(4096))
-#assume valid wfm
+#assume valid scm received
+
+rcm_data = bytearray(b'\x0E\x07\x00\x00\x00\x01\x01\x06\x00\x00\x00\x00')
+sock.send(rcm_data)
+#assume rcm sent
+
+rcm_wfm_data = bytearray(sock.recv(4096))
+#assume valid wfm received
+
 ccm_data = bytearray(b'\x05\x00\x00\x00\x00')
 sock.send(ccm_data)
+#assume ccm sent
+
 ccm_wfm_data = bytearray(sock.recv(4096))
-last_log_line = str(rlm_wfm_data[12:])
-print(last_log_line)
+#assume valid wfm received
+
+target_command = int(rcm_wfm_data[12 + 5])
+target_error = int(rcm_wfm_data[12 + 6])
+target_atomic = int(rcm_wfm_data[12 + 7])
+target_x = int(rcm_wfm_data[12 + 8])
+target_y = int(rcm_wfm_data[12 + 9])
+target_dir = int(rcm_wfm_data[12 + 10])
+target_status = int(rcm_wfm_data[12 + 11])
+print("WFM command=" + str(target_command) + " error=" + str(target_error) + " atomic=" + str(target_atomic) + " x=" + str(target_x) + " y=" + str(target_y) + " dir=" + str(target_dir) + " status=" + str(target_status))
+
 exit()

@@ -460,4 +460,3 @@
 2019-11-17 21:44:35 Device 4 disconnected from address 192.168.1.86
 2019-11-17 21:44:35 Device 17 disconnected from address 192.168.1.86
 2019-11-17 21:44:35 Device 20 disconnected from address 192.168.1.86
-2019-11-18 14:27:09 Server started with status 1 and id 42 at address 192.168.56.1

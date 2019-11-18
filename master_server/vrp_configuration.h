@@ -28,6 +28,7 @@ typedef struct vrp_configuration_t
 	uint8_t max_temporal_id;
 	uint8_t map_height;
 	uint8_t map_width;
+	uint8_t debug_no_broadcast;
 	uint8_t debug_no_emergency_listen;
 	uint8_t* map;
 	size_t block_count;

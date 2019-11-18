@@ -133,6 +133,15 @@ uint8_t read_debug_no_emergency_listen_from_json(const jsonpl_value_t* configura
 	return debug_no_emergency_listen;
 }
 
+uint8_t read_debug_no_broadcast_from_json(const jsonpl_value_t* configuration)
+{
+	uint8_t debug_no_broadcast = 0;
+	jsonpl_value_t* json_debug_no_broadcast = find_child_by_name(configuration, "debug_no_broadcast");
+	if (json_debug_no_broadcast && json_debug_no_broadcast->type == JSONPL_TYPE_BOOLEAN)
+		debug_no_broadcast = (uint8_t)json_debug_no_broadcast->boolean_value;
+	return debug_no_broadcast;
+}
+
 static size_t read_block_list_from_json(const jsonpl_value_t* configuration, uint8_t** block_list)
 {
 	jsonpl_value_t* list = find_child_by_name(configuration, "initial_block_list");
@@ -221,6 +230,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
 	uint8_t max_temporal_id = read_max_temporal_id_from_json(json);
 	uint8_t debug_no_emergency_listen = read_debug_no_emergency_listen_from_json(json);
+	uint8_t debug_no_broadcast = read_debug_no_broadcast_from_json(json);
 
 	uint8_t map_height;
 	uint8_t map_width;
@@ -262,6 +272,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->map_height = map_height;
 	configuration->map_width = map_width;
 	configuration->debug_no_emergency_listen = debug_no_emergency_listen;
+	configuration->debug_no_broadcast = debug_no_broadcast;
 	configuration->map = map;
 	configuration->block_count = block_count;
 	configuration->block_table = block_table;

@@ -5,6 +5,7 @@
 	"system_io_ms_timeout" : 16000,
 	"command_execution_ms_timeout" : 60000,
 	"debug_no_emergency_listen" : false,
+	"debug_no_broadcast" : false,
 	"master_device_id" : 42,
 	"initial_system_status" : 1,
 	"min_temporal_id" : 100,
@@ -17,11 +18,5 @@
 		[ true, true, true, true, false, true, true, true, true ],
 		[ true, true, true, true, false, true, true, true, true ] ],
 	"pickup_location_list" : [ { "id" : 0, "x" : 3, "y" : 0 }, { "id" : 1, "x" : 3, "y" : 1 }, { "id" : 2, "x" : 3, "y" : 2 } ],
-	"initial_block_list" : [ { "x" : 0, "y" : 0 }, { "x" : 2, "y" : 0 }, { "x" : 8, "y" : 3 } ],
-	"initial_device_list" : [
-		{ "type" : 2, "id" : 1, "x" : 0, "y" : 1, "ip" : "192.168.0.1" },
-		{ "type" : 2, "id" : 2, "x" : 0, "y" : 3, "ip" : "192.168.0.2" },
-		{ "type" : 2, "id" : 3, "x" : 4, "y" : 5, "ip" : "192.168.0.3" },
-		{ "type" : 3, "id" : 55, "x" : 255, "y" : 255, "ip" : "192.168.0.8" },
-		{ "type" : 1, "id" : 100, "x" : 255, "y" : 255, "ip" : "192.168.0.127" } ]
+	"initial_block_list" : [ { "x" : 0, "y" : 0 }, { "x" : 2, "y" : 0 }, { "x" : 8, "y" : 3 } ]
 }

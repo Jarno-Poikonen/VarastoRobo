@@ -41,6 +41,7 @@
 #define VRP_CONNECTION_WAITING_FOR_COMMAND 5
 #define VRP_CONNECTION_RESPONDING_TO_COMMAND 6
 #define VRP_CONNECTION_DISCONNECT 7
+#define VRP_CONNECTION_REMOTE_COMMAND 8
 
 typedef struct vrp_server_t
 {
@@ -71,10 +72,12 @@ typedef struct vrp_server_t
 		int io_state;
 		int unprocessed_io;
 		int connection_state;
-		int control_overridden;
 		DWORD io_begin_time;
 		DWORD last_uppdate_time;
 		DWORD connection_begin_time;
+		uint8_t control_target_id;
+		uint8_t executing_remote_command;
+		uint8_t remote_command_finished;
 		uint8_t command;
 		uint8_t type;
 		uint8_t id;
@@ -99,6 +102,7 @@ typedef struct vrp_server_t
 		uint8_t y;
 	}* pickup_location_table;
 	int debug_no_emergency_listen;
+	int debug_no_broadcast;
 	size_t page_size;
 	size_t map_buffer_size;
 	size_t block_buffer_size;
@@ -143,6 +147,22 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 			return id_offset + relative_id;
 	}
 	return VRP_ID_UNDEFINED;
+}
+
+size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id)
+{
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET && server->device_table[i].id == id)
+			return i;
+	return (size_t)~0;
+}
+
+size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_device_id)
+{
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET && server->device_table[i].control_target_id == controled_device_id)
+			return i;
+	return (size_t)~0;
 }
 
 DWORD vrp_get_system_tick()
@@ -348,7 +368,7 @@ size_t vrp_wait_for_io(vrp_server_t* server)
 		}
 
 	DWORD wait_begin_time = NtGetTickCount();
-	DWORD max_wait_time = ((wait_begin_time - server->last_broadcast_time) < server->broadcast_delay) ? (wait_begin_time - server->last_broadcast_time) : (server->broadcast_io_state == VRP_IO_WRITE ? server->broadcast_delay : 0);
+	DWORD max_wait_time = !server->debug_no_broadcast ? (((wait_begin_time - server->last_broadcast_time) < server->broadcast_delay) ? (wait_begin_time - server->last_broadcast_time) : (server->broadcast_io_state == VRP_IO_WRITE ? server->broadcast_delay : 0)) : server->broadcast_delay;
 	DWORD event_index = WaitForMultipleObjects(io_event_count, server->io_event_table, FALSE, max_wait_time);
 
 	if (event_index < MAXIMUM_WAIT_OBJECTS)
@@ -368,7 +388,41 @@ size_t vrp_wait_for_io(vrp_server_t* server)
 		return (size_t)WAIT_FAILED;
 }
 
-BOOL WINAPI vrp_ctr_c_close_process_routine(DWORD parameter) { ExitProcess(0); }
+BOOL WINAPI vrp_ctr_c_close_process_routine(DWORD parameter)
+{
+	WCHAR buffer[(sizeof(HANDLE) * 2) + 1];
+	const size_t buffer_length = sizeof(buffer) / sizeof(WCHAR);
+	HANDLE log_file_handle = INVALID_HANDLE_VALUE;
+	if (GetEnvironmentVariableW(L"MASTER_LOG_FILE_HANDLE", buffer, buffer_length) == (sizeof(HANDLE) * 2))
+	{
+		int valid_string = 1;
+		for (int i = 0; valid_string && i != (sizeof(HANDLE) * 2); ++i)
+			if (!(buffer[i] >= L'0' && buffer[i] <= L'9') && !(buffer[i] >= L'A' && buffer[i] <= L'F'))
+				valid_string = 0;
+		if (valid_string)
+		{
+			log_file_handle = (HANDLE)0;
+			for (int i = 0; valid_string && i != (sizeof(HANDLE) * 2); ++i)
+				if (buffer[i] <= L'9')
+					log_file_handle = (HANDLE)(((UINT_PTR)log_file_handle << 4) | (UINT_PTR)(buffer[i] - L'0'));
+				else
+					log_file_handle = (HANDLE)(((UINT_PTR)log_file_handle << 4) | ((UINT_PTR)10 + (UINT_PTR)(buffer[i] - L'A')));
+		}
+	}
+	if (log_file_handle != INVALID_HANDLE_VALUE)
+		FlushFileBuffers(log_file_handle);
+	ExitProcess(0);
+}
+
+BOOL vrp_set_exit_flush_handle(HANDLE handle)
+{
+	WCHAR hex_table[16] = { L'0', L'1', L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9', L'A', L'B', L'C', L'D', L'E', L'F' };
+	WCHAR buffer[(sizeof(HANDLE) * 2) + 1];
+	for (int i = 0; i != sizeof(HANDLE) * 2; ++i)
+		buffer[i] = hex_table[((UINT_PTR)handle >> ((((sizeof(HANDLE) * 2) - 1) - i) * 4)) & 0xF];
+	buffer[sizeof(HANDLE) * 2] = 0;
+	return SetEnvironmentVariableW(L"MASTER_LOG_FILE_HANDLE", buffer);
+}
 
 size_t vrp_get_page_size() { SYSTEM_INFO system_info; GetSystemInfo(&system_info); return (size_t)system_info.dwPageSize; }
 
@@ -544,6 +598,7 @@ DWORD vrp_server_setup(vrp_server_t* server)
 		vrp_server_close(server);
 		return error;
 	}
+	vrp_set_exit_flush_handle(server->log.handle);
 
 	server->emergency_io_state = VRP_IO_IDLE;
 	server->emergency_io_result.hEvent = CreateEventW(0, TRUE, FALSE, 0);
@@ -606,21 +661,26 @@ DWORD vrp_server_setup(vrp_server_t* server)
 		}
 	}
 
-	server->broadcast_sock = WSASocketW(AF_INET, SOCK_DGRAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
-	if (server->broadcast_sock == INVALID_SOCKET)
+	if (configuration->debug_no_broadcast)
+		server->debug_no_broadcast = 1;
+	else
 	{
-		error = ERROR_OPEN_FAILED;
-		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		return error;
-	}
+		server->broadcast_sock = WSASocketW(AF_INET, SOCK_DGRAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
+		if (server->broadcast_sock == INVALID_SOCKET)
+		{
+			error = ERROR_OPEN_FAILED;
+			vrp_free_master_configuration(configuration);
+			vrp_server_close(server);
+			return error;
+		}
 
-	if (setsockopt(server->broadcast_sock, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(BOOL)))
-	{
-		error = ERROR_OPEN_FAILED;
-		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		return error;
+		if (setsockopt(server->broadcast_sock, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(BOOL)))
+		{
+			error = ERROR_OPEN_FAILED;
+			vrp_free_master_configuration(configuration);
+			vrp_server_close(server);
+			return error;
+		}
 	}
 
 	server->listen_sock = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
@@ -791,7 +851,8 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].io_state = VRP_IO_IDLE;
 			server->device_table[i].unprocessed_io = VRP_IO_IDLE;
 			server->device_table[i].connection_state = VRP_CONNECTION_NEW;
-			server->device_table[i].control_overridden = 0;
+			server->device_table[i].control_target_id = VRP_ID_UNDEFINED;
+			server->device_table[i].remote_command_finished = 0;
 			server->device_table[i].io_begin_time = 0;
 			server->device_table[i].last_uppdate_time = 0;
 			server->device_table[i].connection_begin_time = NtGetTickCount();
@@ -834,6 +895,8 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 	
 	if (server->device_table[i].unprocessed_io != VRP_IO_IDLE)
 	{
+		size_t io_data_size = (size_t)((uintptr_t)server->device_table[i].io_buffer.buf - (uintptr_t)server->device_table[i].io_memory);
+		size_t total_message_size = (io_data_size >= 5) ? (5 + vrp_get_message_size(server->device_table[i].io_memory)) : 0;// total messge size is invalid if io_data_size < 5
 		if (server->device_table[i].unprocessed_io == VRP_IO_WRITE)
 		{
 			if (server->device_table[i].connection_state == VRP_CONNECTION_SENDING_COMMAND)
@@ -871,7 +934,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 		{
 			if (server->device_table[i].connection_state == VRP_CONNECTION_WAITING_FOR_RESPONSE)
 			{
-				if ((server->device_table[i].io_memory[0] != VRP_MESSAGE_WFM) || (server->device_table[i].io_memory[5] != server->device_table[i].command))
+				if ((total_message_size < 12) || (server->device_table[i].io_memory[0] != VRP_MESSAGE_WFM) || (server->device_table[i].io_memory[5] != server->device_table[i].command))
 					return 0;
 
 				server->device_table[i].last_uppdate_time = NtGetTickCount();
@@ -898,10 +961,14 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 
 				server->device_table[i].command = VRP_MESSAGE_UNDEFINED;
 				server->device_table[i].connection_state = VRP_CONNECTION_IDLE;
+
+				size_t controller_index = vrp_get_controlling_device_index(server, server->device_table[i].id);
+				if (controller_index != (size_t)~0 && server->device_table[i].executing_remote_command)
+					server->device_table[i].remote_command_finished = 1;
 			}
 			else if (server->device_table[i].connection_state == VRP_CONNECTION_NEW)
 			{
-				if (server->device_table[i].io_memory[0] != VRP_MESSAGE_NCM)
+				if ((total_message_size < 11) || (server->device_table[i].io_memory[0] != VRP_MESSAGE_NCM))
 					return 0;
 
 				server->device_table[i].last_uppdate_time = NtGetTickCount();
@@ -919,7 +986,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				server->device_table[i].x = server->device_table[i].io_memory[7];
 				server->device_table[i].y = server->device_table[i].io_memory[8];
 				server->device_table[i].direction = server->device_table[i].io_memory[9];
-				server->device_table[i].state = server->device_table[i].io_memory[9];
+				server->device_table[i].state = server->device_table[i].io_memory[10];
 
 				server->device_table[i].connection_state = VRP_CONNECTION_SETUP;
 
@@ -938,7 +1005,6 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 						((server->device_table[i].ip_address) >> 24) & 0xFF, ((server->device_table[i].ip_address) >> 16) & 0xFF, ((server->device_table[i].ip_address) >> 8) & 0xFF, ((server->device_table[i].ip_address) >> 0) & 0xFF);
 					vrp_write_log_entry(&server->log, log_entry_buffer);
 
-					server->device_table[i].control_overridden = 1;
 					server->device_table[i].command = VRP_MESSAGE_SCM;
 					server->device_table[i].connection_state = VRP_CONNECTION_RESPONDING_TO_COMMAND;
 					server->device_table[i].io_memory[5] = 0x01;
@@ -949,6 +1015,9 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 			}
 			else if (server->device_table[i].connection_state == VRP_CONNECTION_WAITING_FOR_COMMAND)
 			{
+				if (total_message_size < 5)
+					return 0;
+
 				server->device_table[i].command = server->device_table[i].io_memory[0];
 
 				sprintf(log_entry_buffer, "Received command %lu from device %lu at address %lu.%lu.%lu.%lu", server->device_table[i].command, server->device_table[i].id,
@@ -973,34 +1042,69 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 					}
 					case VRP_MESSAGE_RLM:
 					{
-						uint32_t log_line_offset = ((uint32_t)server->device_table[i].io_memory[7] << 0) | ((uint32_t)server->device_table[i].io_memory[8] << 8) | ((uint32_t)server->device_table[i].io_memory[9] << 16) | ((uint32_t)server->device_table[i].io_memory[10] << 24);
-						uint32_t log_line_count = (uint32_t)server->device_table[i].io_memory[6];
-						if (server->device_table[i].io_memory[5])
-						{
-							if ((server->log.line_count - 1) < (log_line_offset + log_line_count))
-								log_line_offset = 0;
-							else
-								log_line_offset = (server->log.line_count - 1) - (log_line_offset + log_line_count);
-						}
-						uint32_t log_lines_read;
-						size_t log_size_read;
-						DWORD log_error = vrp_read_log(&server->log, log_line_offset, log_line_count, server->device_io_buffer_size - 12, server->device_table[i].io_memory + 12, &log_lines_read, &log_size_read);
-						if (!log_error)
-						{
-							wfm_error = VRP_ERROR_SUCCESS;
-							if (log_lines_read < (uint8_t)log_line_count)
-								wfm_atomic = 0;
-							lines_read = (uint8_t)log_lines_read;
-							wfm_size = 12 + log_size_read;
-						}
-						else if (wfm_error == ERROR_FILE_NOT_FOUND)
-							wfm_error = VRP_ERROR_INVALID_PARAMETER;
+						if (total_message_size < 11)
+							wfm_error = VRP_ERROR_INVALID_MESSAGE;
 						else
-							wfm_error = VRP_ERROR_DEVICE_MALFUNCTION;
+						{
+							uint32_t log_line_offset = ((uint32_t)server->device_table[i].io_memory[7] << 0) | ((uint32_t)server->device_table[i].io_memory[8] << 8) | ((uint32_t)server->device_table[i].io_memory[9] << 16) | ((uint32_t)server->device_table[i].io_memory[10] << 24);
+							uint32_t log_line_count = (uint32_t)server->device_table[i].io_memory[6];
+							if (server->device_table[i].io_memory[5])
+							{
+								if ((server->log.line_count - 1) < (log_line_offset + log_line_count))
+									log_line_offset = 0;
+								else
+									log_line_offset = (server->log.line_count - 1) - (log_line_offset + log_line_count);
+							}
+							uint32_t log_lines_read;
+							size_t log_size_read;
+							DWORD log_error = vrp_read_log(&server->log, log_line_offset, log_line_count, server->device_io_buffer_size - 12, server->device_table[i].io_memory + 12, &log_lines_read, &log_size_read);
+							if (!log_error)
+							{
+								wfm_error = VRP_ERROR_SUCCESS;
+								if (log_lines_read < (uint8_t)log_line_count)
+									wfm_atomic = 0;
+								lines_read = (uint8_t)log_lines_read;
+								wfm_size = 12 + log_size_read;
+							}
+							else if (log_error == ERROR_FILE_NOT_FOUND)
+								wfm_error = VRP_ERROR_INVALID_PARAMETER;
+							else
+								wfm_error = VRP_ERROR_DEVICE_MALFUNCTION;
+						}
 						break;
 					}
 					case VRP_MESSAGE_RCM:
 					{
+						if (total_message_size < 7)
+							wfm_error = VRP_ERROR_INVALID_MESSAGE;
+						else
+						{
+							uint8_t remote_command_target = server->device_table[i].io_memory[5];
+							uint8_t remote_control_flag = server->device_table[i].io_memory[6];
+							uint32_t remote_command_size = total_message_size - 7;
+							if (remote_control_flag)
+							{
+								if (!remote_command_size)
+									wfm_error = VRP_ERROR_INVALID_MESSAGE;
+								else
+								{
+									size_t target_controller_index = vrp_get_controlling_device_index(server, remote_command_target);
+									size_t target_index = vrp_get_device_index_by_id(server, remote_command_target);
+									if ((target_controller_index == (size_t)~0 || target_controller_index == server->device_table[i].id) && remote_command_target != VRP_ID_UNDEFINED && target_index != (size_t)~0)
+									{
+										server->device_table[i].control_target_id = remote_command_target;
+										server->device_table[target_index].executing_remote_command = 0;
+										server->device_table[target_index].remote_command_finished = 0;
+										server->device_table[i].connection_state = VRP_CONNECTION_REMOTE_COMMAND;
+										server->device_table[i].unprocessed_io = VRP_IO_IDLE;
+										return 1;
+									}
+									wfm_error = VRP_ERROR_ITEM_NOT_FOUND;
+								}
+							}
+							else
+								server->device_table[i].control_target_id = VRP_ID_UNDEFINED;
+						}
 						break;
 					}
 					case VRP_MESSAGE_POM:
@@ -1076,34 +1180,99 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 	
 	if (server->device_table[i].connection_state == VRP_CONNECTION_IDLE)
 	{
-		
-		if (current_time - server->device_table[i].connection_begin_time > 120000)
+		size_t controller_index = vrp_get_controlling_device_index(server, server->device_table[i].id);
+		if (controller_index == (size_t)~0)
 		{
-			server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+			if (current_time - server->device_table[i].connection_begin_time > 120000)
+			{
+				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 
-			server->device_table[i].command = VRP_MESSAGE_CCM;
-			server->device_table[i].io_memory[0] = server->device_table[i].command;
-			server->device_table[i].io_memory[1] = 0;
-			server->device_table[i].io_memory[2] = 0;
-			server->device_table[i].io_memory[3] = 0;
-			server->device_table[i].io_memory[4] = 0;
+				server->device_table[i].command = VRP_MESSAGE_CCM;
+				server->device_table[i].io_memory[0] = server->device_table[i].command;
+				server->device_table[i].io_memory[1] = 0;
+				server->device_table[i].io_memory[2] = 0;
+				server->device_table[i].io_memory[3] = 0;
+				server->device_table[i].io_memory[4] = 0;
 
-			if (!vrp_write(server, i, 0, 5))
-				return 0;
+				if (!vrp_write(server, i, 0, 5))
+					return 0;
+			}
+			else if (current_time - server->device_table[i].last_uppdate_time > 60000)
+			{
+				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+
+				server->device_table[i].command = VRP_MESSAGE_SQM;
+				server->device_table[i].io_memory[0] = server->device_table[i].command;
+				server->device_table[i].io_memory[1] = 0;
+				server->device_table[i].io_memory[2] = 0;
+				server->device_table[i].io_memory[3] = 0;
+				server->device_table[i].io_memory[4] = 0;
+
+				if (!vrp_write(server, i, 0, 5))
+					return 0;
+			}
 		}
-		else if (current_time - server->device_table[i].last_uppdate_time > 20000)
+		else if (!server->device_table[i].executing_remote_command && !server->device_table[i].remote_command_finished)
 		{
 			server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 
-			server->device_table[i].command = VRP_MESSAGE_SQM;
-			server->device_table[i].io_memory[0] = server->device_table[i].command;
-			server->device_table[i].io_memory[1] = 0;
+			server->device_table[i].command = server->device_table[controller_index].io_memory[7];
+			size_t remote_command_size = 5 + vrp_get_message_size(server->device_table[controller_index].io_memory + 7);
+			memcpy(server->device_table[i].io_memory, server->device_table[controller_index].io_memory + 7, remote_command_size);
+
+			if (!vrp_write(server, i, 0, remote_command_size))
+				return 0;
+
+			server->device_table[i].executing_remote_command = 1;
+		}
+	}
+
+	if (server->device_table[i].connection_state == VRP_CONNECTION_REMOTE_COMMAND)
+	{
+		size_t target_index = vrp_get_device_index_by_id(server, server->device_table[i].control_target_id);
+		if (target_index != (size_t)~0)
+		{
+			if (server->device_table[target_index].remote_command_finished)
+			{
+				size_t remote_command_wfm_size = 5 + vrp_get_message_size(server->device_table[target_index].io_memory);
+				server->device_table[i].io_memory[0] = VRP_MESSAGE_WFM;
+				server->device_table[i].io_memory[1] = ((uint32_t)(7 + remote_command_wfm_size) >> 0) & 0xFF;
+				server->device_table[i].io_memory[2] = ((uint32_t)(7 + remote_command_wfm_size) >> 8) & 0xFF;
+				server->device_table[i].io_memory[3] = ((uint32_t)(7 + remote_command_wfm_size) >> 16) & 0xFF;
+				server->device_table[i].io_memory[4] = ((uint32_t)(7 + remote_command_wfm_size) >> 24) & 0xFF;
+				server->device_table[i].io_memory[5] = VRP_MESSAGE_RCM;
+				server->device_table[i].io_memory[6] = VRP_ERROR_SUCCESS;
+				server->device_table[i].io_memory[7] = 1;
+				server->device_table[i].io_memory[8] = VRP_COORDINATE_UNDEFINED;
+				server->device_table[i].io_memory[9] = VRP_COORDINATE_UNDEFINED;
+				server->device_table[i].io_memory[10] = VRP_DIRECTION_UNDEFINED;
+				server->device_table[i].io_memory[11] = server->status;
+				memcpy(server->device_table[i].io_memory + 12, server->device_table[target_index].io_memory, remote_command_wfm_size);
+				if (!vrp_write(server, i, 0, 12 + remote_command_wfm_size))
+					return 0;
+
+				server->device_table[i].connection_state = VRP_CONNECTION_RESPONDING_TO_COMMAND;
+			}
+		}
+		else
+		{
+			server->device_table[i].control_target_id = VRP_ID_UNDEFINED;
+			server->device_table[i].io_memory[0] = VRP_MESSAGE_WFM;
+			server->device_table[i].io_memory[1] = 7;
 			server->device_table[i].io_memory[2] = 0;
 			server->device_table[i].io_memory[3] = 0;
 			server->device_table[i].io_memory[4] = 0;
-
-			if (!vrp_write(server, i, 0, 5))
+			server->device_table[i].io_memory[5] = VRP_MESSAGE_RCM;
+			server->device_table[i].io_memory[6] = VRP_ERROR_ITEM_NOT_FOUND;
+			server->device_table[i].io_memory[7] = 0;
+			server->device_table[i].io_memory[8] = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].io_memory[9] = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].io_memory[10] = VRP_DIRECTION_UNDEFINED;
+			server->device_table[i].io_memory[11] = server->status;
+			if (!vrp_write(server, i, 0, 12))
 				return 0;
+
+			server->device_table[i].connection_state = VRP_CONNECTION_RESPONDING_TO_COMMAND;
 		}
 	}
 
@@ -1157,7 +1326,7 @@ int main(int argc, char* argv)
 			if (server.device_table[j].sock != INVALID_SOCKET)
 				if(!vrp_process_device(&server, j))
 					vrp_remove_device(&server, j);
-		if (server.broadcast_io_state == VRP_IO_IDLE && (GetTickCount64() - server.last_broadcast_time) > server.broadcast_delay)
+		if (!server.debug_no_broadcast && server.broadcast_io_state == VRP_IO_IDLE && (GetTickCount64() - server.last_broadcast_time) > server.broadcast_delay)
 			vrp_send_system_broadcast_message(&server);
 	}
 	Sleep(INFINITE);
