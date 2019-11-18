@@ -86,7 +86,8 @@ def Broadcast_communication(viestit):
 			system_status = int(message[2])
 			master_id = int(message[3])
 			wait_for_message = False
-			if not yhteysMasteriin: viestit.append((1, "IP", master_address))
+			if not yhteysMasteriin:
+				viestit.append((1, "IP", master_address))
 	
 	# Luetaan broadcast viestejä ja reagoidaan hätäseis käskyyn.
 	while True:
@@ -153,7 +154,7 @@ def Master_communication(viestit):
 					# Ei ehkä tarpeellinen.
 					yhteys.sendall("Seis")
 					break
-			
+	
 def UR5_communication(viestit):
 	#Gateway laitteen IP ja portti UR5:en suuntaan
 	URip = "192.168.100.11"
@@ -161,35 +162,64 @@ def UR5_communication(viestit):
 	
 	
 	URsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	URsocket.bind(URip, URport)
+	URsocket.setblocking(0) # Non-blockinf
+	URsocket.bind((URip, URport))
 	URsocket.listen()
 	
 	while True:
 		# Luetaan viestejä.
 		
 		# Jos ei ole viestejä ei tehdä mitään.
-		if len(viestit) == 0:
+		# if len(viestit) == 0:
+			# continue
+		
+		try:
+			yhteys, osoite = URsocket.accept()
+		except Exception as e:
+			sleep(1)
 			continue
 		
-		
-		yhteys, osoite = URsocket.accept()
 		with yhteys:
 			print(yhteys)
 			
 			while True:
 				# Mitä yhteydellä tehdään.
 				
-				data = yhteys.recv(512)
+				try:
+					data = yhteys.recv(512)
+					print("UR5: ", data)
+				except socket.error:
+					data = str.encode("")
+				except Exception as e:
+					print(e)
 				
-				if viestit[0][1] == "Seis":
-					yhteys.sendall("Seis")
+				try:
+					if viestit[0][0] == 0:
+						viesti = Lue_viesti(viestit)
+						yhteys.sendall(viesti[3])
+				except:
+					pass
+				
+				# if viestit[0][1] == "Seis":
+					# yhteys.sendall("Seis")
+					# break
+				
+				if data == str.encode("Valmis"):
+					viestit.append((1, "Tuote", "Valmis"))
 					break
+				
+				if data == str.encode("Fail"):
+					viestit.append((1, "Tuote", "Fail"))
 				
 				# data = yhteys.recv(512)
 				# print("UR5: ", data)
-				# if data == "Kiinni":
-					# break
+				if data == str.encode("Kiinni") or data == str.encode("Ei objekteja"):
+					break
+				if not data:
+					print("Kpois")
+					break
 				# elif data == "Ei objekteja"
+		break
 
 yhteysMasteriin = False
 seis = False
@@ -198,9 +228,9 @@ seis = False
 if __name__ == "__main__":
 	# Käsien paikat.
 	paikat = [
+	#str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
 	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
-	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)"),
-	str.encode("(-0.586169,-0.413107,0.242636,-1.91015,-1.85181,0.584344)")
+	str.encode("(5.89284,-2.85641,-1.68474,-0.149206,1.56736,-0.316181)")
 	]
 
 	# Luodaan viestimis listat, säikeet ja käynnistetään säikeet.
@@ -208,6 +238,7 @@ if __name__ == "__main__":
 	# 0/1 kummasta suunnasta viesti tulee. 0 = main, 1 = säie
 	# "nimi" käskyn nimi minkä mukaan tehdään päätöksiä.
 	# data viestin data esim. IP osoite.
+	# "nimi" = komento
 	broadcast_viestit = []
 	master_viestit = []
 	ur5_viestit = []
@@ -215,7 +246,7 @@ if __name__ == "__main__":
 	broadcast_saie = threading.Thread(target=Broadcast_communication, args=(broadcast_viestit,))
 	broadcast_saie.start()
 	
-	master_saie = threading.Thread(target=Master_communication, args=(master_viestit))
+	master_saie = threading.Thread(target=Master_communication, args=(master_viestit,))
 	master_saie.start()
 	
 	ur5_saie = threading.Thread(target=UR5_communication, args=(ur5_viestit,))
@@ -247,9 +278,8 @@ if __name__ == "__main__":
 				print("Master viesti: ", viesti)
 				
 				if viesti[1] == "Tuote":
-					#ur5_viestit.append([0, "Tuote", viesti[2], paikat[viesti[3]])
-				
-					pass
+					ur5_viestit.append((0, "Tuote", viesti[2], paikat[viesti[3]]))
+					
 		# Käydään läpi UR5 viestejä.
 		if len(ur5_viestit) != 0:
 			if ur5_viestit[0] == 1:
@@ -259,7 +289,7 @@ if __name__ == "__main__":
 		# Kaikki seis.
 		if seis:
 			print("SEIS")
-			# Broadcast osa turha koska se sulkee itsensä hätä seis viestin jälkeen.
+			# Broadcast osa turha koska säie sulkee itsensä hätä seis viestin jälkeen.
 			#broadcast_viestit.clear()
 			#broadcast_viestit.append((0, "Seis", 0))
 			master_viestit.clear()
