@@ -2,6 +2,7 @@
 	"broadcast_ms_delay" : 1000,
 	"server_ip_address" : null,
 	"broadcast_ip_address" : null,
+	"network_prefix_length" : null,
 	"system_io_ms_timeout" : 16000,
 	"command_execution_ms_timeout" : 60000,
 	"debug_no_emergency_listen" : false,
@@ -18,5 +19,6 @@
 		[ true, true, true, true, false, true, true, true, true ],
 		[ true, true, true, true, false, true, true, true, true ] ],
 	"pickup_location_list" : [ { "id" : 0, "x" : 3, "y" : 0 }, { "id" : 1, "x" : 3, "y" : 1 }, { "id" : 2, "x" : 3, "y" : 2 } ],
-	"initial_block_list" : [ { "x" : 0, "y" : 0 }, { "x" : 2, "y" : 0 }, { "x" : 8, "y" : 3 } ]
+	"idle_location_list" : [ { "x" : 0, "y" : 0 }, { "x" : 0, "y" : 1 }, { "x" : 0, "y" : 2 }, { "x" : 0, "y" : 3 } ],
+	"initial_block_list" : [ { "x" : 5, "y" : 0 }, { "x" : 5, "y" : 1 }, { "x" : 6, "y" : 0 } ]
 }

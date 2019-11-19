@@ -3,6 +3,8 @@
 */
 
 #include "vrp_log.h"
+#include "vrp_file.h"
+#include <stdio.h>
 
 void vrp_close_log(vrp_log_t* log)
 {
@@ -75,9 +77,9 @@ DWORD vrp_write_log_entry(vrp_log_t* log, const char* line)
 	line_buffer[19] = '0' + (char)(((time.wSecond) / 1) % 10);
 	line_buffer[20] = ' ';
 	memcpy(line_buffer + time_stamp_size, line, line_size);
-	if (((log->line_count + 1) * sizeof(*log->line_table)) > log->line_table_memory_commited)
+	if ((((size_t)log->line_count + 1) * sizeof(*log->line_table)) > log->line_table_memory_commited)
 	{
-		if (((log->line_count + 1) * sizeof(*log->line_table)) > log->line_table_memory_reserved)
+		if ((((size_t)log->line_count + 1) * sizeof(*log->line_table)) > log->line_table_memory_reserved)
 			return ERROR_OUTOFMEMORY;
 		if (!VirtualAlloc((void*)((uintptr_t)log->line_table + log->line_table_memory_commited), log->line_table_memory_granularity, MEM_COMMIT, PAGE_READWRITE))
 			return ERROR_OUTOFMEMORY;
@@ -85,10 +87,10 @@ DWORD vrp_write_log_entry(vrp_log_t* log, const char* line)
 	}
 	if (!SetFilePointerEx(log->handle, *(LARGE_INTEGER*)&relative_offset, (LARGE_INTEGER*)&offset, FILE_END))
 		return GetLastError();
-	if (!WriteFile(log->handle, line_buffer, time_stamp_size + line_size, &written_size, 0))
+	if (!WriteFile(log->handle, line_buffer, (DWORD)time_stamp_size + line_size, &written_size, 0))
 		return GetLastError();
-	log->line_table[log->line_count].offset = offset + 1;
-	log->line_table[log->line_count].size = (time_stamp_size - 1) + line_size;
+	log->line_table[log->line_count].offset = (uint32_t)(offset + 1);
+	log->line_table[log->line_count].size = (uint32_t)((time_stamp_size - 1) + line_size);
 	log->line_count++;
 	return 0;
 }
@@ -176,10 +178,13 @@ DWORD vrp_open_log_file(vrp_log_t* log, size_t reserved_memory_size, size_t memo
 		DWORD file_read_size;
 		if (ReadFile(log->handle, log_buffer, (DWORD)(((file_size - offset) < sizeof(log_buffer)) ? (file_size - offset) : sizeof(log_buffer)), &file_read_size, 0))
 		{
+			__assume(file_read_size <= sizeof(log_buffer));
 			for (DWORD relative_offset = 0; relative_offset != file_read_size; ++relative_offset)
 			{
+				__assume(relative_offset < file_read_size);
 				if (log_buffer[relative_offset] == (uint8_t)'\n')
 				{
+					__assume(current_line < line_count);
 					log->line_table[current_line].offset = current_line_offset;
 					log->line_table[current_line].size = current_line_size - (uint32_t)return_character;
 					++current_line;
@@ -207,6 +212,8 @@ DWORD vrp_open_log_file(vrp_log_t* log, size_t reserved_memory_size, size_t memo
 			return error;
 		}
 	}
+
+	__assume(current_line < line_count);
 	log->line_table[current_line].offset = current_line_offset;
 	log->line_table[current_line].size = current_line_size - (uint32_t)return_character;
 

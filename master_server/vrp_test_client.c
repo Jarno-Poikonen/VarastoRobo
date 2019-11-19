@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.3.0 2019-11-17 by Santtu Nyman.
+	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
 */
 
 #ifdef __cplusplus
@@ -10,6 +10,7 @@ extern "C" {
 #include "ntdll_time.h"
 #include <stdlib.h>
 #include "vrp_thread_group.h"
+#include "vrp_ip_addresses_info.h"
 
 typedef struct vrp_test_client_configuration_t
 {
@@ -17,28 +18,6 @@ typedef struct vrp_test_client_configuration_t
 	int random_delays;
 	
 } vrp_test_client_configuration_t;
-
-uint32_t vrp_get_host_address()
-{
-	uint32_t on_wire_host_address = INADDR_ANY;
-	struct addrinfo host_address_hints;
-	memset(&host_address_hints, 0, sizeof(struct addrinfo));
-	host_address_hints.ai_family = AF_UNSPEC;
-	host_address_hints.ai_socktype = SOCK_STREAM;
-	host_address_hints.ai_protocol = IPPROTO_TCP;
-	struct addrinfo* host_address;
-	if (!getaddrinfo("", 0, &host_address_hints, &host_address))
-	{
-		for (struct addrinfo* address = host_address; address; address = address ? address->ai_next : 0)
-			if (address->ai_family == AF_INET)
-			{
-				on_wire_host_address = ((struct sockaddr_in*)address->ai_addr)->sin_addr.s_addr;
-				address = 0;
-			}
-		freeaddrinfo(host_address);
-	}
-	return on_wire_host_address;
-}
 
 uint32_t vrp_get_master_address_from_sbm()
 {
@@ -283,8 +262,8 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 	Sleep(1000);
 	printf("vrp_test_client %ul: starting in 0\n", GetCurrentThreadId());
 
-	uint8_t id = 1 + thread_index;
-	uint8_t type = VRP_DEVICE_TYPE_GOPIGO;
+	uint8_t id = 1 + (uint8_t)thread_index;
+	uint8_t type = 43;// some unknown type
 	uint8_t x = 3;
 	uint8_t y = 4;
 	uint8_t direction = VRP_DIRECTION_UP;
@@ -299,7 +278,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 	if (sock == INVALID_SOCKET)
 	{
 		printf("vrp_test_client %ul error: Failed to connect\n", GetCurrentThreadId());
-		return ERROR_OPEN_FAILED;
+		return;
 	}
 
 	if (random_delay && !(rand() & 3))
@@ -316,7 +295,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 		{
 			printf("vrp_test_client %ul error: Receiving command failed\n", GetCurrentThreadId());
 			closesocket(sock);
-			return ERROR_IO_DEVICE;
+			return;
 		}
 		uint8_t command = message_buffer[0];
 		switch (command)
@@ -345,7 +324,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 					{
 						printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
 						closesocket(sock);
-						return ERROR_IO_DEVICE;
+						return;
 					}
 				}
 				else
@@ -370,7 +349,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 					{
 						printf("vrp_test_client %ul error: sending response failed\n", GetCurrentThreadId());
 						closesocket(sock);
-						return ERROR_IO_DEVICE;
+						return;
 					}
 					printf("vrp_test_client %ul: Setup again? This seems to be wrong\n", GetCurrentThreadId());
 				}
@@ -399,7 +378,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 
 				shutdown(sock, SD_BOTH);
 				closesocket(sock);
-				return 0;
+				return;
 			}
 			case VRP_MESSAGE_SQM:
 			{
@@ -423,7 +402,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				{
 					printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
 					closesocket(sock);
-					return ERROR_IO_DEVICE;
+					return;
 				}
 				printf("vrp_test_client %ul: Executed SQM\n", GetCurrentThreadId());
 				break;
@@ -450,14 +429,14 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				{
 					printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
 					closesocket(sock);
-					return ERROR_IO_DEVICE;
+					return;
 				}
 				printf("vrp_test_client %ul: Received unsupported command\n", GetCurrentThreadId());
 				break;
 			}
 		}
 	}
-	return -1;
+	return;
 }
 
 void hello_thread_group(void* parameter, size_t thread_count, size_t thread_index)
@@ -474,8 +453,13 @@ DWORD vrp_create_test_client()
 {
 	vrp_test_client_configuration_t* client_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	// BuT COAMputterS HAv InfinET MeMori so Tsis CAn NOT be zEro right?
+	__assume(client_configuration);
 
-	client_configuration->on_wire_server_address = vrp_get_host_address();
+	uint32_t server_ip;
+	uint32_t subnet_mask;
+	vrp_get_host_ip_address(&server_ip, &subnet_mask);
+
+	client_configuration->on_wire_server_address = INADDR_ANY;
 	client_configuration->random_delays = 1;
 
 	vrp_create_thread_group(0, 20, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, free_test_client_configuration);

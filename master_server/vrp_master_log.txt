@@ -460,3 +460,9 @@
 2019-11-17 21:44:35 Device 4 disconnected from address 192.168.1.86
 2019-11-17 21:44:35 Device 17 disconnected from address 192.168.1.86
 2019-11-17 21:44:35 Device 20 disconnected from address 192.168.1.86
+2019-11-19 19:39:56 Server started with status 1 and id 42 at address 172.20.248.141
+2019-11-19 19:41:40 Server started with status 1 and id 42 at address 172.20.248.141
+2019-11-19 19:41:44 Device 100(QT-client) connected with type 1 and status 1 from address 172.20.248.144
+2019-11-19 19:41:44 Received command 10 from device 100 at address 172.20.248.144
+2019-11-19 19:41:44 Received command 5 from device 100 at address 172.20.248.144
+2019-11-19 19:41:44 Device 100(QT-client) disconnected from address 172.20.248.144

@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.0 2019-11-18 by Santtu Nyman.
+	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
 */
 
 #include <Winsock2.h>
@@ -88,6 +88,15 @@ static uint32_t read_server_ip_address_from_json(const jsonpl_value_t* configura
 	return ip;
 }
 
+static uint32_t read_network_prefix_length_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t network_prefix_length = 0xFFFFFFFF;
+	jsonpl_value_t* json_network_prefix_length = find_child_by_name(configuration, "network_prefix_length");
+	if (json_network_prefix_length && json_network_prefix_length->type == JSONPL_TYPE_NUMBER)
+		network_prefix_length = (uint32_t)json_network_prefix_length->number_value;
+	return network_prefix_length;
+}
+
 static uint8_t read_master_id_from_json(const jsonpl_value_t* configuration)
 {
 	uint8_t id = 42;
@@ -173,6 +182,37 @@ static size_t read_block_list_from_json(const jsonpl_value_t* configuration, uin
 	return n;
 }
 
+static size_t read_idle_location_list_from_json(const jsonpl_value_t* configuration, uint8_t** location_list)
+{
+	jsonpl_value_t* list = find_child_by_name(configuration, "idle_location_list");
+	if (!list || list->type != JSONPL_TYPE_ARRAY)
+		return 0;
+	size_t n = 0;
+	for (size_t i = 0; i != list->array.value_count; ++i)
+		if (list->array.table[i]->type == JSONPL_TYPE_OBJECT)
+			++n;
+	uint8_t* table = (uint8_t*)malloc(n ? (n * 2) : 1);
+	if (!table)
+		return 0;
+	for (size_t c = 0, i = 0; c != n; ++i)
+		if (list->array.table[i]->type == JSONPL_TYPE_OBJECT)
+		{
+			jsonpl_value_t* component = find_child_by_name(list->array.table[i], "x");
+			if (component && component->type == JSONPL_TYPE_NUMBER)
+				table[c * 2 + 0] = (uint8_t)component->number_value;
+			else
+				table[c * 2 + 0] = 0xFF;
+			component = find_child_by_name(list->array.table[i], "y");
+			if (component && component->type == JSONPL_TYPE_NUMBER)
+				table[c * 2 + 1] = (uint8_t)component->number_value;
+			else
+				table[c * 2 + 1] = 0xFF;
+			++c;
+		}
+	*location_list = table;
+	return n;
+}
+
 static size_t read_pickup_location_list_from_json(const jsonpl_value_t* configuration, uint8_t** pickup_location_list)
 {
 	jsonpl_value_t* list = find_child_by_name(configuration, "pickup_location_list");
@@ -225,6 +265,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint32_t command_timeout = read_command_timeout_from_json(json);
 	uint32_t on_wire_broadcast_ip_address = read_broadcast_ip_address_from_json(json);
 	uint32_t on_wire_server_ip_address = read_server_ip_address_from_json(json);
+	uint32_t network_prefix_length = read_network_prefix_length_from_json(json);
 	uint8_t system_status = read_system_status_from_json(json);
 	uint8_t master_id = read_master_id_from_json(json);
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
@@ -241,6 +282,10 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 		return ERROR_INVALID_DATA;
 	}
 
+	
+	uint8_t* idle_location_table = 0;
+	size_t idle_location_count = read_idle_location_list_from_json(json, &idle_location_table);
+
 	uint8_t* block_table = 0;
 	size_t block_count = read_block_list_from_json(json, &block_table);
 
@@ -252,6 +297,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	vrp_configuration_t* configuration = (vrp_configuration_t*)malloc(sizeof(vrp_configuration_t));
 	if (!configuration)
 	{
+		if (idle_location_table)
+			free(idle_location_table);
 		if (pickup_location_table)
 			free(pickup_location_table);
 		if (block_table)
@@ -265,6 +312,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->command_ms_timeout = command_timeout;
 	configuration->on_wire_broadcast_ip_address = on_wire_broadcast_ip_address;
 	configuration->on_wire_server_ip_address = on_wire_server_ip_address;
+	configuration->network_prefix_length = network_prefix_length;
 	configuration->master_id = master_id;
 	configuration->system_status = system_status;
 	configuration->min_temporal_id = min_temporal_id;
@@ -278,6 +326,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->block_table = block_table;
 	configuration->pickup_location_count = pickup_location_count;
 	configuration->pickup_location_table = pickup_location_table;
+	configuration->idle_location_table = idle_location_table;
+	configuration->idle_location_count = idle_location_count;
 
 	*master_configuration = configuration;
 	return 0;
@@ -285,6 +335,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 
 void vrp_free_master_configuration(vrp_configuration_t* master_configuration)
 {
+	if (master_configuration->idle_location_table)
+		free(master_configuration->idle_location_table);
 	if (master_configuration->pickup_location_table)
 		free(master_configuration->pickup_location_table);
 	if (master_configuration->block_table)

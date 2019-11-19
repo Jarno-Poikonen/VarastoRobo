@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.0 2019-11-18 by Santtu Nyman.
+	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
 */
 
 #ifndef VRP_CONFIGURATION_H
@@ -22,6 +22,7 @@ typedef struct vrp_configuration_t
 	uint32_t command_ms_timeout;
 	uint32_t on_wire_broadcast_ip_address;
 	uint32_t on_wire_server_ip_address;
+	uint32_t network_prefix_length;
 	uint8_t master_id;
 	uint8_t system_status;
 	uint8_t min_temporal_id;
@@ -35,6 +36,8 @@ typedef struct vrp_configuration_t
 	uint8_t* block_table;
 	size_t pickup_location_count;
 	uint8_t* pickup_location_table;
+	size_t idle_location_count;
+	uint8_t* idle_location_table;
 } vrp_configuration_t;
 
 DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration);
