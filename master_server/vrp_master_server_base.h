@@ -70,6 +70,7 @@ typedef struct vrp_server_t
 	uint8_t* map_bitmap;
 	struct
 	{
+		int path_finder_state;
 		uint8_t valid_location;
 		uint8_t blocked;
 		uint8_t used_by_device_id;
@@ -107,6 +108,8 @@ typedef struct vrp_server_t
 		uint8_t y;
 		uint8_t direction;
 		uint32_t ip_address;
+		uint8_t move_to_x;
+		uint8_t move_to_y;
 		uint8_t destination_x;
 		uint8_t destination_y;
 		uint8_t* io_memory;

@@ -1,8 +1,9 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
 */
 
 #include "vrp_ip_addresses_info.h"
+#include <stdio.h>
 
 DWORD vrp_get_host_ip_address(uint32_t* host_ip_address, uint32_t* subnet_mask)
 {
@@ -38,45 +39,6 @@ DWORD vrp_get_host_ip_address(uint32_t* host_ip_address, uint32_t* subnet_mask)
 			return error;
 		}
 	}
-	int host_address_likelynes = 1;
-	uint32_t likely_host_address = INADDR_ANY;
-	uint32_t likely_subnet_mask = 0xFFFFFFFF;
-	for (IP_ADAPTER_ADDRESSES* adapter_info = adapter_info_base; adapter_info; adapter_info = adapter_info->Next)
-	{
-		IP_ADAPTER_UNICAST_ADDRESS* unicast_address = adapter_info->FirstUnicastAddress;
-		IP_ADAPTER_MULTICAST_ADDRESS* multicast_address = adapter_info->FirstMulticastAddress;
-		IP_ADAPTER_GATEWAY_ADDRESS_LH* gateway_address = adapter_info->FirstGatewayAddress;
-		IP_ADAPTER_DNS_SERVER_ADDRESS* dns_address = adapter_info->FirstDnsServerAddress;
-		int likelynes = 0;
-		while (unicast_address && unicast_address->Address.lpSockaddr->sa_family != AF_INET)
-			unicast_address = unicast_address->Next;
-		while (multicast_address && multicast_address->Address.lpSockaddr->sa_family != AF_INET)
-			multicast_address = multicast_address->Next;
-		while (gateway_address && gateway_address->Address.lpSockaddr->sa_family != AF_INET)
-			gateway_address = gateway_address->Next;
-		while (dns_address && dns_address->Address.lpSockaddr->sa_family != AF_INET)
-			dns_address = dns_address->Next;
-		if (adapter_info->DnsSuffix && (lstrlenW(adapter_info->DnsSuffix) > 0) && dns_address && gateway_address && multicast_address && unicast_address)
-			likelynes = 6;
-		else if (dns_address && gateway_address && multicast_address && unicast_address)
-			likelynes = 5;
-		else if (gateway_address && multicast_address && unicast_address)
-			likelynes = 4;
-		else if (multicast_address && unicast_address)
-			likelynes = 3;
-		else if (unicast_address)
-			likelynes = 2;
-		if (likelynes > host_address_likelynes)
-		{
-			likely_host_address = ((struct sockaddr_in*)unicast_address->Address.lpSockaddr)->sin_addr.s_addr;
-			ConvertLengthToIpv4Mask(unicast_address->OnLinkPrefixLength, &likely_subnet_mask);
-			host_address_likelynes = likelynes;
-		}
-	}
-	HeapFree(heap, 0, adapter_info_base);
-	*host_ip_address = likely_host_address;
-	*subnet_mask = likely_subnet_mask;
-	return 0;
 
 	/*
 	CHAR address_string[46];
@@ -244,6 +206,45 @@ DWORD vrp_get_host_ip_address(uint32_t* host_ip_address, uint32_t* subnet_mask)
 
 		pCurrAddresses = pCurrAddresses->Next;
 	}
-	return on_wire_host_address;
 	*/
+
+	int host_address_likelynes = 1;
+	uint32_t likely_host_address = INADDR_ANY;
+	uint32_t likely_subnet_mask = 0xFFFFFFFF;
+	for (IP_ADAPTER_ADDRESSES* adapter_info = adapter_info_base; adapter_info; adapter_info = adapter_info->Next)
+	{
+		IP_ADAPTER_UNICAST_ADDRESS* unicast_address = adapter_info->FirstUnicastAddress;
+		IP_ADAPTER_MULTICAST_ADDRESS* multicast_address = adapter_info->FirstMulticastAddress;
+		IP_ADAPTER_GATEWAY_ADDRESS_LH* gateway_address = adapter_info->FirstGatewayAddress;
+		IP_ADAPTER_DNS_SERVER_ADDRESS* dns_address = adapter_info->FirstDnsServerAddress;
+		int likelynes = 0;
+		while (unicast_address && unicast_address->Address.lpSockaddr->sa_family != AF_INET)
+			unicast_address = unicast_address->Next;
+		while (multicast_address && multicast_address->Address.lpSockaddr->sa_family != AF_INET)
+			multicast_address = multicast_address->Next;
+		while (gateway_address && gateway_address->Address.lpSockaddr->sa_family != AF_INET)
+			gateway_address = gateway_address->Next;
+		while (dns_address && dns_address->Address.lpSockaddr->sa_family != AF_INET)
+			dns_address = dns_address->Next;
+		if (adapter_info->DnsSuffix && (lstrlenW(adapter_info->DnsSuffix) > 0) && dns_address && gateway_address && multicast_address && unicast_address)
+			likelynes = 6;
+		else if (dns_address && gateway_address && multicast_address && unicast_address)
+			likelynes = 5;
+		else if (gateway_address && multicast_address && unicast_address)
+			likelynes = 4;
+		else if (multicast_address && unicast_address)
+			likelynes = 3;
+		else if (unicast_address)
+			likelynes = 2;
+		if (likelynes > host_address_likelynes)
+		{
+			likely_host_address = ((struct sockaddr_in*)unicast_address->Address.lpSockaddr)->sin_addr.s_addr;
+			ConvertLengthToIpv4Mask(unicast_address->OnLinkPrefixLength, &likely_subnet_mask);
+			host_address_likelynes = likelynes;
+		}
+	}
+	HeapFree(heap, 0, adapter_info_base);
+	*host_ip_address = likely_host_address;
+	*subnet_mask = likely_subnet_mask;
+	return 0;
 }

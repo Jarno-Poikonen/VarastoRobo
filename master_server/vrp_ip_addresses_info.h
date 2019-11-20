@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
 */
 
 #ifndef VRP_IP_ADDRESS_INFO_H

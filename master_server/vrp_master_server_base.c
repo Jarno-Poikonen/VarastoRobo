@@ -1,3 +1,7 @@
+/*
+	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
+*/
+
 #include "vrp_master_server_base.h"
 
 uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
@@ -403,7 +407,7 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	server->page_size = vrp_get_page_size();
 
 	size_t required_map_bitmap_buffer_size = ((size_t)((((size_t)configuration->map_height * (size_t)configuration->map_width) + 7) / 8) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_map_state_buffer_size = (((size_t)configuration->map_height * (size_t)configuration->map_width) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_map_state_buffer_size = (((size_t)configuration->map_height * (size_t)configuration->map_width * sizeof(*server->map_state)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
 	size_t required_block_buffer_size = ((size_t)(VRP_MAX_BLOCK_COUNT * sizeof(*server->block_table)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
 	size_t required_idle_location_table_buffer_size = ((((size_t)configuration->idle_location_count * sizeof(*server->idle_location_table)) / 8) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
 	size_t required_pickup_location_buffer_size = ((size_t)(VRP_MAX_PICKUP_LOCATION_COUNT * sizeof(*server->pickup_location_table)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
@@ -531,13 +535,9 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		setsockopt(server->emergency_sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse_address_enable, sizeof(BOOL));
 		// this is not needed to be successful, but helps when running clients on same machine
 
-		int wsa_error_1 = WSAGetLastError();
-
 		if (setsockopt(server->emergency_sock, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(BOOL)) ||
-			bind(server->emergency_sock, (struct sockaddr*) & server->emergency_address, sizeof(struct sockaddr_in)))
+			bind(server->emergency_sock, (struct sockaddr*)&server->emergency_address, sizeof(struct sockaddr_in)))
 		{
-			int wsa_error_2 = WSAGetLastError();
-
 			error = ERROR_OPEN_FAILED;
 			vrp_free_master_configuration(configuration);
 			vrp_server_close(server);
@@ -738,7 +738,7 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 {
 	struct sockaddr_in client_address;
 	int client_address_size = sizeof(struct sockaddr_in);
-	SOCKET client_sock = accept(server->listen_sock, (struct sockaddr*) & client_address, &client_address_size);
+	SOCKET client_sock = accept(server->listen_sock, (struct sockaddr*)&client_address, &client_address_size);
 	ResetEvent(server->accept_event);
 	if (client_sock != INVALID_SOCKET)
 	{
@@ -762,6 +762,8 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].direction = VRP_DIRECTION_UNDEFINED;
 			server->device_table[i].ip_address = ntohl(client_address.sin_addr.s_addr);
+			server->device_table[i].move_to_x = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].move_to_y = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
 			if (vrp_read(server, i, 0, server->device_io_buffer_size))

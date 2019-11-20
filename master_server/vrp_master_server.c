@@ -1,8 +1,9 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
+#include "vrp_path_logic.h"
 
 int vrp_process_device(vrp_server_t* server, size_t i)
 {
@@ -10,7 +11,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 	DWORD current_time = NtGetTickCount();
 
 	if ((((server->device_table[i].io_state == VRP_IO_WRITE) || ((server->device_table[i].io_state == VRP_IO_READ) && (server->device_table[i].connection_state == VRP_CONNECTION_NEW))) && (current_time - server->device_table[i].io_begin_time) > server->io_timeout) ||
-		((server->device_table[i].io_state == VRP_IO_READ) && (current_time - server->device_table[i].io_begin_time) > server->command_timeout))
+		(((server->device_table[i].io_state == VRP_IO_READ) && (current_time - server->device_table[i].io_begin_time) > server->command_timeout) && (server->device_table[i].connection_state != VRP_CONNECTION_WAITING_FOR_COMMAND)))
 		return 0;
 	
 	if (server->device_table[i].unprocessed_io != VRP_IO_IDLE)
@@ -229,6 +230,12 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 					}
 					case VRP_MESSAGE_POM:
 					{
+						uint8_t remote_command_target = server->device_table[i].io_memory[5];
+
+
+						sprintf(log_entry_buffer, "Received product order message command for product %lu from device %lu at address %lu.%lu.%lu.%lu", 0, server->device_table[i].id,
+							((server->device_table[i].ip_address) >> 24) & 0xFF, ((server->device_table[i].ip_address) >> 16) & 0xFF, ((server->device_table[i].ip_address) >> 8) & 0xFF, ((server->device_table[i].ip_address) >> 0) & 0xFF);
+						vrp_write_log_entry(&server->log, log_entry_buffer);
 						break;
 					}
 					case VRP_MESSAGE_SSM:
@@ -286,7 +293,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				server->device_table[i].io_memory[7] = wfm_atomic;
 				server->device_table[i].io_memory[8] = VRP_COORDINATE_UNDEFINED;
 				server->device_table[i].io_memory[9] = VRP_COORDINATE_UNDEFINED;
-				server->device_table[i].io_memory[10] = lines_read;;
+				server->device_table[i].io_memory[10] = lines_read;
 				server->device_table[i].io_memory[11] = server->status;
 				if (!vrp_write(server, i, 0, wfm_size))
 					return 0;
@@ -317,7 +324,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				if (!vrp_write(server, i, 0, 5))
 					return 0;
 			}
-			else if (current_time - server->device_table[i].last_uppdate_time > 60000)
+			else if (current_time - server->device_table[i].last_uppdate_time > 30000)
 			{
 				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 
@@ -331,6 +338,31 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				if (!vrp_write(server, i, 0, 5))
 					return 0;
 			}
+			/*
+			const int test_gopigo_destination_x = 7;
+			const int test_gopigo_destination_y = 1;
+			if ((server->device_table[i].connection_state == VRP_CONNECTION_IDLE) && (server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) && ((server->device_table[i].x != test_gopigo_destination_x) || (server->device_table[i].y != test_gopigo_destination_y)))
+			{
+				uint8_t direction = (uint8_t)vrp_calculate_direction_to_target(server, server->device_table[i].x, server->device_table[i].y, test_gopigo_destination_x, test_gopigo_destination_y);
+				if (direction != VRP_DIRECTION_UNDEFINED)
+				{
+					server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+
+					server->device_table[i].command = VRP_MESSAGE_MCM;
+					server->device_table[i].io_memory[0] = server->device_table[i].command;
+					server->device_table[i].io_memory[1] = 1;
+					server->device_table[i].io_memory[2] = 0;
+					server->device_table[i].io_memory[3] = 0;
+					server->device_table[i].io_memory[4] = 0;
+					server->device_table[i].io_memory[5] = direction;
+
+					if (!vrp_write(server, i, 0, 6))
+						return 0;
+				}
+				else
+					printf("server error: can't gopigo\n");
+			}
+			*/
 		}
 		else if (!server->device_table[i].executing_remote_command && !server->device_table[i].remote_command_finished)
 		{
@@ -401,20 +433,20 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 
 DWORD vrp_run_setup(vrp_server_t* server)
 {
-	printf("Starting VarastoRobo master 0.4.1...\n");
+	printf("Starting VarastoRobo master 0.4.2...\n");
 	
 	int server_setup_error_hint = 0;
 	DWORD error = vrp_server_setup(server, &server_setup_error_hint);
-	if (error)
-	{
-		printf("vrp_server_setup failed. error code %lu error hint %i(%s)\n", error, server_setup_error_hint, (server_setup_error_hint == -1) ? "failed to load \"master_server.json\"" : "ask Santtu about this");
-		return error;
-	}
-
 	char server_ip_address[16];
 	char broadcast_ip_address[16];
 	RtlIpv4AddressToStringA((const struct in_addr*)&server->server_address.sin_addr.s_addr, server_ip_address);
 	RtlIpv4AddressToStringA((const struct in_addr*)&server->broadcast_address.sin_addr.s_addr, broadcast_ip_address);
+	if (error)
+	{
+		printf("vrp_server_setup failed. error code %lu error hint %i(%s) server address %s broadcast address %s\n", error, server_setup_error_hint, (server_setup_error_hint == -1) ? "failed to load \"master_server.json\"" : "ask Santtu about this", server_ip_address, broadcast_ip_address);
+		return error;
+	}
+
 	printf("server running at address %s broadcast address %s\n", server_ip_address, broadcast_ip_address);
 
 	//vrp_create_test_client();
@@ -462,6 +494,7 @@ int main(int argc, char* argv)
 		if (!server.debug_no_broadcast && server.broadcast_io_state == VRP_IO_IDLE && (GetTickCount64() - server.last_broadcast_time) > server.broadcast_delay)
 			vrp_send_system_broadcast_message(&server);
 	}
-	Sleep(INFINITE);
+
+	__assume(0);
 	return 0;
 }

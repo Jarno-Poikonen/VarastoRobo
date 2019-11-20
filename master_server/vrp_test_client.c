@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
 */
 
 #ifdef __cplusplus
@@ -263,9 +263,9 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 	printf("vrp_test_client %ul: starting in 0\n", GetCurrentThreadId());
 
 	uint8_t id = 1 + (uint8_t)thread_index;
-	uint8_t type = 43;// some unknown type
-	uint8_t x = 3;
-	uint8_t y = 4;
+	uint8_t type = VRP_DEVICE_TYPE_GOPIGO;
+	uint8_t x = 0;
+	uint8_t y = (uint8_t)thread_index;
 	uint8_t direction = VRP_DIRECTION_UP;
 	uint8_t state = VRP_STATE_NORMAL;
 	uint8_t message_buffer[256] = { 0 };
@@ -407,6 +407,78 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				printf("vrp_test_client %ul: Executed SQM\n", GetCurrentThreadId());
 				break;
 			}
+			case VRP_MESSAGE_MCM:
+			{
+				int cant_move = 0;
+				switch (message_buffer[5])
+				{
+					case VRP_DIRECTION_LEFT:
+						if (x)
+						{
+							direction = VRP_DIRECTION_LEFT;
+							x -= 1;
+						}
+						else
+							cant_move = 1;
+						break;
+					case VRP_DIRECTION_UP:
+						if (y < 5)
+						{
+							direction = VRP_DIRECTION_UP;
+							y += 1;
+						}
+						else
+							cant_move = 1;
+						break;
+					case VRP_DIRECTION_RIGHT:
+						if (x < 8)
+						{
+							direction = VRP_DIRECTION_RIGHT;
+							x += 1;
+						}
+						else
+							cant_move = 1;
+						break;
+					case VRP_DIRECTION_DOWN:
+						if (y)
+						{
+							direction = VRP_DIRECTION_DOWN;
+							y -= 1;
+						}
+						else
+							cant_move = 1;
+						break;
+					default:
+						cant_move = 1;
+						break;
+				}
+
+				message_buffer[0] = VRP_MESSAGE_WFM;
+				message_buffer[1] = 7;
+				message_buffer[2] = 0;
+				message_buffer[3] = 0;
+				message_buffer[4] = 0;
+				message_buffer[5] = VRP_MESSAGE_MCM;
+				message_buffer[6] = !cant_move ? VRP_ERROR_SUCCESS : VRP_ERROR_UNABLE_TO_USE_PATH;
+				message_buffer[7] = 1;
+				message_buffer[8] = x;
+				message_buffer[9] = y;
+				message_buffer[10] = direction;
+				message_buffer[11] = state;
+
+				Sleep(2000 + (rand() % 500));
+				if (random_delay && !(rand() & 3))
+					Sleep(rand() % 1000);
+
+				if (!vrp_send_message(sock, 12, message_buffer))
+				{
+					printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
+					closesocket(sock);
+					return;
+				}
+				printf("vrp_test_client %ul: Executed MCM\n", GetCurrentThreadId());
+				break;
+			}
 			default:
 			{
 				message_buffer[0] = VRP_MESSAGE_WFM;
@@ -462,7 +534,7 @@ DWORD vrp_create_test_client()
 	client_configuration->on_wire_server_address = INADDR_ANY;
 	client_configuration->random_delays = 1;
 
-	vrp_create_thread_group(0, 20, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, free_test_client_configuration);
+	vrp_create_thread_group(0, 1, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, free_test_client_configuration);
 	
 	printf("server: client threads created\n");
 	return 0;// also there were no errors, because no errors were checked
