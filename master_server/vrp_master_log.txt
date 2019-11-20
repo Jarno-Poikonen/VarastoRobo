@@ -466,3 +466,4 @@
 2019-11-19 19:41:44 Received command 10 from device 100 at address 172.20.248.144
 2019-11-19 19:41:44 Received command 5 from device 100 at address 172.20.248.144
 2019-11-19 19:41:44 Device 100(QT-client) disconnected from address 172.20.248.144
+2019-11-19 19:46:38 Server started with status 1 and id 42 at address 172.20.248.141
