@@ -1,4 +1,4 @@
-QT       += core gui
+QT += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,14 +16,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    bitmap.cpp \
+    ipv4address.cpp \
     main.cpp \
-    mainwindow.cpp
+    point.cpp \
+    qtclient.cpp \
+    systembroadcastmessage.cpp \
+    varastorobodevice.cpp
 
 HEADERS += \
-    mainwindow.h
+    bitmap.h \
+    ipv4address.h \
+    point.h \
+    qtclient.h \
+    systembroadcastmessage.h \
+    varastorobodevice.h
 
 FORMS += \
-    mainwindow.ui
+    qtclient.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
