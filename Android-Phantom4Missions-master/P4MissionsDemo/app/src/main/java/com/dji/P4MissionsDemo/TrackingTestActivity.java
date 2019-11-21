@@ -72,7 +72,7 @@ import dji.sdk.sdkmanager.DJISDKManager;
 import static dji.midware.data.manager.P3.ServiceManager.getContext;
 
 
-public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTextureListener, OnClickListener, OnTouchListener, CompoundButton.OnCheckedChangeListener, ActiveTrackMissionOperatorListener
+public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTextureListener, OnClickListener, CompoundButton.OnCheckedChangeListener, ActiveTrackMissionOperatorListener
 {
     private static final String TAG = "TrackingTestActivity";
     private static final int MAIN_CAMERA_INDEX = 0;
@@ -80,7 +80,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private static final int MOVE_OFFSET = 20;
 
     private int trackingIndex = INVALID_INDEX;
-    private int photoCaptureInterval = 5000;
+    private int photoCaptureInterval = 10000;
     private boolean isAutoSensingSupported = false;
     private boolean isDrawingRect = false;
 
@@ -99,6 +99,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
     private static BaseProduct mProduct;
     private ActiveTrackOperator mActiveTrackOperator;
+    private ActiveTrackMission mActiveTrackMission;
     private final DJIKey trackModeKey = FlightControllerKey.createFlightAssistantKey(FlightControllerKey.ACTIVE_TRACK_MODE);
     private ConcurrentHashMap<Integer, MultiTrackingView> targetViewHashMap = new ConcurrentHashMap<>();
     private ActiveTrackMode startMode = ActiveTrackMode.TRACE;
@@ -107,7 +108,9 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private List<MediaFile> mediaFileList = new ArrayList<>();
     private MediaManager.FileListState currentFileListState = MediaManager.FileListState.UNKNOWN;
     private Timer mTimer1;
+    private Timer mTimer2;
     private Handler mTimerHandler = new Handler();
+    private Handler mTimerHandler2 = new Handler();
     File destDir = new File(Environment.getExternalStorageDirectory().getPath() + "/TrackerApp/");
 
 
@@ -184,6 +187,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     @SuppressLint("ClickableViewAccessibility")
     private void initUI()
     {
+        startTimer2();
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         ImageButton mPushDrawerIb = findViewById(R.id.tracking_drawer_control_ib);
         mPushInfoSd = findViewById(R.id.tracking_drawer_sd);
@@ -205,7 +209,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         mPushBackSw.setOnCheckedChangeListener(this);
         mAutoCaptureSw.setOnCheckedChangeListener(this);
 
-        mBgLayout.setOnTouchListener(this);
+       // mBgLayout.setOnTouchListener(this);
         mConfirmBtn.setOnClickListener(this);
         mStopBtn.setOnClickListener(this);
         mRejectBtn.setOnClickListener(this);
@@ -283,12 +287,35 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         return Math.abs(point1X - point2X) + Math.abs(point1Y - point2Y);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouch(View v, MotionEvent event)
+
+    private void startTimer2()
     {
-        switch (event.getAction())
+        mTimer2 = new Timer();
+
+        TimerTask mTt2 = new TimerTask()
         {
+            public void run()
+            {
+                mTimerHandler2.post(() -> track());
+
+            }
+        };
+
+        mTimer2.schedule(mTt2, 5000, 5000);
+    }
+
+
+    private void stopTimer2()
+    {
+        if ( mTimer2 != null )
+        {
+            mTimer2.cancel();
+            mTimer2.purge();
+        }
+    }
+    private void track() {
+      /*
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 isDrawingRect = false;
                 downX = event.getX();
@@ -296,20 +323,9 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                setResultToToast("Currently dragging...");
+                if (calcManhattanDistance(downX, downY, event.getX(), event.getY()) < MOVE_OFFSET && !isDrawingRect) {
+                trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
 
-                if (calcManhattanDistance(downX, downY, event.getX(), event.getY()) < MOVE_OFFSET && !isDrawingRect)
-                {
-                    trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
-
-                    if (targetViewHashMap.get(trackingIndex) != null)
-                        Objects.requireNonNull(targetViewHashMap.get(trackingIndex)).setBackgroundColor(Color.RED);
-
-                    setResultToToast("Insufficient movement, no further action");
-                    return true;
-                }
-
-                isDrawingRect = true;
                 mSendRectIV.setVisibility(View.VISIBLE);
                 int l = (int) (downX < event.getX() ? downX : event.getX());
                 int t = (int) (downY < event.getY() ? downY : event.getY());
@@ -323,42 +339,55 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (!isDrawingRect)
-                {
-                    if (targetViewHashMap.get(trackingIndex) != null)
-                    {
-                        setResultToToast("Selected Index: " + trackingIndex + ",Please Confirm it!");
-                        Objects.requireNonNull(targetViewHashMap.get(trackingIndex)).setBackgroundColor(Color.TRANSPARENT);
-                    }
-                }
-                else
-                {
-                    RectF rectF = getActiveTrackRect(mSendRectIV);
-                    ActiveTrackMission mActiveTrackMission = new ActiveTrackMission(rectF, startMode);
-
-                    if (startMode == ActiveTrackMode.QUICK_SHOT)
-                    {
-                        mActiveTrackMission.setQuickShotMode(quickShotMode);
-                        checkStorageStates();
-                    }
-
-                    mActiveTrackOperator.startTracking(mActiveTrackMission, error ->
-                    {
-                        if (error == null)
-                            isDrawingRect = false;
-
-                        setResultToToast("Start Tracking: " + (error == null  ?  "Success"  :  error.getDescription()));
-                    });
-                    mSendRectIV.setVisibility(View.INVISIBLE);
-                    clearCurrentView();
-                }
-                break;
-
-            default:
-                break;
+            */
+        if (targetViewHashMap.get(trackingIndex) != null) {
+            Objects.requireNonNull(targetViewHashMap.get(trackingIndex)).setBackgroundColor(Color.RED);
         }
 
-        return true;
+        float downX = 0.2f;
+        float downY = 0.2f;
+
+        //  if (calcManhattanDistance(downX, downY, 0.5f, 0.5f) < MOVE_OFFSET && !isDrawingRect) {
+        trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
+        DJILog.d(TAG,trackingIndex);
+        isDrawingRect = true;
+        mSendRectIV.setVisibility(View.VISIBLE);
+        //mSendRectIV.setX(0.3f);
+        // mSendRectIV.setY(0.7f);
+        //mSendRectIV.getLayoutParams().width = (int)0.2;
+        // mSendRectIV.getLayoutParams().height = (int)0.6;
+        //    mSendRectIV.requestLayout();
+
+
+        if (!isDrawingRect) {
+
+            if (targetViewHashMap.get(trackingIndex) != null) {
+                setResultToToast("Selected Index: " + trackingIndex + ",Please Confirm it!");
+                targetViewHashMap.get(trackingIndex).setBackgroundColor(Color.TRANSPARENT);
+            }
+        } else {
+            //RectF rectF = getActiveTrackRect(mSendRectIV);
+            RectF rectF = new RectF(0.2f, 0.4f, 0.6f, 0.8f);
+            mActiveTrackMission = new ActiveTrackMission(rectF, startMode);
+            if (startMode == ActiveTrackMode.QUICK_SHOT) {
+                mActiveTrackMission.setQuickShotMode(quickShotMode);
+                checkStorageStates();
+            }
+            mActiveTrackOperator.startTracking(mActiveTrackMission, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(DJIError error) {
+                    if (error == null) {
+                        isDrawingRect = false;
+                    }
+                    setResultToToast("Start Tracking: " + (error == null
+                            ? "Success"
+                            : error.getDescription()));
+
+                }
+            });
+            mSendRectIV.setVisibility(View.INVISIBLE);
+            clearCurrentView();
+        }
     }
 
 

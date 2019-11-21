@@ -10,7 +10,50 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Firebase" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bea61bef-e213-4200-8faf-53d96a4659d8" name="Default Changelist" comment="" />
+    <list default="true" id="bea61bef-e213-4200-8faf-53d96a4659d8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_asynclayoutinflater_asynclayoutinflater_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_asynclayoutinflater_asynclayoutinflater_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_constraintlayout_constraintlayout_1_1_3_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_constraintlayout_constraintlayout_1_1_3_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_coordinatorlayout_coordinatorlayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_coordinatorlayout_coordinatorlayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_cursoradapter_cursoradapter_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_cursoradapter_cursoradapter_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_customview_customview_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_customview_customview_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_documentfile_documentfile_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_documentfile_documentfile_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_drawerlayout_drawerlayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_drawerlayout_drawerlayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_interpolator_interpolator_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_interpolator_interpolator_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_ui_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_ui_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_utils_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_utils_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_extensions_2_0_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_extensions_2_0_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_process_2_0_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_process_2_0_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_service_2_0_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_service_2_0_0_rc01_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_loader_loader_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_loader_loader_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_localbroadcastmanager_localbroadcastmanager_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_localbroadcastmanager_localbroadcastmanager_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_multidex_multidex_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_multidex_multidex_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_multidex_multidex_instrumentation_2_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_multidex_multidex_instrumentation_2_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_print_print_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_print_print_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_recyclerview_recyclerview_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_recyclerview_recyclerview_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_slidingpanelayout_slidingpanelayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_slidingpanelayout_slidingpanelayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_swiperefreshlayout_swiperefreshlayout_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_swiperefreshlayout_swiperefreshlayout_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_animated_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_animated_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager_viewpager_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager_viewpager_1_0_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dji_dji_sdk_4_11_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dji_dji_sdk_4_11_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dji_fly_safe_database_1_0_17_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dji_fly_safe_database_1_0_17_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dji_library_networkrtk_helper_1_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_dji_library_networkrtk_helper_1_0_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_mapzen_android_lost_3_0_4_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_mapzen_android_lost_3_0_4_aar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +63,7 @@
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="73QDU17A21001920" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="72c84c87" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -66,189 +109,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="85" column="63" selection-start-line="85" selection-start-column="35" selection-end-line="85" selection-end-column="63" />
-            </state>
-          </provider>
-          <provider editor-type-id="android-manifest" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
-          <provider editor-type-id="text-editor">
-            <state relative-caret-position="782">
-              <caret line="46" selection-start-line="46" selection-end-line="46" />
-            </state>
-          </provider>
-          <provider selected="true" editor-type-id="android-designer2" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="37" selection-start-line="5" selection-start-column="37" selection-end-line="5" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="881">
-              <caret line="87" selection-start-line="87" selection-end-line="87" />
-              <folding>
-                <element signature="e#6642#6643#0" expanded="true" />
-                <element signature="e#6675#6676#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
-          <provider editor-type-id="text-editor">
-            <state relative-caret-position="-119">
-              <caret line="237" column="23" selection-start-line="237" selection-start-column="23" selection-end-line="237" selection-end-column="23" />
-            </state>
-          </provider>
-          <provider selected="true" editor-type-id="android-designer2" />
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="142" selection-start-line="142" selection-end-line="142" />
-              <folding>
-                <element signature="e#4253#4612#0" />
-                <element signature="e#4553#4747#0" />
-                <element signature="e#4671#4741#1" />
-                <element signature="e#4012#4235#0" />
-                <element signature="e#4242#4542#0" />
-                <element signature="e#4548#4857#0" />
-                <element signature="e#4864#6205#0" />
-                <element signature="e#6211#6314#0" />
-                <element signature="e#6320#6361#0" />
-                <element signature="e#6320#7173#0" />
-                <element signature="class#6746:7165" />
-                <element signature="method#onSuccess#0;class#6746:7165" />
-                <element signature="method#onFailure#0;class#6746:7165" />
-                <element signature="e#7181#7399#0" />
-                <element signature="e#7405#7870#0" />
-                <element signature="e#7504#7595#0" />
-                <element signature="e#7616#7660#0" />
-                <element signature="e#7912#8098#0" />
-                <element signature="e#8104#8147#0" />
-                <element signature="e#8104#11233#0" />
-                <element signature="e#8265#11205#0" />
-                <element signature="e#8683#9092#1" />
-                <element signature="e#9857#10216#1" />
-                <element signature="e#9949#10198#1" />
-                <element signature="e#10254#11127#1" />
-                <element signature="e#10512#10658#1" />
-                <element signature="e#10736#11004#0" />
-                <element signature="e#11241#11998#0" />
-                <element signature="e#11612#11962#1" />
-                <element signature="e#12004#15015#0" />
-                <element signature="e#12146#15008#0" />
-                <element signature="e#12504#12849#1" />
-                <element signature="e#12587#12829#0" />
-                <element signature="e#12887#13397#1" />
-                <element signature="e#13135#13377#0" />
-                <element signature="e#13687#14154#0" />
-                <element signature="e#13781#14136#1" />
-                <element signature="e#14448#14670#0" />
-                <element signature="e#14791#14858#1" />
-                <element signature="e#14864#14930#1" />
-                <element signature="e#15837#17063#0" />
-                <element signature="e#16055#17057#0" />
-                <element signature="e#15635#15922#0" />
-                <element signature="e#16013#19542#0" />
-                <element signature="e#16584#16658#1" />
-                <element signature="e#17026#17107#1" />
-                <element signature="e#17219#19402#1" />
-                <element signature="e#17379#18455#1" />
-                <element signature="e#17471#18441#1" />
-                <element signature="e#17597#18423#1" />
-                <element signature="e#18461#19392#1" />
-                <element signature="e#18573#19342#1" />
-                <element signature="e#19550#20474#0" />
-                <element signature="e#19901#20468#1" />
-                <element signature="e#19978#20193#1" />
-                <element signature="e#20223#20458#1" />
-                <element signature="e#20481#22475#0" />
-                <element signature="e#20821#21227#1" />
-                <element signature="e#20875#21215#0" />
-                <element signature="e#21561#21970#1" />
-                <element signature="e#21615#21958#0" />
-                <element signature="e#21992#22469#1" />
-                <element signature="e#22046#22457#0" />
-                <element signature="e#22482#22986#0" />
-                <element signature="e#22993#24704#0" />
-                <element signature="e#23737#24696#0" />
-                <element signature="e#24711#25774#0" />
-                <element signature="e#25466#25766#0" />
-                <element signature="e#25781#27241#0" />
-                <element signature="e#26068#26630#1" />
-                <element signature="e#26179#26365#1" />
-                <element signature="e#26371#26620#1" />
-                <element signature="e#26749#27076#1" />
-                <element signature="e#26834#26978#1" />
-                <element signature="e#26875#26964#1" />
-                <element signature="e#27011#27066#1" />
-                <element signature="e#27118#27235#1" />
-                <element signature="e#27250#27916#0" />
-                <element signature="e#27430#27910#1" />
-                <element signature="e#27471#27845#1" />
-                <element signature="e#27540#27828#0" />
-                <element signature="e#27923#28710#0" />
-                <element signature="e#28042#28704#1" />
-                <element signature="e#28096#28692#0" />
-                <element signature="e#28172#28570#1" />
-                <element signature="e#28208#28510#0" />
-                <element signature="e#28717#29453#0" />
-                <element signature="e#28846#29447#1" />
-                <element signature="e#29100#29435#0" />
-                <element signature="e#29174#29338#1" />
-                <element signature="e#29460#30891#0" />
-                <element signature="e#29851#30332#1" />
-                <element signature="class#29953:30320" />
-                <element signature="method#onFailure#0;class#29953:30320" />
-                <element signature="e#30354#30885#1" />
-                <element signature="class#30466:30873" />
-                <element signature="method#onFailure#0;class#30466:30873" />
-                <element signature="e#30898#32280#0" />
-                <element signature="e#32287#34014#0" />
-                <element signature="e#32670#33986#1" />
-                <element signature="e#34021#36022#0" />
-                <element signature="e#34710#34900#1" />
-                <element signature="e#34985#35185#1" />
-                <element signature="e#35400#36016#1" />
-                <element signature="e#35455#36006#1" />
-                <element signature="class#35568:35990" />
-                <element signature="method#onFailure#0;class#35568:35990" />
-                <element signature="e#36029#36625#0" />
-                <element signature="e#36180#36619#1" />
-                <element signature="e#36336#36609#1" />
-                <element signature="e#36635#37719#0" />
-                <element signature="class#36989:37711" />
-                <element signature="method#onFailure#0;class#36989:37711" />
-                <element signature="method#onProgress#0;class#36989:37711" />
-                <element signature="method#onRateUpdate#0;class#36989:37711" />
-                <element signature="method#onSuccess#0;class#36989:37711" />
-                <element signature="e#37726#39069#0" />
-                <element signature="e#37892#39063#1" />
-                <element signature="e#38125#39053#1" />
-                <element signature="e#38234#39037#0" />
-                <element signature="e#38328#38893#1" />
-                <element signature="e#38517#38869#0" />
-                <element signature="e#39076#39270#0" />
-                <element signature="e#39277#39435#0" />
-              </folding>
+            <state relative-caret-position="-4012">
+              <caret line="88" column="38" lean-forward="true" selection-start-line="88" selection-start-column="38" selection-end-line="88" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -266,10 +131,11 @@
       <find>targetSensingInformations</find>
       <find>mProduct</find>
       <find>mQuickShotSw</find>
+      <find>stopTimer</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -291,35 +157,59 @@
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane" />
       <pane id="Scope" />
-      <pane id="AndroidView">
+      <pane id="AndroidView" />
+      <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="P4MissionsDemo" type="1abcf292:AndroidViewProjectNode" />
-              <item name="P4MissionsDemo-app" type="feadf853:AndroidModuleNode" />
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
-              <item name="P4MissionsDemo" type="1abcf292:AndroidViewProjectNode" />
-              <item name="P4MissionsDemo-app" type="feadf853:AndroidModuleNode" />
-              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
-              <item name="P4MissionsDemo" type="1abcf292:AndroidViewProjectNode" />
-              <item name="P4MissionsDemo-app" type="feadf853:AndroidModuleNode" />
-              <item name="res" type="d4f16f75:AndroidResFolderNode" />
-              <item name="values" type="ddeffd01:AndroidResFolderTypeNode" />
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="P4MissionsDemo" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -341,7 +231,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Android App.P4MissionsDemo-app">
+  <component name="RunManager" selected="Android App.Android-Phantom4Missions-master-P4MissionsDemo-app">
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -369,6 +259,59 @@
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Android-Phantom4Missions-master-P4MissionsDemo-app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="Android-Phantom4Missions-master-P4MissionsDemo-app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Hybrid>
+      <Java />
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
       <method v="2">
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
@@ -539,11 +482,11 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1096" extended-state="7" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.11940298" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.12080537" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -551,6 +494,7 @@
       <window_info id="Designer" order="6" />
       <window_info id="Resources Explorer" order="7" />
       <window_info id="Capture Tool" order="8" />
+      <window_info id="simpleUML" order="9" />
       <window_info anchor="bottom" id="Run" order="0" weight="0.32917964" />
       <window_info anchor="bottom" id="Logcat" order="1" weight="0.32917964" />
       <window_info anchor="bottom" id="TODO" order="2" />
@@ -558,7 +502,7 @@
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.32917964" />
       <window_info anchor="bottom" id="Event Log" order="5" side_tool="true" weight="0.32917964" />
       <window_info anchor="bottom" id="Version Control" order="6" weight="0.32917964" />
-      <window_info anchor="bottom" id="Build" order="7" weight="0.17030114" />
+      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.16997167" />
       <window_info anchor="bottom" id="Android Profiler" order="8" />
       <window_info anchor="bottom" id="Find" order="9" weight="0.32917964" />
       <window_info anchor="right" id="Device File Explorer" order="0" side_tool="true" />
@@ -577,13 +521,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/com/dji/P4MissionsDemo/BuildConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/com/dji/P4MissionsDemo/BuildConfig.java" />
     <entry file="jar://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-28/android.jar!/java/lang/Object.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="66">
@@ -643,16 +581,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
           <caret line="411" column="26" selection-start-line="411" selection-start-column="26" selection-end-line="411" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DemoBaseActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="118" column="16" lean-forward="true" selection-start-line="118" selection-start-column="16" selection-end-line="118" selection-end-column="16" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -722,32 +650,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="881">
-          <caret line="87" selection-start-line="87" selection-end-line="87" />
-          <folding>
-            <element signature="e#6642#6643#0" expanded="true" />
-            <element signature="e#6675#6676#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1445">
+          <caret line="85" column="63" selection-start-line="85" selection-start-column="35" selection-end-line="85" selection-end-column="63" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
-      <provider editor-type-id="text-editor">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="782">
           <caret line="46" selection-start-line="46" selection-end-line="46" />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="android-designer2" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DemoBaseActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="85" column="63" selection-start-line="85" selection-start-column="35" selection-end-line="85" selection-end-column="63" />
+        <state relative-caret-position="524">
+          <caret line="118" column="16" lean-forward="true" selection-start-line="118" selection-start-column="16" selection-end-line="118" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
-      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
@@ -757,143 +684,28 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="-119">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
           <caret line="237" column="23" selection-start-line="237" selection-start-column="23" selection-end-line="237" selection-end-column="23" />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="382">
+          <caret line="77" column="47" selection-start-line="77" selection-start-column="47" selection-end-line="77" selection-end-column="47" />
+          <folding>
+            <element signature="e#6642#6643#0" expanded="true" />
+            <element signature="e#6675#6676#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="142" selection-start-line="142" selection-end-line="142" />
-          <folding>
-            <element signature="e#4253#4612#0" />
-            <element signature="e#4553#4747#0" />
-            <element signature="e#4671#4741#1" />
-            <element signature="e#4012#4235#0" />
-            <element signature="e#4242#4542#0" />
-            <element signature="e#4548#4857#0" />
-            <element signature="e#4864#6205#0" />
-            <element signature="e#6211#6314#0" />
-            <element signature="e#6320#6361#0" />
-            <element signature="e#6320#7173#0" />
-            <element signature="class#6746:7165" />
-            <element signature="method#onSuccess#0;class#6746:7165" />
-            <element signature="method#onFailure#0;class#6746:7165" />
-            <element signature="e#7181#7399#0" />
-            <element signature="e#7405#7870#0" />
-            <element signature="e#7504#7595#0" />
-            <element signature="e#7616#7660#0" />
-            <element signature="e#7912#8098#0" />
-            <element signature="e#8104#8147#0" />
-            <element signature="e#8104#11233#0" />
-            <element signature="e#8265#11205#0" />
-            <element signature="e#8683#9092#1" />
-            <element signature="e#9857#10216#1" />
-            <element signature="e#9949#10198#1" />
-            <element signature="e#10254#11127#1" />
-            <element signature="e#10512#10658#1" />
-            <element signature="e#10736#11004#0" />
-            <element signature="e#11241#11998#0" />
-            <element signature="e#11612#11962#1" />
-            <element signature="e#12004#15015#0" />
-            <element signature="e#12146#15008#0" />
-            <element signature="e#12504#12849#1" />
-            <element signature="e#12587#12829#0" />
-            <element signature="e#12887#13397#1" />
-            <element signature="e#13135#13377#0" />
-            <element signature="e#13687#14154#0" />
-            <element signature="e#13781#14136#1" />
-            <element signature="e#14448#14670#0" />
-            <element signature="e#14791#14858#1" />
-            <element signature="e#14864#14930#1" />
-            <element signature="e#15837#17063#0" />
-            <element signature="e#16055#17057#0" />
-            <element signature="e#15635#15922#0" />
-            <element signature="e#16013#19542#0" />
-            <element signature="e#16584#16658#1" />
-            <element signature="e#17026#17107#1" />
-            <element signature="e#17219#19402#1" />
-            <element signature="e#17379#18455#1" />
-            <element signature="e#17471#18441#1" />
-            <element signature="e#17597#18423#1" />
-            <element signature="e#18461#19392#1" />
-            <element signature="e#18573#19342#1" />
-            <element signature="e#19550#20474#0" />
-            <element signature="e#19901#20468#1" />
-            <element signature="e#19978#20193#1" />
-            <element signature="e#20223#20458#1" />
-            <element signature="e#20481#22475#0" />
-            <element signature="e#20821#21227#1" />
-            <element signature="e#20875#21215#0" />
-            <element signature="e#21561#21970#1" />
-            <element signature="e#21615#21958#0" />
-            <element signature="e#21992#22469#1" />
-            <element signature="e#22046#22457#0" />
-            <element signature="e#22482#22986#0" />
-            <element signature="e#22993#24704#0" />
-            <element signature="e#23737#24696#0" />
-            <element signature="e#24711#25774#0" />
-            <element signature="e#25466#25766#0" />
-            <element signature="e#25781#27241#0" />
-            <element signature="e#26068#26630#1" />
-            <element signature="e#26179#26365#1" />
-            <element signature="e#26371#26620#1" />
-            <element signature="e#26749#27076#1" />
-            <element signature="e#26834#26978#1" />
-            <element signature="e#26875#26964#1" />
-            <element signature="e#27011#27066#1" />
-            <element signature="e#27118#27235#1" />
-            <element signature="e#27250#27916#0" />
-            <element signature="e#27430#27910#1" />
-            <element signature="e#27471#27845#1" />
-            <element signature="e#27540#27828#0" />
-            <element signature="e#27923#28710#0" />
-            <element signature="e#28042#28704#1" />
-            <element signature="e#28096#28692#0" />
-            <element signature="e#28172#28570#1" />
-            <element signature="e#28208#28510#0" />
-            <element signature="e#28717#29453#0" />
-            <element signature="e#28846#29447#1" />
-            <element signature="e#29100#29435#0" />
-            <element signature="e#29174#29338#1" />
-            <element signature="e#29460#30891#0" />
-            <element signature="e#29851#30332#1" />
-            <element signature="class#29953:30320" />
-            <element signature="method#onFailure#0;class#29953:30320" />
-            <element signature="e#30354#30885#1" />
-            <element signature="class#30466:30873" />
-            <element signature="method#onFailure#0;class#30466:30873" />
-            <element signature="e#30898#32280#0" />
-            <element signature="e#32287#34014#0" />
-            <element signature="e#32670#33986#1" />
-            <element signature="e#34021#36022#0" />
-            <element signature="e#34710#34900#1" />
-            <element signature="e#34985#35185#1" />
-            <element signature="e#35400#36016#1" />
-            <element signature="e#35455#36006#1" />
-            <element signature="class#35568:35990" />
-            <element signature="method#onFailure#0;class#35568:35990" />
-            <element signature="e#36029#36625#0" />
-            <element signature="e#36180#36619#1" />
-            <element signature="e#36336#36609#1" />
-            <element signature="e#36635#37719#0" />
-            <element signature="class#36989:37711" />
-            <element signature="method#onFailure#0;class#36989:37711" />
-            <element signature="method#onProgress#0;class#36989:37711" />
-            <element signature="method#onRateUpdate#0;class#36989:37711" />
-            <element signature="method#onSuccess#0;class#36989:37711" />
-            <element signature="e#37726#39069#0" />
-            <element signature="e#37892#39063#1" />
-            <element signature="e#38125#39053#1" />
-            <element signature="e#38234#39037#0" />
-            <element signature="e#38328#38893#1" />
-            <element signature="e#38517#38869#0" />
-            <element signature="e#39076#39270#0" />
-            <element signature="e#39277#39435#0" />
-          </folding>
+        <state relative-caret-position="-4012">
+          <caret line="88" column="38" lean-forward="true" selection-start-line="88" selection-start-column="38" selection-end-line="88" selection-end-column="38" />
         </state>
       </provider>
     </entry>
