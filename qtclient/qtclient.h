@@ -18,8 +18,8 @@ class QtClient : public QMainWindow
 
 public:
     QtClient(QWidget *parent = nullptr,
-             quint16 master_tcp_port = 0,
-             quint16 local_udp_port = 0);
+             quint16 tcp_port_to_master = 0,
+             quint16 udp_port_from_master = 0);
     ~QtClient();
 
     void emit_finished();
@@ -27,8 +27,8 @@ public:
 
 private:
     Ui::QtClient *ui;
-    quint16 master_tcp_port;
-    quint16 local_udp_port;
+    quint16 tcp_port_to_master;
+    quint16 udp_port_from_master;
 
     QTcpSocket tcp_socket;
     QUdpSocket udp_socket;

@@ -29,8 +29,8 @@ private:
     quint8 device_count;    // 4x GoPiGo, UR5, Drone, QtClient = 7 (master not included here)
 
     BitMap warehouse_bitmap; // (0, 0), (1, 0) .. (8, 0), (0, 1) [54]
-    Point* obstacle_list;    // x, y // 1, 1 [54*2]
-    VarastoRoboDevice* device_list;     // type, id, x, y, ipv4 // 1, 1, 1, 1, 4 bytes [7*8]
+    Point obstacle_list[54];    // x, y // 1, 1 [54*2]
+    VarastoRoboDevice device_list[32];     // type, id, x, y, ipv4 // 1, 1, 1, 1, 4 bytes [7*8]
 };
 
 #endif // SYSTEMBROADCASTMESSAGE_H

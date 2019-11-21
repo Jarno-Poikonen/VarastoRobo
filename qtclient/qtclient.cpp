@@ -1,8 +1,8 @@
 #include "qtclient.h"
 #include "ui_qtclient.h"
 
-QtClient::QtClient(QWidget *parent, quint16 master_tcp_port, quint16 local_udp_port) :
-    QMainWindow(parent), ui(new Ui::QtClient), master_tcp_port(master_tcp_port), local_udp_port(local_udp_port)
+QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port_from_master) :
+    QMainWindow(parent), ui(new Ui::QtClient), tcp_port_to_master(tcp_port_to_master), udp_port_from_master(udp_port_from_master)
 {
     ui->setupUi(this);
     connect(&udp_socket,    SIGNAL(readyRead()),                   this, SLOT(slot_readyRead_udp()));
@@ -12,10 +12,12 @@ QtClient::QtClient(QWidget *parent, quint16 master_tcp_port, quint16 local_udp_p
     connect(&tcp_socket,    SIGNAL(disconnected()),                this, SLOT(slot_disconnected()));
     connect(&tcp_socket,    SIGNAL(readyRead()),                   this, SLOT(slot_readyRead_tcp()));
 
-    qDebug() << "master_tcp_port number" << master_tcp_port;
-    qDebug() << "local_udp_port number"  << local_udp_port;
-    ui->textEdit->append(QString("master tcp port number: ") + QString::number(master_tcp_port));
-    ui->textEdit->append(QString("local udp port number: ") + QString::number(local_udp_port));
+    qDebug() << "Qt Client port bindings:";
+    qDebug() << "tcp_port_to_master number" << tcp_port_to_master;
+    qDebug() << "udp_port_from_master number"  << udp_port_from_master;
+    ui->textEdit->append(QString("Qt Client port bindings:"));
+    ui->textEdit->append(QString("tcp port to master: ") + QString::number(tcp_port_to_master));
+    ui->textEdit->append(QString("udp port from master: ") + QString::number(udp_port_from_master));
 }
 
 QtClient::~QtClient()
@@ -25,7 +27,7 @@ QtClient::~QtClient()
 
 void QtClient::bind()
 {
-    bool udp_binding_result = udp_socket.bind(local_udp_port);
+    bool udp_binding_result = udp_socket.bind(udp_port_from_master);
 
     qDebug() << "udp_binding_result:" << udp_binding_result;
     ui->textEdit->append(QString("udp_binding_result: ") + QString::number(udp_binding_result) + QString("\n"));
@@ -62,9 +64,9 @@ void QtClient::slot_readyRead_udp()
 
 void QtClient::slot_connect_master()
 {
-    qDebug("Looking for host.");
-    ui->textEdit->append(QString("Looking for host."));
-    tcp_socket.connectToHost(master_ip, master_tcp_port, QTcpSocket::ReadWrite, QAbstractSocket::NetworkLayerProtocol::IPv4Protocol);
+    qDebug() << "Looking for host at IP address:" << master_ip << "on PORT:" << tcp_port_to_master;
+    ui->textEdit->append(QString("Looking for host at IP address: ") + master_ip + QString(" on PORT:") + QString::number(tcp_port_to_master));
+    tcp_socket.connectToHost(master_ip, tcp_port_to_master, QTcpSocket::ReadWrite, QAbstractSocket::NetworkLayerProtocol::IPv4Protocol);
 }
 
 void QtClient::slot_hostFound()
@@ -77,7 +79,9 @@ void QtClient::slot_connected()
 {
     qDebug("Connected.");
     ui->textEdit->append(QString("Connected.\n"));
+
     sent_bytes = tcp_socket.write(new_connection_message, 11);
+
     qDebug() << "NCM sent (" << sent_bytes << "bytes )";
     ui->textEdit->append(QString("NCM sent (") + QString::number(sent_bytes) + QString(" bytes)\n"));
 }
@@ -94,8 +98,10 @@ void QtClient::slot_readyRead_tcp()
     // if common header is not known
     // with 5 or more bytes we can check out the message type and message length
     bytes_received = tcp_socket.bytesAvailable();
+
     qDebug() << "bytes_received" << bytes_received;
     ui->textEdit->append(QString("bytes_received ") + QString::number(bytes_received));
+
     if (bytes_received >= 5 && !is_common_header_read)
     {
         tcp_socket.read(tcp_read_buffer, 5);
@@ -136,6 +142,7 @@ void QtClient::slot_readyRead_tcp()
             device_id               = static_cast<quint8>(tcp_read_buffer[1]);
 
             is_common_header_read   = false; // done with a message
+
             qDebug() << "SCM: {";
             qDebug() << "  system_control:" << system_control << ",";
             qDebug() << "  device_id:" << device_id;

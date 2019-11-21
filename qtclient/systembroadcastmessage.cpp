@@ -7,15 +7,7 @@ SystemBroadcastMessage::SystemBroadcastMessage()
 
 SystemBroadcastMessage::~SystemBroadcastMessage()
 {
-    if(obstacle_count > 0)
-    {
-        delete[] obstacle_list;
-    }
 
-    if(device_count > 0)
-    {
-        delete[] device_list;
-    }
 }
 
 void SystemBroadcastMessage::parse_datagram_string(char* datagram_string, qint64 datagram_size)
@@ -38,16 +30,11 @@ void SystemBroadcastMessage::parse_datagram_string(char* datagram_string, qint64
     else
         qDebug() << "BAD BITMAP LENGTH! \n";
 
-    if(obstacle_count > 0)
-        obstacle_list = new Point[obstacle_count];
-    else
+    if(obstacle_count == 0)
         qDebug() << "BAD OBSTACLE COUNT! \n";
 
-    if(device_count > 0)
-        device_list = new VarastoRoboDevice[device_count];
-//    else
-//        qDebug() << "BAD DEVICE COUNT! \n";
-
+    if(device_count == 0)
+        qDebug() << "BAD DEVICE COUNT! \n";
 
     QString map_str;
     for(quint8 i = 0; i < map_length; ++i)
@@ -83,8 +70,6 @@ void SystemBroadcastMessage::parse_datagram_string(char* datagram_string, qint64
         device_list[i] = VarastoRoboDevice(type, id, Point(x, y), ipv4_address);
         devices_str += device_list[i].str;
     }
-
-
 
     // save parsed datagram as a string for gui use
     str =   QString("datagram_size: ")     + QString::number(datagram_size)  + QString("\n") +
