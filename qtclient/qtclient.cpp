@@ -84,6 +84,7 @@ void QtClient::slot_connected()
 
 void QtClient::slot_disconnected()
 {
+    is_master_known = false;
     qDebug() << "Disconnected.";
     ui->textEdit->append(QString("Disconnected."));
 }
