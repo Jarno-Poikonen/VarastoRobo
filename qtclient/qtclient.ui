@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtClient</class>
+ <widget class="QMainWindow" name="QtClient">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1600</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QtClient</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+	background-color: orange;
+}
+
+QPushButton, QLabel, QTextEdit {
+	background-color: orange;
+	color: white;
+	font-weight: bold;
+	border: 1px solid white;
+	border-width: 2px;
+}
+
+QLabel {
+	font-size: 40px;
+}
+
+QPushButton {
+	border-radius: -2px;
+	font-size: 36px;
+}
+
+QPushButton:hover {
+	background-color: white;
+	color: orange;
+}
+
+QLabel {
+	background-color: orange;
+	color: white;
+}
+
+QTextEdit {
+	background-color: white;
+	color: orange
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>1190</x>
+      <y>120</y>
+      <width>380</width>
+      <height>720</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>700</y>
+      <width>240</width>
+      <height>135</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">::hover {
+	background-color: white;
+	color: lightred;
+}
+QPushButton {
+	background-color: lightred;
+	color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>UNFREEZE</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>130</y>
+      <width>240</width>
+      <height>135</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">::hover {
+	background-color: white;
+	color: green;
+}
+QPushButton {
+	background-color: green;
+	color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>START</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>1190</x>
+      <y>30</y>
+      <width>380</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Terminal</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>280</y>
+      <width>240</width>
+      <height>135</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">::hover {
+	background-color: white;
+	color: blue;
+}
+QPushButton {
+	background-color: blue;
+	color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>SHUTDOWN</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>550</y>
+      <width>240</width>
+      <height>135</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">::hover {
+	background-color: white;
+	color: red;
+}
+QPushButton {
+	background-color: red;
+	color: white;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>EMERGENCY
+STOP</string>
+    </property>
+   </widget>
+   <zorder>pushButton</zorder>
+   <zorder>pushButton_2</zorder>
+   <zorder>textEdit</zorder>
+   <zorder>label</zorder>
+   <zorder>pushButton_3</zorder>
+   <zorder>label</zorder>
+   <zorder>pushButton_4</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1600</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
