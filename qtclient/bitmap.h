@@ -13,7 +13,7 @@ public:
     bool& operator[](quint16 i);
 
 private:
-    bool* map;
+    bool map[54];
     quint8 width;
     quint8 height;
     quint16 length;
