@@ -534,7 +534,7 @@ DWORD vrp_create_test_client()
 	client_configuration->on_wire_server_address = INADDR_ANY;
 	client_configuration->random_delays = 1;
 
-	vrp_create_thread_group(0, 1, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, free_test_client_configuration);
+	vrp_create_thread_group(0, 3, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, free_test_client_configuration);
 	
 	printf("server: client threads created\n");
 	return 0;// also there were no errors, because no errors were checked

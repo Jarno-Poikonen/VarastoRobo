@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.4.3 2019-11-19 by Santtu Nyman.
 */
 
 #ifndef VRP_MASTER_SERVER_BASE_H
@@ -27,6 +27,7 @@ extern "C" {
 #include "ntdll_time.h"
 #include "vrp_log.h"
 #include "vrp_ip_addresses_info.h"
+#include <assert.h>
 
 #define VRP_MAX_MAP_HEIGHT 64
 #define VRP_MAX_MAP_WIDTH 64
@@ -51,6 +52,37 @@ extern "C" {
 #define VRP_CONNECTION_RESPONDING_TO_COMMAND 6
 #define VRP_CONNECTION_DISCONNECT 7
 #define VRP_CONNECTION_REMOTE_COMMAND 8
+
+typedef struct vrp_device_t
+{
+	SOCKET sock;
+	int io_state;
+	int unprocessed_io;
+	int connection_state;
+	DWORD io_begin_time;
+	DWORD last_uppdate_time;
+	DWORD connection_begin_time;
+	uint8_t control_target_id;
+	uint8_t executing_remote_command;
+	uint8_t remote_command_finished;
+	uint8_t command;
+	uint8_t type;
+	uint8_t id;
+	uint8_t state;
+	uint8_t x;
+	uint8_t y;
+	uint8_t direction;
+	uint32_t ip_address;
+	uint8_t move_to_x;
+	uint8_t move_to_y;
+	uint8_t destination_x;
+	uint8_t destination_y;
+	uint8_t* io_memory;
+	DWORD io_flags;
+	DWORD io_transfered;
+	WSABUF io_buffer;
+	OVERLAPPED io_result;
+} vrp_device_t;
 
 typedef struct vrp_server_t
 {
@@ -88,36 +120,7 @@ typedef struct vrp_server_t
 		uint8_t y;
 	}* idle_location_table;
 	size_t device_count;
-	struct
-	{
-		SOCKET sock;
-		int io_state;
-		int unprocessed_io;
-		int connection_state;
-		DWORD io_begin_time;
-		DWORD last_uppdate_time;
-		DWORD connection_begin_time;
-		uint8_t control_target_id;
-		uint8_t executing_remote_command;
-		uint8_t remote_command_finished;
-		uint8_t command;
-		uint8_t type;
-		uint8_t id;
-		uint8_t state;
-		uint8_t x;
-		uint8_t y;
-		uint8_t direction;
-		uint32_t ip_address;
-		uint8_t move_to_x;
-		uint8_t move_to_y;
-		uint8_t destination_x;
-		uint8_t destination_y;
-		uint8_t* io_memory;
-		DWORD io_flags;
-		DWORD io_transfered;
-		WSABUF io_buffer;
-		OVERLAPPED io_result;
-	}* device_table;
+	vrp_device_t* device_table;
 	size_t pickup_location_count;
 	struct
 	{
@@ -167,7 +170,12 @@ typedef struct vrp_server_t
 	HANDLE accept_event;
 	HANDLE io_event_table[MAXIMUM_WAIT_OBJECTS];
 	vrp_log_t log;
+#ifndef _NDEBUG
+	vrp_device_t* debug_device_table[VRP_MAX_DEVICE_COUNT];
+#endif
 } vrp_server_t;
+
+uint64_t vrp_get_valid_device_entries(vrp_server_t* server);
 
 uint8_t vrp_get_temporal_device_id(vrp_server_t* server);
 

@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
+	VarastoRobo master server version 0.4.3 2019-11-20 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
@@ -89,7 +89,12 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 			}
 			else if (server->device_table[i].connection_state == VRP_CONNECTION_NEW)
 			{
-				if ((total_message_size < 11) || (server->device_table[i].io_memory[0] != VRP_MESSAGE_NCM) || (server->device_table[i].io_memory[5] == VRP_DEVICE_TYPE_MASTER) || (server->device_table[i].io_memory[5] == VRP_DEVICE_TYPE_UNDEFINED) || (server->device_table[i].io_memory[6] == server->id))
+				if ((total_message_size < 11) ||
+					(server->device_table[i].io_memory[0] != VRP_MESSAGE_NCM) ||
+					(server->device_table[i].io_memory[5] == VRP_DEVICE_TYPE_MASTER) ||
+					(server->device_table[i].io_memory[5] == VRP_DEVICE_TYPE_UNDEFINED) ||
+					(server->device_table[i].io_memory[6] == server->id) ||
+					(vrp_get_device_index_by_id(server, server->device_table[i].io_memory[6]) != (size_t)~0))
 					return 0;
 
 				server->device_table[i].last_uppdate_time = NtGetTickCount();
@@ -104,9 +109,18 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				}
 
 				server->device_table[i].type = server->device_table[i].io_memory[5];
-				server->device_table[i].x = server->device_table[i].io_memory[7];
-				server->device_table[i].y = server->device_table[i].io_memory[8];
-				server->device_table[i].direction = server->device_table[i].io_memory[9];
+				if (server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO)
+				{
+					server->device_table[i].x = server->device_table[i].io_memory[7];
+					server->device_table[i].y = server->device_table[i].io_memory[8];
+					server->device_table[i].direction = server->device_table[i].io_memory[9];
+				}
+				else
+				{
+					server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
+					server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
+					server->device_table[i].direction = VRP_DIRECTION_UNDEFINED;
+				}
 				server->device_table[i].state = server->device_table[i].io_memory[10];
 
 				server->device_table[i].connection_state = VRP_CONNECTION_SETUP;
@@ -433,7 +447,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 
 DWORD vrp_run_setup(vrp_server_t* server)
 {
-	printf("Starting VarastoRobo master 0.4.2...\n");
+	printf("Starting VarastoRobo master 0.4.3...\n");
 	
 	int server_setup_error_hint = 0;
 	DWORD error = vrp_server_setup(server, &server_setup_error_hint);
@@ -462,6 +476,10 @@ int main(int argc, char* argv)
 
 	for (;;)
 	{
+#ifndef _NDEBUG
+		// validate servers internal device list
+		vrp_get_valid_device_entries(&server);
+#endif
 		size_t i = vrp_wait_for_io(&server);
 		vrp_accept_incoming_connection(&server);
 		if (i == VRP_WAIT_EMERGENCY)
