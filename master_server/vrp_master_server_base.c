@@ -1,8 +1,28 @@
 /*
-	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
+	VarastoRobo master server version 0.4.3 2019-11-20 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
+
+uint64_t vrp_get_valid_device_entries(vrp_server_t* server)
+{
+	__assume(VRP_MAX_DEVICE_COUNT <= 64);
+	uint64_t valid_device_entry_mask = 0;
+	for (int i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
+			valid_device_entry_mask |= ((uint64_t)1 << (uint64_t)i);
+#ifndef _NDEBUG
+	int set_bit_count = 0;
+	for (int i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if ((int)((uint64_t)valid_device_entry_mask >> (uint64_t)i) & 1)
+		{
+			assert(server->device_table[i].io_result.hEvent);
+			++set_bit_count;
+		}
+	assert(set_bit_count == server->device_count);
+#endif
+	return valid_device_entry_mask;
+}
 
 uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 {
@@ -24,6 +44,8 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 
 size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id)
 {
+	if (id == VRP_ID_UNDEFINED)
+		return (size_t)~0;
 	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
 		if (server->device_table[i].sock != INVALID_SOCKET && server->device_table[i].id == id)
 			return i;
@@ -472,7 +494,12 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	server->broadcast_io_memory = (uint8_t*)((UINT_PTR)server->product_order_table + server->product_order_table_buffer_size);
 	server->emergency_io_memory = (uint8_t*)((UINT_PTR)server->broadcast_io_memory + server->broadcast_io_buffer_size);
 	for (size_t offset = server->map_bitmap_buffer_size + server->map_state_buffer_size + server->block_buffer_size + server->idle_location_table_buffer_size + server->pickup_location_buffer_size + server->device_table_buffer_size + server->product_order_table_buffer_size + server->broadcast_io_buffer_size + server->emergency_io_buffer_size, i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+	{
 		server->device_table[i].io_memory = (uint8_t*)((UINT_PTR)server->allocation_base + offset + (i * server->device_io_buffer_size));
+#ifndef _NDEBUG
+		server->debug_device_table[i] = server->device_table + i;
+#endif
+	}
 
 	error = vrp_open_log_file(&server->log, 0x200000000, 0x100000, 0);
 	if (error)
@@ -691,17 +718,20 @@ size_t vrp_send_system_broadcast_message(vrp_server_t* server)
 		server->broadcast_io_memory[8 + map_size + (i * 2) + 0] = server->block_table[i].x;
 		server->broadcast_io_memory[8 + map_size + (i * 2) + 1] = server->block_table[i].y;
 	}
-	for (size_t i = 0; i != server->device_count; ++i)
-	{
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 0] = server->device_table[i].type;
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 1] = server->device_table[i].id;
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 2] = server->device_table[i].x;
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 3] = server->device_table[i].y;
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 4] = (uint8_t)((server->device_table[i].ip_address >> 0) & 0xFF);
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 5] = (uint8_t)((server->device_table[i].ip_address >> 8) & 0xFF);
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 6] = (uint8_t)((server->device_table[i].ip_address >> 16) & 0xFF);
-		server->broadcast_io_memory[8 + map_size + block_array_size + (i * 8) + 7] = (uint8_t)((server->device_table[i].ip_address >> 24) & 0xFF);
-	}
+
+	for (size_t c = 0, i = 0; c != server->device_count; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
+		{
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 0] = server->device_table[i].type;
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 1] = server->device_table[i].id;
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 2] = server->device_table[i].x;
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 3] = server->device_table[i].y;
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 4] = (uint8_t)((server->device_table[i].ip_address >> 0) & 0xFF);
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 5] = (uint8_t)((server->device_table[i].ip_address >> 8) & 0xFF);
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 6] = (uint8_t)((server->device_table[i].ip_address >> 16) & 0xFF);
+			server->broadcast_io_memory[8 + map_size + block_array_size + (c * 8) + 7] = (uint8_t)((server->device_table[i].ip_address >> 24) & 0xFF);
+			++c;
+		}
 
 	server->broadcast_io_buffer.buf = server->broadcast_io_memory;
 	server->broadcast_io_buffer.len = (ULONG)packet_size;
