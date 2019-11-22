@@ -19,6 +19,7 @@
 #define VRP_MESSAGE_MPM              0x0C
 #define VRP_MESSAGE_MCM              0x0D
 #define VRP_MESSAGE_RCM              0x0E
+#define VRP_MESSAGE_FOM              0x0F
 #define VRP_MESSAGE_UNDEFINED        0xFF
 
 #define VRP_ERROR_SUCCESS            0x00

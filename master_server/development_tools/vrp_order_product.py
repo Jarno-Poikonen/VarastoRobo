@@ -78,19 +78,30 @@ print("Master device " + str(configuration["master_device_id"]) + " found at add
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #assume socket created
+
 sock.connect((configuration["master_device_address"], 1739))
 #assume connection created
+
 ncm_data = bytearray(b'\x02\x06\x00\x00\x00\x01\xFF\xFF\xFF\xFF\x01')
 sock.send(ncm_data)
+#assume ncm sent
+
 scm_data = bytearray(sock.recv(4096))
 #assume valid scm
-rlm_data = bytearray(b'\x0A\x06\x00\x00\x00\x01\x0A\x09\x00\x00\x00')
-sock.send(rlm_data)
+
+pom_data = bytearray(b'\x0B\x03\x00\x00\x00\x01\x07\x01')
+sock.send(pom_data)
+#assume pom sent
+print("send order for product id 1 to coordinate 7,1")
+
 rlm_wfm_data = bytearray(sock.recv(4096))
 #assume valid wfm
+
 ccm_data = bytearray(b'\x05\x00\x00\x00\x00')
 sock.send(ccm_data)
+#assume ccm sent
+
 ccm_wfm_data = bytearray(sock.recv(4096))
-last_log_line = str(rlm_wfm_data[12:])
-print(last_log_line)
+#assume valid wfm
+
 exit()

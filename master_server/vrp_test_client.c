@@ -16,7 +16,6 @@ typedef struct vrp_test_client_configuration_t
 {
 	uint32_t on_wire_server_address;
 	int random_delays;
-	
 } vrp_test_client_configuration_t;
 
 uint32_t vrp_get_master_address_from_sbm()
@@ -326,6 +325,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 						closesocket(sock);
 						return;
 					}
+					printf("vrp_test_client %ul: Setup executed\n", GetCurrentThreadId());
 				}
 				else
 				{
@@ -511,14 +511,253 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 	return;
 }
 
-void hello_thread_group(void* parameter, size_t thread_count, size_t thread_index)
+void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
 {
-	printf("hello parameter %p theads %zu index %zu\n", parameter, thread_count, thread_index);
-}
+	int random_delay = 1;
 
-void free_test_client_configuration(uint32_t flags, void* parameter, size_t thread_count)
-{
-	VirtualFree(parameter, 0, MEM_RELEASE);
+	srand((int)(GetCurrentThreadId() >> 2));
+
+	printf("ur5 %ul: starting in 3\n", GetCurrentThreadId());
+	Sleep(1000);
+	printf("ur5 %ul: starting in 2\n", GetCurrentThreadId());
+	Sleep(1000);
+	printf("ur5 %ul: starting in 1\n", GetCurrentThreadId());
+	Sleep(1000);
+	printf("ur5 %ul: starting in 0\n", GetCurrentThreadId());
+
+	uint8_t id = 55;
+	uint8_t type = VRP_DEVICE_TYPE_UR5;
+	uint8_t x = VRP_COORDINATE_UNDEFINED;
+	uint8_t y = VRP_COORDINATE_UNDEFINED;
+	uint8_t direction = VRP_DIRECTION_UNDEFINED;
+	uint8_t state = VRP_STATE_NORMAL;
+	uint8_t message_buffer[256] = { 0 };
+
+	if (random_delay && !(rand() & 3))
+		Sleep(rand() % 1000);
+
+	printf("ur5 %ul: Connecting...\n", GetCurrentThreadId());
+	SOCKET sock = vrp_test_connect(&id, type, x, y, direction, state, 0, INADDR_ANY);
+	if (sock == INVALID_SOCKET)
+	{
+		printf("ur5 %ul error: Failed to connect\n", GetCurrentThreadId());
+		return;
+	}
+
+	if (random_delay && !(rand() & 3))
+		Sleep(rand() % 1000);
+
+	for (;;)
+	{
+		if (random_delay && !(rand() & 3))
+			Sleep(rand() % 1000);
+
+		printf("ur5 %ul: Waiting for command...\n", GetCurrentThreadId());
+		size_t message_size = vrp_receive_message(sock, sizeof(message_buffer), message_buffer);
+		if (!message_size)
+		{
+			printf("ur5 %ul error: Receiving command failed\n", GetCurrentThreadId());
+			closesocket(sock);
+			return;
+		}
+		uint8_t command = message_buffer[0];
+		switch (command)
+		{
+			case VRP_MESSAGE_SCM:
+			{
+				if ((message_size != 7) || message_buffer[5] || (message_buffer[6] == 0xFF))
+				{
+					message_buffer[0] = VRP_MESSAGE_WFM;
+					message_buffer[1] = 7;
+					message_buffer[2] = 0;
+					message_buffer[3] = 0;
+					message_buffer[4] = 0;
+					message_buffer[5] = VRP_MESSAGE_SCM;
+					message_buffer[6] = VRP_ERROR_INVALID_PARAMETER;
+					message_buffer[7] = 1;
+					message_buffer[8] = x;
+					message_buffer[9] = y;
+					message_buffer[10] = direction;
+					message_buffer[11] = state;
+
+					if (random_delay && !(rand() & 3))
+						Sleep(rand() % 1000);
+
+					if (!vrp_send_message(sock, 12, message_buffer))
+					{
+						printf("ur5 %ul error: Sending response failed\n", GetCurrentThreadId());
+						closesocket(sock);
+						return;
+					}
+					printf("ur5 %ul: Setup executed\n", GetCurrentThreadId());
+				}
+				else
+				{
+					message_buffer[0] = VRP_MESSAGE_WFM;
+					message_buffer[1] = 7;
+					message_buffer[2] = 0;
+					message_buffer[3] = 0;
+					message_buffer[4] = 0;
+					message_buffer[5] = VRP_MESSAGE_SCM;
+					message_buffer[6] = VRP_ERROR_SUCCESS;
+					message_buffer[7] = 1;
+					message_buffer[8] = x;
+					message_buffer[9] = y;
+					message_buffer[10] = direction;
+					message_buffer[11] = state;
+
+					if (random_delay && !(rand() & 3))
+						Sleep(rand() % 1000);
+
+					if (!vrp_send_message(sock, 12, message_buffer))
+					{
+						printf("ur5 %ul error: sending response failed\n", GetCurrentThreadId());
+						closesocket(sock);
+						return;
+					}
+					printf("ur5 %ul: Setup again? This seems to be wrong\n", GetCurrentThreadId());
+				}
+				break;
+			}
+			case VRP_MESSAGE_CCM:
+			{
+				message_buffer[0] = VRP_MESSAGE_WFM;
+				message_buffer[1] = 7;
+				message_buffer[2] = 0;
+				message_buffer[3] = 0;
+				message_buffer[4] = 0;
+				message_buffer[5] = VRP_MESSAGE_CCM;
+				message_buffer[6] = VRP_ERROR_SUCCESS;
+				message_buffer[7] = 1;
+				message_buffer[8] = x;
+				message_buffer[9] = y;
+				message_buffer[10] = direction;
+				message_buffer[11] = state;
+
+				if (random_delay && !(rand() & 3))
+					Sleep(rand() % 1000);
+
+				vrp_send_message(sock, 12, message_buffer);
+				printf("ur5 %ul: Connection closed\n", GetCurrentThreadId());
+
+				shutdown(sock, SD_BOTH);
+				closesocket(sock);
+				return;
+			}
+			case VRP_MESSAGE_SQM:
+			{
+				message_buffer[0] = VRP_MESSAGE_WFM;
+				message_buffer[1] = 7;
+				message_buffer[2] = 0;
+				message_buffer[3] = 0;
+				message_buffer[4] = 0;
+				message_buffer[5] = VRP_MESSAGE_SQM;
+				message_buffer[6] = VRP_ERROR_SUCCESS;
+				message_buffer[7] = 1;
+				message_buffer[8] = x;
+				message_buffer[9] = y;
+				message_buffer[10] = direction;
+				message_buffer[11] = state;
+
+				if (random_delay && !(rand() & 3))
+					Sleep(rand() % 1000);
+
+				if (!vrp_send_message(sock, 12, message_buffer))
+				{
+					printf("ur5 %ul error: Sending response failed\n", GetCurrentThreadId());
+					closesocket(sock);
+					return;
+				}
+				printf("ur5 %ul: Executed SQM\n", GetCurrentThreadId());
+				break;
+			}
+			case VRP_MESSAGE_MPM:
+			{
+				if (message_size >= 7)
+				{
+					uint8_t product_id = message_buffer[5];
+					uint8_t destination = message_buffer[6];
+
+					message_buffer[0] = VRP_MESSAGE_WFM;
+					message_buffer[1] = 7;
+					message_buffer[2] = 0;
+					message_buffer[3] = 0;
+					message_buffer[4] = 0;
+					message_buffer[5] = VRP_MESSAGE_MPM;
+					message_buffer[6] = VRP_ERROR_SUCCESS;
+					message_buffer[7] = 1;
+					message_buffer[8] = x;
+					message_buffer[9] = y;
+					message_buffer[10] = direction;
+					message_buffer[11] = state;
+
+					Sleep(1000 + (rand() % 1000));
+
+					if (!vrp_send_message(sock, 12, message_buffer))
+					{
+						printf("ur5 %ul error: Sending response failed\n", GetCurrentThreadId());
+						closesocket(sock);
+						return;
+					}
+
+					printf("ur5 %ul: Executed MPM. product=%lu destination=%lu\n", GetCurrentThreadId(), (unsigned long)product_id, (unsigned long)destination);
+				}
+				else
+				{
+					message_buffer[0] = VRP_MESSAGE_WFM;
+					message_buffer[1] = 7;
+					message_buffer[2] = 0;
+					message_buffer[3] = 0;
+					message_buffer[4] = 0;
+					message_buffer[5] = VRP_MESSAGE_MPM;
+					message_buffer[6] = VRP_ERROR_INVALID_MESSAGE;
+					message_buffer[7] = 1;
+					message_buffer[8] = x;
+					message_buffer[9] = y;
+					message_buffer[10] = direction;
+					message_buffer[11] = state;
+
+					if (!vrp_send_message(sock, 12, message_buffer))
+					{
+						printf("ur5 %ul error: Sending response failed\n", GetCurrentThreadId());
+						closesocket(sock);
+						return;
+					}
+
+					printf("ur5 %ul: Invalid MPM received\n", GetCurrentThreadId());
+				}
+				break;
+			}
+			default:
+			{
+				message_buffer[0] = VRP_MESSAGE_WFM;
+				message_buffer[1] = 7;
+				message_buffer[2] = 0;
+				message_buffer[3] = 0;
+				message_buffer[4] = 0;
+				message_buffer[5] = command;
+				message_buffer[6] = VRP_ERROR_NOT_SUPPORTED;
+				message_buffer[7] = 1;
+				message_buffer[8] = x;
+				message_buffer[9] = y;
+				message_buffer[10] = direction;
+				message_buffer[11] = state;
+
+				if (random_delay && !(rand() & 3))
+					Sleep(rand() % 1000);
+
+				if (!vrp_send_message(sock, 12, message_buffer))
+				{
+					printf("ur5 %ul error: Sending response failed\n", GetCurrentThreadId());
+					closesocket(sock);
+					return;
+				}
+				printf("ur5 %ul: Received unsupported command\n", GetCurrentThreadId());
+				break;
+			}
+		}
+	}
+	return;
 }
 
 DWORD vrp_create_test_client()
@@ -534,7 +773,9 @@ DWORD vrp_create_test_client()
 	client_configuration->on_wire_server_address = INADDR_ANY;
 	client_configuration->random_delays = 1;
 
-	vrp_create_thread_group(0, 3, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, free_test_client_configuration);
+	vrp_create_thread_group(0, 3, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, 0);
+
+	vrp_create_thread_group(0, 1, 0, (void(*)(void*, size_t, size_t))vrp_test_ur5, 0);
 	
 	printf("server: client threads created\n");
 	return 0;// also there were no errors, because no errors were checked
