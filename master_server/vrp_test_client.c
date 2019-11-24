@@ -513,7 +513,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 
 void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
 {
-	int random_delay = 1;
+	int random_delay = configuration->random_delays;
 
 	srand((int)(GetCurrentThreadId() >> 2));
 
@@ -537,7 +537,7 @@ void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_
 		Sleep(rand() % 1000);
 
 	printf("ur5 %ul: Connecting...\n", GetCurrentThreadId());
-	SOCKET sock = vrp_test_connect(&id, type, x, y, direction, state, 0, INADDR_ANY);
+	SOCKET sock = vrp_test_connect(&id, type, x, y, direction, state, 0, configuration->on_wire_server_address);
 	if (sock == INVALID_SOCKET)
 	{
 		printf("ur5 %ul error: Failed to connect\n", GetCurrentThreadId());
@@ -760,35 +760,146 @@ void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_
 	return;
 }
 
-DWORD vrp_create_test_client()
+void vrp_test_client_order(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
 {
-	vrp_test_client_configuration_t* client_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	int random_delay = configuration->random_delays;
+
+	srand((int)(GetCurrentThreadId() >> 2));
+
+	uint8_t id = VRP_ID_UNDEFINED;
+	uint8_t type = VRP_DEVICE_TYPE_CLIENT;
+	uint8_t x = VRP_COORDINATE_UNDEFINED;
+	uint8_t y = VRP_COORDINATE_UNDEFINED;
+	uint8_t direction = VRP_DIRECTION_UNDEFINED;
+	uint8_t state = VRP_STATE_NORMAL;
+	uint8_t message_buffer[256] = { 0 };
+	
+	printf("client %ul: starting in 10 seconds\n", GetCurrentThreadId());
+	Sleep(10000);
+	printf("client %ul: starting now\n", GetCurrentThreadId());
+
+	if (random_delay && !(rand() & 3))
+		Sleep(rand() % 1000);
+
+	printf("client %ul: Connecting...\n", GetCurrentThreadId());
+	SOCKET sock = vrp_test_connect(&id, type, x, y, direction, state, 0, configuration->on_wire_server_address);
+	if (sock == INVALID_SOCKET)
+	{
+		printf("client %ul error: Failed to connect\n", GetCurrentThreadId());
+		return;
+	}
+
+	if (random_delay && !(rand() & 3))
+		Sleep(rand() % 1000);
+
+	uint8_t product_id = 1;
+	int8_t product_destination_x = 8;
+	int8_t product_destination_y = 2;
+
+	message_buffer[0] = VRP_MESSAGE_POM;
+	message_buffer[1] = 3;
+	message_buffer[2] = 0;
+	message_buffer[3] = 0;
+	message_buffer[4] = 0;
+	message_buffer[5] = product_id;
+	message_buffer[6] = product_destination_x;
+	message_buffer[7] = product_destination_y;
+
+	Sleep(1000 + (rand() % 1000));
+
+	if (!vrp_send_message(sock, 8, message_buffer))
+	{
+		printf("client %ul error: Sending command failed\n", GetCurrentThreadId());
+		closesocket(sock);
+		return;
+	}
+	printf("client %ul: pom sent\n", GetCurrentThreadId());
+
+	printf("client %ul: Waiting for response...\n", GetCurrentThreadId());
+	size_t message_size = vrp_receive_message(sock, sizeof(message_buffer), message_buffer);
+	if (message_size < 12)
+	{
+		printf("client %ul error: Receiving response failed\n", GetCurrentThreadId());
+		closesocket(sock);
+		return;
+	}
+
+	if (message_buffer[0] != VRP_MESSAGE_WFM ||
+		message_buffer[5] != VRP_MESSAGE_POM ||
+		message_size < 12)
+	{
+		printf("client %ul error: Received invalid wfm failed\n", GetCurrentThreadId());
+		closesocket(sock);
+		return;
+	}
+
+	printf("client %ul: product order error %lu atomic flag %lu order number %08X response from server\n", GetCurrentThreadId(), message_buffer[6], message_buffer[7], *(unsigned long*)(message_buffer + 12));
+
+	message_buffer[0] = VRP_MESSAGE_CCM;
+	message_buffer[1] = 0;
+	message_buffer[2] = 0;
+	message_buffer[3] = 0;
+	message_buffer[4] = 0;
+
+	Sleep(1000 + (rand() % 1000));
+
+	if (!vrp_send_message(sock, 5, message_buffer))
+	{
+		printf("client %ul error: Sending ccm failed\n", GetCurrentThreadId());
+		closesocket(sock);
+		return;
+	}
+	printf("client %ul: ccm sent\n", GetCurrentThreadId());
+
+	printf("client %ul: Waiting for response...\n", GetCurrentThreadId());
+	message_size = vrp_receive_message(sock, sizeof(message_buffer), message_buffer);
+	if (message_size < 12)
+	{
+		printf("client %ul error: Receiving response failed\n", GetCurrentThreadId());
+		closesocket(sock);
+		return;
+	}
+	printf("client %ul: disconnected\n", GetCurrentThreadId());
+
+	closesocket(sock);
+	return;
+}
+
+void vrp_free_test_client_configuraton(uint32_t flags, void* thread_group_parameter, size_t thread_count)
+{
+	VirtualFree(thread_group_parameter, 0, MEM_RELEASE);
+}
+
+DWORD vrp_create_test_clients()
+{
+	vrp_test_client_configuration_t* gopigo_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	vrp_test_client_configuration_t* ur5_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	vrp_test_client_configuration_t* client_order_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+
 	// BuT COAMputterS HAv InfinET MeMori so Tsis CAn NOT be zEro right?
-	__assume(client_configuration);
+	__assume(gopigo_configuration);
+	__assume(ur5_configuration);
+	__assume(client_order_configuration);
 
 	uint32_t server_ip;
 	uint32_t subnet_mask;
 	vrp_get_host_ip_address(&server_ip, &subnet_mask);
 
-	client_configuration->on_wire_server_address = INADDR_ANY;
-	client_configuration->random_delays = 1;
+	gopigo_configuration->on_wire_server_address = INADDR_ANY;
+	gopigo_configuration->random_delays = 1;
 
-	vrp_create_thread_group(0, 3, client_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, 0);
+	ur5_configuration->on_wire_server_address = INADDR_ANY;
+	ur5_configuration->random_delays = 1;
 
-	vrp_create_thread_group(0, 1, 0, (void(*)(void*, size_t, size_t))vrp_test_ur5, 0);
+	client_order_configuration->on_wire_server_address = INADDR_ANY;
+	client_order_configuration->random_delays = 1;
+
+	vrp_create_thread_group(0, 3, gopigo_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, ur5_configuration, (void(*)(void*, size_t, size_t))vrp_test_ur5, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, client_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order, vrp_free_test_client_configuraton);
 	
 	printf("server: client threads created\n");
 	return 0;// also there were no errors, because no errors were checked
-}
-
-DWORD CALLBACK vrp_test(void* parameter)
-{
-	return -1;
-}
-
-DWORD vrp_run_tests(int bad_clients)
-{
-	return -1;
 }
 
 #ifdef __cplusplus

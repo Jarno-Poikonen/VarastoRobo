@@ -17,9 +17,7 @@ extern "C" {
 #include "vrp_constants.h"
 #include <stdio.h>
 
-DWORD vrp_create_test_client();
-
-DWORD vrp_run_tests(int bad_clients);
+DWORD vrp_create_test_clients();
 
 #ifdef __cplusplus
 }

@@ -318,6 +318,28 @@ size_t vrp_is_device_on_pickup_location(vrp_server_t* server, size_t device_inde
 	return (size_t)~0;
 }
 
+size_t vrp_get_pickup_location_index_by_coordinate(const vrp_server_t * server, int x, int y)
+{
+	__assume((x < VRP_MAX_MAP_WIDTH || x == VRP_COORDINATE_UNDEFINED) && (y < VRP_MAX_MAP_WIDTH || y == VRP_COORDINATE_UNDEFINED));
+
+	for (size_t i = 0; i != server->pickup_location_count; ++i)
+		if ((server->pickup_location_table[i].x == (uint8_t)x) && (server->pickup_location_table[i].y == (uint8_t)y))
+			return i;
+
+	return (size_t)~0;
+}
+
+size_t vrp_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y)
+{
+	__assume((x < VRP_MAX_MAP_WIDTH || x == VRP_COORDINATE_UNDEFINED) && (y < VRP_MAX_MAP_WIDTH || y == VRP_COORDINATE_UNDEFINED));
+
+	for (size_t i = 0; i != server->device_count; ++i)
+		if ((server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) && (server->device_table[i].x == (uint8_t)x) && (server->device_table[i].y == (uint8_t)y))
+			return i;
+
+	return (size_t)~0;
+}
+
 int vrp_get_any_transport_device_from_pickup_location(vrp_server_t* server, size_t* device_index, size_t* pickup_location_index)
 {
 	for (size_t i = 0; i != server->device_count; ++i)

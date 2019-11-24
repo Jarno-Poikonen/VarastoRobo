@@ -33,6 +33,10 @@ size_t vrp_get_nearest_pickup_location_index_for_device(vrp_server_t* server, si
 
 size_t vrp_is_device_on_pickup_location(vrp_server_t* server, size_t device_index);
 
+size_t vrp_get_pickup_location_index_by_coordinate(const vrp_server_t* server, int x, int y);
+
+size_t vrp_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y);
+
 int vrp_get_any_transport_device_from_pickup_location(vrp_server_t* server, size_t* device_index, size_t* pickup_location_index);
 
 #ifdef __cplusplus

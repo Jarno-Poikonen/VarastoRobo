@@ -82,6 +82,8 @@ typedef struct vrp_device_t
 	uint8_t move_to_y;
 	uint8_t destination_x;
 	uint8_t destination_y;
+	uint8_t carried_product_confidence;
+	uint8_t carried_product_id;
 	uint8_t* io_memory;
 	DWORD io_flags;
 	DWORD io_transfered;
@@ -214,6 +216,8 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server);
 size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id);
 
 size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_device_id);
+
+size_t vrp_get_pickup_location_index_by_id(vrp_server_t* server, uint8_t pickup_location_id);
 
 DWORD vrp_get_system_tick_resolution();
 

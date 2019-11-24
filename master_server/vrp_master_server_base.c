@@ -114,8 +114,12 @@ size_t vrp_get_nonstarted_product_order_index(vrp_server_t* server)
 size_t vrp_get_order_index_of_transport_device(vrp_server_t* server, size_t device_index)
 {
 	for (size_t i = 0; i != server->product_order_count; ++i)
-		if (server->product_order_table[i].transport_device_id == server->device_table[device_index].id)
+	{
+		uint8_t device_id = server->device_table[device_index].id;
+		uint8_t transport_device_id = server->product_order_table[i].transport_device_id;
+		if (transport_device_id == device_id)
 			return i;
+	}
 	return (size_t)~0;
 }
 
@@ -151,6 +155,14 @@ size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_
 {
 	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
 		if (server->device_table[i].sock != INVALID_SOCKET && server->device_table[i].control_target_id == controled_device_id)
+			return i;
+	return (size_t)~0;
+}
+
+size_t vrp_get_pickup_location_index_by_id(vrp_server_t* server, uint8_t pickup_location_id)
+{
+	for (size_t i = 0; i != server->pickup_location_count; ++i)
+		if (server->pickup_location_table[i].id == pickup_location_id)
 			return i;
 	return (size_t)~0;
 }
@@ -971,6 +983,8 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].ip_address = ntohl(client_address.sin_addr.s_addr);
 			server->device_table[i].move_to_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].move_to_y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].carried_product_confidence = 0;
+			server->device_table[i].carried_product_id = 0;
 			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
 			if (vrp_read(server, i, 0, server->device_io_buffer_size))
