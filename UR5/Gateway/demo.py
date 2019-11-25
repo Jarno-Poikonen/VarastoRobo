@@ -38,12 +38,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			print(data)
 			if i > 2:
 				i = 0
-			
-			viesti = str.encode("(0,") + paikat2[i]
+			if i == 0:
+				viesti = str.encode("(0,") + paikat2[i]
+			else:
+				viesti = str.encode("(1,") + paikat2[i]
 			print(viesti)
 			conn.sendall(viesti)
+			
 			'''
 			conn.sendall(paikat[i])
 			print(paikat[i])
-			i = i + 1
 			'''
+			i = i + 1

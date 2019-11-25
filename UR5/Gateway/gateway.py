@@ -111,7 +111,7 @@ if __name__ == "__main__":
 	
 	ID = 55
 	tila = 1
-	'''
+	
 	URIP = "192.168.100.11"
 	URPort = 30000
 	
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 	URSocket.listen()
 	
 	URYhteys, URAddr = URSocket.accept()
-	'''
+	
 	print("Odotetaan Masterin IP.")
 	while MasterIP is None:
 		pass
@@ -163,8 +163,9 @@ if __name__ == "__main__":
 				
 			elif MasterData[0] == 12:	# Move Product Message
 				print("Move Product Message saatu")
-				'''
-				data = str.encode("(" + MasterData[5] + paikat[MasterData[6]])
+				
+				data = str.encode("(") + str.encode(str(MasterData[5])) + paikat[MasterData[6]]
+				print(data)
 				URYhteys.sendall(data)
 				
 				URData = URYhteys.recv(512)
@@ -175,7 +176,7 @@ if __name__ == "__main__":
 					MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
 				elif URData == "Fail":
 					MasterSocket.sendall(Luo_WFM(MasterData[0], 4, 1, tila))
-				'''
+				
 				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
 				# continue
 			
