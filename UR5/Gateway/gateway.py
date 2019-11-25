@@ -44,7 +44,7 @@ def Broadcast_communication():
 			global MasterPort 
 			MasterIP, MasterPort = master_address
 			MasterPort = 1739
-	
+	'''
 	# Luodaan socket hätäseis toiminnallisuutta varten
 	SEISsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	SEISsocket.bind(("192.168.100.11", 30001))
@@ -63,6 +63,7 @@ def Broadcast_communication():
 				SEISyhteys.sendall("seis")
 				SEISyhteys.close()
 				break
+	'''
 
 def Luo_NCM(tyyppi, id, tila):
 	viesti = bytearray([2])
@@ -74,6 +75,8 @@ def Luo_NCM(tyyppi, id, tila):
 		
 	for b in viestin_loppu:
 		viesti.append(b)
+	
+	print("NCM: ", viesti)
 	
 	return viesti
 
@@ -88,6 +91,8 @@ def Luo_WFM(vastaukseksi, virhe, suoritus, tila):
 		
 	for b in viestin_loppu:
 		viesti.append(b)
+	
+	print("WFM: ", viesti)
 	
 	return viesti
 
@@ -106,7 +111,7 @@ if __name__ == "__main__":
 	
 	ID = 55
 	tila = 1
-	
+	'''
 	URIP = "192.168.100.11"
 	URPort = 30000
 	
@@ -115,7 +120,7 @@ if __name__ == "__main__":
 	URSocket.listen()
 	
 	URYhteys, URAddr = URSocket.accept()
-	
+	'''
 	print("Odotetaan Masterin IP.")
 	while MasterIP is None:
 		pass
@@ -124,9 +129,7 @@ if __name__ == "__main__":
 	MasterSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	MasterSocket.connect((MasterIP, MasterPort))
 	
-	viesti = Luo_NCM(3, ID, 2)
-	print(viesti)
-	MasterSocket.send(viesti)
+	MasterSocket.send(Luo_NCM(3, ID, 2))
 	
 	while not seis:
 		MasterData = MasterSocket.recv(512)
@@ -160,6 +163,7 @@ if __name__ == "__main__":
 				
 			elif MasterData[0] == 12:	# Move Product Message
 				print("Move Product Message saatu")
+				'''
 				data = str.encode("(" + MasterData[5] + paikat[MasterData[6]])
 				URYhteys.sendall(data)
 				
@@ -171,18 +175,30 @@ if __name__ == "__main__":
 					MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
 				elif URData == "Fail":
 					MasterSocket.sendall(Luo_WFM(MasterData[0], 4, 1, tila))
-				
+				'''
+				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
 				# continue
 			
 			elif MasterData[0] == 9 or MasterData[0] == 10 or MasterData[0] == 11 or MasterData[0] == 13 or MasterData[0] == 14:
 				print("Ei tuettu komento")
 				MasterSocket.sendall(Luo_WFM(MasterData[0], 5, 1, tila))
 			
-			else
+			else:
 				print("Tuntematon komento")
 				MasterSocket.sendall(Luo_WFM(MasterData[0], 2, 1, tila))
 		except IndexError:
 			sleep(1)
+			print("Yhteys poikki.")
+			seis = True
 			continue
+		# except socket.error as msg:
+			# print("Socket error: ", msg)
+			# print("Yhdistetään uudestaan.")
+			# MasterSocket.connect((MasterIP, MasterPort))
+			# MasterSocket.send(Luo_NCM(3, ID, 2))
+			# continue
+		except KeyboardInterrupt:
+			MasterSocket.close()
+			seis = True
 	
 	print("Valmis")
