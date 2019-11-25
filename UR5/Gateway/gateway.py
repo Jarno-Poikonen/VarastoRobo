@@ -171,14 +171,13 @@ if __name__ == "__main__":
 				URData = URYhteys.recv(512)
 				
 				print(URData)
+				utf = URData.decode("utf-8")
+				print(utf)
 				
-				if URData == "Valmis":
+				if "Valmis" in utf:
 					MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
-				elif URData == "Fail":
+				elif "Fail" in utf:
 					MasterSocket.sendall(Luo_WFM(MasterData[0], 4, 1, tila))
-				
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
-				# continue
 			
 			elif MasterData[0] == 9 or MasterData[0] == 10 or MasterData[0] == 11 or MasterData[0] == 13 or MasterData[0] == 14:
 				print("Ei tuettu komento")
