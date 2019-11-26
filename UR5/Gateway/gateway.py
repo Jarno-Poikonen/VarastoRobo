@@ -148,6 +148,7 @@ if __name__ == "__main__":
 	
 	MasterSocket.send(Luo_NCM(3, ID, 2))
 	
+	# Niin kauan kuin seis ei ole True niin kuunnellaan mestarilta käskyjä ja toteutetaan ne if elif lausekkeissa.
 	while not seis:
 		MasterData = MasterSocket.recv(512)
 		print(MasterData)
@@ -208,6 +209,7 @@ if __name__ == "__main__":
 			else:
 				print("Tuntematon komento")
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei tueta"], 1, tila))
+		# Jos saadaan IndexError niin oletetaan sen johtuvan siitä että mestarilta saatiin tyhjä tieto minkä oletetaan tarkoittavan yhteyden poikki olemista.
 		except IndexError:
 			sleep(1)
 			print("Yhteys poikki.")
