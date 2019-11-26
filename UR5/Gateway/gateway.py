@@ -97,7 +97,22 @@ def Luo_WFM(vastaukseksi, virhe, suoritus, tila):
 	return viesti
 
 if __name__ == "__main__":
-
+	
+	# Mahdolliset virheet
+	virheet = {
+	"Ei virheitä": 0,
+	"Viesti viallinen": 1,
+	"Ei tueta": 2,
+	"Param virheelliset": 3,
+	"Kohdetta ei löytynyt": 4,
+	"Kieltäytyi": 5,
+	"Vikatila": 6,
+	"Resurssit ei riitä": 7,
+	"Pysäytetty": 8,
+	"Reittiä ei olemassa": 9,
+	"Reittiä ei voi kulkea": 10,
+	}
+	
 	# Käsien paikat.
 	# Ensimämisenä tuotteen numero, sen jälkeen 6 float arvoa servojen asennoille.
 	paikat = [
@@ -111,6 +126,8 @@ if __name__ == "__main__":
 	
 	ID = 55
 	tila = 1
+	
+	print("Odotetaan UR5 yhteyttä.")
 	
 	URIP = "192.168.100.11"
 	URPort = 30000
@@ -138,28 +155,28 @@ if __name__ == "__main__":
 			if MasterData[0] == 3:		# Setup Connection Message
 				print("Setup Connection Message saatu")
 				ID = MasterData[6]
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 				# continue
 				
 			elif MasterData[0] == 5:	# Closed Connection Message
 				print("Closed Connection Message saatu")
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 2, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei tueta"], 1, tila))
 				# break
 				
 			elif MasterData[0] == 6:	# Status Query Message
 				print("Status Query Message saatu")
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 				# continue
 				
 			elif MasterData[0] == 7:	# System Startup Message
 				print("System Shutdown Message saatu")
 				tila = 1
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 				
 			elif MasterData[0] == 8:	# System Shutdown Message
 				print("System Shutdown Message saatu")
 				tila = 2
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 				
 			elif MasterData[0] == 12:	# Move Product Message
 				print("Move Product Message saatu")
@@ -167,25 +184,30 @@ if __name__ == "__main__":
 				data = str.encode("(") + str.encode(str(MasterData[5])) + paikat[MasterData[6]]
 				print(data)
 				URYhteys.sendall(data)
+				valmis = False
+				while not valmis:
+					
+					URData = URYhteys.recv(512)
+					
+					print(URData)
+					utf = URData.decode("utf-8")
+					print(utf)
+					
+					if "Valmis" in utf:
+						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
+						valmis = True
+					elif "Fail" in utf:
+						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Kohdetta ei löytynyt"], 0, tila))
+						valmis = True
+					
 				
-				URData = URYhteys.recv(512)
-				
-				print(URData)
-				utf = URData.decode("utf-8")
-				print(utf)
-				
-				if "Valmis" in utf:
-					MasterSocket.sendall(Luo_WFM(MasterData[0], 0, 1, tila))
-				elif "Fail" in utf:
-					MasterSocket.sendall(Luo_WFM(MasterData[0], 4, 1, tila))
-			
 			elif MasterData[0] == 9 or MasterData[0] == 10 or MasterData[0] == 11 or MasterData[0] == 13 or MasterData[0] == 14:
 				print("Ei tuettu komento")
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 5, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Kieltäytyi"], 1, tila))
 			
 			else:
 				print("Tuntematon komento")
-				MasterSocket.sendall(Luo_WFM(MasterData[0], 2, 1, tila))
+				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei tueta"], 1, tila))
 		except IndexError:
 			sleep(1)
 			print("Yhteys poikki.")
@@ -200,5 +222,6 @@ if __name__ == "__main__":
 		except KeyboardInterrupt:
 			MasterSocket.close()
 			seis = True
-	
+	MasterSocket.close()
+	URSocket.close()
 	print("Valmis")
