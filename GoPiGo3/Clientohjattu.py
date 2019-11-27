@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 from __future__ import division
 import traceback
@@ -9,13 +10,22 @@ import traceback
 import easygopigo3 as easy
 import time
 
-esteetaisyys = 230 #eteen
-esteetaisyysvjo = 230 #vasen ja oikea
+esteetaisyysk = 230 #raja-arvo eteen 
+esteetaisyysvjo = 230 #raja-arvo vasen ja oikea
+
+
+etaisyyskeski = 0
+etaisyysvasen = 0
+etaisyysoikea = 0
+
+estek = 0
+estev = 0
+esteo = 0
 
 vasen = False
 oikea = False
 
-position = [1,2]    #Koordinaatit määritetään leveys,korkeus järjestyksessä
+position = [0,0]    #Koordinaatit määritetään leveys,korkeus järjestyksessä
 orientation = 0     #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
 
 gpg = easy.EasyGoPiGo3()
@@ -40,46 +50,47 @@ gpg.set_speed(perus)
 
 ######
 def lahella():
+    global estek
+    global estev 
+    global esteo
+    
     gpg.stop()
     servo.rotate_servo(40)
     time.sleep(0.2)
-    if etaisyys.read_mm() <= esteetaisyysvjo:
-        gpg.stop()
-        print("este 40, oikealla")
-
-        while True:
-            if etaisyys.read_mm() > esteetaisyysvjo:
-                break
+    etaisyysoikea = etaisyys.read_mm()
 
     servo.rotate_servo(95)
     time.sleep(0.2)
-    if etaisyys.read_mm() <= esteetaisyys:
-        gpg.stop()
-        print("este 95")
-
-        while True:
-            if etaisyys.read_mm() > esteetaisyys:
-                break
+    etaisyyskeski = etaisyys.read_mm()
 
     servo.rotate_servo(150)
     time.sleep(0.2)
-    if etaisyys.read_mm() <= esteetaisyysvjo:
-        gpg.stop()
-        print("este 150, vasemmalla")
+    etaisyysvasen = etaisyys.read_mm()
 
-        while True:
-            if etaisyys.read_mm() > esteetaisyysvjo:
-                break
-                
     servo.rotate_servo(95)
-    time.sleep(0.2)
-    if etaisyys.read_mm() <= esteetaisyys:
-        gpg.stop()
-        print("este 95, keskella")
 
-        while True:
-            if etaisyys.read_mm() > esteetaisyys:
-                break
+
+    if etaisyysoikea <= esteetaisyysvjo:
+        esteo = 1
+        print("este oikealla")
+        gpg.stop()
+    if etaisyyskeski <= esteetaisyysk:
+        estek = 1
+        gpg.stop()
+        print("este keskella")
+    if etaisyysvasen <= esteetaisyysvjo:
+        estev = 1
+        gpg.stop()
+        print("este vasemmalla")
+
+
+    while esteo or estek or estev == 1:
+            gpg.stop()
+            esteo = 0
+            estek = 0
+            estev = 0
+            break
+            #Liiku(int(input("Anna suunta-arvo: ")))
 ######
 
 def Left():
@@ -238,9 +249,9 @@ def Liiku(suunta):
     Turn(suunta)
     lahella()
     Eteen()
-    if(position == [1,2]):
+    if(position == [0,0]):
         Parkki()
     PosOri()
 while True: #Konsolitestausta varten
     PosOri()
-    Liiku(int(input("Anna suunta-arvo")))
+    Liiku(int(input("Anna suunta-arvo: ")))
