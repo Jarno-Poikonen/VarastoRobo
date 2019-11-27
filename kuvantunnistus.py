@@ -53,12 +53,12 @@ while True:
                 print(shape)
       
     #avataan kameran kuvaa nayttava ikkuna 
-    cv2.imshow("Frame", crop_frame)
+    #cv2.imshow("Frame", crop_frame)
     #cv2.imshow("Red", red)
     #cv2.imshow("Gray", gray)
     #cv2.imshow("Blurred", blurred)
     #cv2.imshow("Thresh", thresh)
-    cv2.imshow("Mask", mask)
+    #cv2.imshow("Mask", mask)
     
     #odotetaan esc nappaimen painamista scriptin lopettamiseksi
     key = cv2.waitKey(1)
