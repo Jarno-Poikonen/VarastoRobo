@@ -15,7 +15,7 @@ while True:
     low_red = np.array([161, 100, 0]) #aseteaan varin alaraja-arvo
     high_red = np.array([179, 255, 255]) #asetetaan varin ylaraja-arvo
     red_mask = cv2.inRange(hsv_frame, low_red, high_red) #etsitaan maaritelty vari kuvasta
-    red = cv2.bitwise_and(crop_frame, crop_frame, mask=red_mask) #poistetaan mut paitsi haluttu vari kuvasta
+    red = cv2.bitwise_and(crop_frame, crop_frame, mask=red_mask) #poistetaan muut paitsi haluttu vari kuvasta
     
     gray = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY) #muutetaan varit harmaaksi
     blurred = cv2.GaussianBlur(gray, (5, 5), 0) #sumennetaan kuvaa
