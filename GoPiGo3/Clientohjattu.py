@@ -24,8 +24,8 @@ esteo = 0
 
 vasen = False
 oikea = False
-
-position = [0,0]    #Koordinaatit määritetään leveys,korkeus järjestyksessä
+Aloitus = [0,0]
+position = Aloitus.copy()    #Koordinaatit määritetään leveys,korkeus järjestyksessä
 orientation = 0     #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
 
 gpg = easy.EasyGoPiGo3()
@@ -249,7 +249,7 @@ def Liiku(suunta):
     Turn(suunta)
     lahella()
     Eteen()
-    if(position == [0,0]):
+    if(position == Aloitus):
         Parkki()
     PosOri()
 while True: #Konsolitestausta varten
