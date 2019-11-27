@@ -37,7 +37,7 @@ while True:
             #tunnisteaan muodot
             if len(approx) == 3:
                 cv2.putText(crop_frame, "Triangle", (x, y), font, 1, (0, 255, 0)) #lisataan teksti ruudulle ja maaritellaan sen vari
-                shape = "Triangle"
+                shape = "Triangle" #annetaan muodolle haluttu nimi
                 print(shape)
             elif len(approx) == 4:
                 cv2.putText(crop_frame, "Rectangle", (x, y), font, 1, (0, 255, 0))
