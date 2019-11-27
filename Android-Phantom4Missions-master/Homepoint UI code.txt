@@ -1,0 +1,113 @@
+
+
+
+
+
+TrackingTestActivity.java:
+
+
+public class TrackingTestActivity ...
+{
+    private Button mButtonHomeClear;
+    private Button mButtonHomeGo;
+    private Button mButtonHomeSave;
+
+    ...
+}
+
+
+
+private void initUI()
+{
+        mButtonHomeSave = findViewById(R.id.buttonHomeSave);
+        mButtonHomeClear = findViewById(R.id.buttonHomeClear);
+        mButtonHomeGo = findViewById(R.id.buttonHomeGo);
+
+        mButtonHomeClear.setEnabled(false);
+        mButtonHomeGo.setEnabled(false);
+
+        mButtonHomeSave.setOnClickListener(this);
+        mButtonHomeClear.setOnClickListener(this);
+        mButtonHomeGo.setOnClickListener(this);
+}
+
+
+
+public void onClick()
+{
+    ...
+
+            case R.id.buttonHomeSave:
+                writeToast("Homepoint set");
+                mButtonHomeClear.setEnabled(true);
+                mButtonHomeGo.setEnabled(true);
+                break;
+
+            case R.id.buttonHomeClear:
+                writeToast("Homepoint cleared");
+                mButtonHomeClear.setEnabled(false);
+                mButtonHomeGo.setEnabled(false);
+                break;
+
+            case R.id.buttonHomeGo:
+                writeToast("Returning home");
+                break;
+}
+
+
+
+
+
+activity_tracking_test.xml:
+
+
+...
+
+(in tracking_bg_layout hierarchy)
+
+        <LinearLayout
+            android:id="@+id/HomepointLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Homepoint"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonHomeSave"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Save" />
+
+                <Button
+                    android:id="@+id/buttonHomeGo"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Go" />
+
+                <Button
+                    android:id="@+id/buttonHomeClear"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Clear" />
+            </LinearLayout>
+        </LinearLayout>
+
