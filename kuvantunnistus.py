@@ -32,24 +32,24 @@ while True:
         y = approx.ravel()[1]
         
         if area > 400: #maaritetaan muotojen minimikoko
-            cv2.drawContours(crop_frame, [approx], 0, (0, 255, 0), 2) #piirretaan muodon aariviivat kuvaan ja maaritellaan sen vari
+            #cv2.drawContours(crop_frame, [approx], 0, (0, 255, 0), 2) #piirretaan muodon aariviivat kuvaan ja maaritellaan sen vari
             
             #tunnisteaan muodot
             if len(approx) == 3:
-                cv2.putText(crop_frame, "Triangle", (x, y), font, 1, (0, 255, 0)) #lisataan teksti ruudulle ja maaritellaan sen vari
-                shape = "Triangle" #annetaan muodolle haluttu nimi
+                #cv2.putText(crop_frame, "Triangle", (x, y), font, 1, (0, 255, 0)) #lisataan teksti ruudulle ja maaritellaan sen vari
+                shape = 1 #annetaan muodolle haluttu nimi tai merkki
                 print(shape)
             elif len(approx) == 4:
-                cv2.putText(crop_frame, "Rectangle", (x, y), font, 1, (0, 255, 0))
-                shape = "Rectangle"
+                #cv2.putText(crop_frame, "Rectangle", (x, y), font, 1, (0, 255, 0))
+                shape = 2
                 print(shape)
             elif len(approx) == 5:
-                cv2.putText(crop_frame, "Pentagon", (x, y), font, 1, (0, 255, 0))
-                shape = "Pentagon"
+                #cv2.putText(crop_frame, "Pentagon", (x, y), font, 1, (0, 255, 0))
+                shape = 3
                 print(shape)
             elif 7 < len(approx) < 10:
-                cv2.putText(crop_frame, "Circle", (x, y), font, 1, (0, 255, 0))
-                shape = "Circle"
+                #cv2.putText(crop_frame, "Circle", (x, y), font, 1, (0, 255, 0))
+                shape = 4
                 print(shape)
       
     #avataan kameran kuvaa nayttava ikkuna 
