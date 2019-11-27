@@ -2,10 +2,9 @@
 import socket
 import time
 import threading
-import gpgDrive
+import Clientohjattu
 
 masterIp = None
-
 deviceID = None
 
 def count_length(message, length=4):   
@@ -49,9 +48,9 @@ def form_NCM(devType,devID,cordX,cordY,direction,devState):
         
     return message
 
-def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,deviceState,packetNum):
+def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum):
     message = bytearray([4])
-    mesEndPart = bytearray([commandNum,errorCode,atom,cordX,cordY,direction,deviceState,packetNum])
+    mesEndPart = bytearray([commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum])
     length = count_length(len(mesEndPart))
     
     for i in length:
@@ -64,6 +63,8 @@ def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,deviceState,packetN
     
 def main():
     systemStop = 0
+    deviceState = 0
+    latestDir = 0
     broadcast_thread = threading.Thread(target=udp_broadcast,args=())
     broadcast_thread.start()
 
@@ -76,7 +77,9 @@ def main():
     masterSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     masterSocket.connect((masterIp, 1739))
     #print("Yhteys muodostettu")
-    message = form_NCM(2,255,0,0,0,1)
+    #systemStatus = 1
+    message = form_NCM(2,255,0,0,0,deviceState)
+    print(message)
     masterSocket.send(message)
     
     while systemStop == 0:
@@ -86,34 +89,45 @@ def main():
         #SCM
         if fromMaster[0] == 3:
             deviceID = fromMaster[6]
-            #print(deviceID)
-            pos = gpgDrive2.PosOri()
-            print(pos[0])
-            reply = form_WFM(3,0,1,pos[0],pos[1],0,1,0)
+            deviceState = 1
+            reply = form_WFM(fromMaster[0],0,1,0,0,0,deviceState,0)
             masterSocket.send(reply)
             print(reply)
             print("SCM vastattu")
-            #risteys = gpgDrive.Liiku(4)
-            #print(risteys)
-        
+                
+            
         #CCM
         if fromMaster[0] == 5:
             print("Vastaanotettu CCM")
-            reply = form_WFM(5,0,1,0,0,0,1,0)
+            reply = form_WFM(fromMaster[0],0,1,0,0,0,deviceState,0)
             masterSocket.send(reply)
             systemStop = 1
-            
+                
         #SQM    
         if fromMaster[0] == 6:
-            reply = form_WFM(6,0,1,0,0,0,1,0)
+            reply = form_WFM(fromMaster[0],0,1,0,0,0,deviceState,0)
             masterSocket.send(reply)
             print("SQM vastattu")
-            
         
-        #MCM
-        if fromMaster[0] == 13:
-            direction = fromMaster[5]
+        #SSM
+        #if fromMaster[0] == 7:
+            #deviceState = 1
+        
+        #SHM
+        if fromMaster[0] == 8:
+            deviceState = 0
+            #systemStop = 1
             
+        #MCM
+        if fromMaster[0] == 13 and deviceState == 1:
+            direction = fromMaster[5]
+            Clientohjattu.Liiku(direction)
+            pos = PosOri()
+            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],direction,deviceState,0)
+            
+        else:
+            print("Komentoa ei tueta/tunnistettu")
+            reply = form_WFM(fromMaster[0],2,1,pos[0],pos[1],direction,deviceState,0)
     
     masterSocket.close()
     print("Yhteys katkaistiin")   
