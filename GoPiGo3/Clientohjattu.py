@@ -12,6 +12,9 @@ import time
 esteetaisyys = 230 #eteen
 esteetaisyysvjo = 230 #vasen ja oikea
 
+vasen = False
+oikea = False
+
 def lahella():
     gpg.stop()
     servo.rotate_servo(40)
@@ -55,11 +58,8 @@ def lahella():
                 break
 ######
 
-Position = [0,0]    #Koordinaatita määritetään leveys,korkeus järjestyksessä
-Orientation = 0     #Suunta 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
-#def orientation()
-    
-#def position()
+position = [0,0]    #Koordinaatita määritetään leveys,korkeus järjestyksessä
+orientation = 0     #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
 
 def Left():
     gpg.turn_degrees(-90)
@@ -71,9 +71,9 @@ def Around():
     gpg.turn_degrees(180)
     
 def PosOri():
-    print("Position:",Position)
-    print("Orientation:",Orientation)
-    return Position
+    print("Position:",position)
+    print("Orientation:",orientation)
+    return position
 
 gpg = easy.EasyGoPiGo3()
 etaisyys = gpg.init_distance_sensor()
@@ -94,33 +94,75 @@ perus = 250
 korjaus = 150
 servo.rotate_servo(95)
 gpg.set_speed(perus)
-
-def Turn(suunta):
-    if(suunta == 4): #Suoraan
-        suunta = None
-
-    #if(suunta is None):
-        #gpg.drive_cm(3)
-        #Position[1] = Position[1]+1
+def Orientation():
+    if(orientation == 0): #Oikea
+        print("East")
+    elif(orientation == 1): #Ylös
+        print("North")
+    elif(orientation == 2): #Vasen
+        print("West")
+    elif(orientation == 3): #Alas
+        print("South")
+    elif(orientation>3): #Lost
+        print("Lost")
         
-    elif(suunta == 2): #Täyskäännös
-        Around()
+def Turn(suunta):    #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
+    global orientation
+    Orientation()
+    print(suunta)
+    if(orientation == 0): #Suunta Itään
+        if(suunta == 0): #Suoraan
+            pass
+        
+        elif(suunta == 1): #Vasen
+            Left()
     
-    elif(suunta == 3): #Täyskäännös parkkiin
-        print("Parking");
-        Around()
-        #PosOri()
-        #input("Parked. Push enter to go")
+        elif(suunta == 2): #Täyskäännös
+            Around()
 
-    elif(suunta == 0): #Vasen
-        Left()
+        elif(suunta == 3): #Oikea
+            Right()
+    elif(orientation == 1): #Suunta Pohjoiseen
+        if(suunta == 1): #Suoraan
+            pass
         
-    elif(suunta == 1): #Oikea
-        Right()
+        elif(suunta == 2): #Vasen
+            Left()
+    
+        elif(suunta == 3): #Täyskäännös
+            Around()
+
+        elif(suunta == 0): #Oikea
+            Right()
+    elif(orientation == 2): #Suunta Länteen
+        if(suunta == 2): #Suoraan
+            pass
+        
+        elif(suunta == 3): #Vasen
+            Left()
+    
+        elif(suunta == 0): #Täyskäännös
+            Around()
+
+        elif(suunta == 1): #Oikea
+            Right()
+    elif(orientation == 3): #Suunta Etelään
+        if(suunta == 3): #Suoraan
+            pass
+        
+        elif(suunta == 0): #Vasen
+            Left()
+    
+        elif(suunta == 1): #Täyskäännös
+            Around()
+
+        elif(suunta == 2): #Oikea
+            Right()            
+    orientation = suunta
 
 def Eteen():
-    vasen = False
-    oikea = False
+    global vasen
+    global oikea
     try:
         while True:
             paikka = my_linefollower.read(representation="bivariate")
@@ -129,12 +171,12 @@ def Eteen():
             if(paikka[len(paikka)-1] == 0): oikea = True
             
             if(vasen or oikea):
-                if vasen and oikea:
-                    print("Risteys vasemmalle ja oikealle.")
-                elif vasen :
-                    print("Risteys vasemmalle.")
-                elif oikea:
-                    print("Risteys oikealle.")
+                #if vasen and oikea:
+                #    print("Risteys vasemmalle ja oikealle.")
+                #elif vasen :
+                #    print("Risteys vasemmalle.")
+                #elif oikea:
+                #    print("Risteys oikealle.")
                 vasen = False
                 oikea = False
                 
@@ -166,10 +208,9 @@ def Eteen():
         traceback.print_exc()
         
 def Liiku(suunta):
-    vasen = False
-    oikea = False
     Turn(suunta)
     lahella()
     Eteen()
+    PosOri()
 while True: #Konsolitestausta varten
     Liiku(suunta = int(input("Anna suunta-arvo")))
