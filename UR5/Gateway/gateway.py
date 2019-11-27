@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 import socket
 from time import sleep
+from datetime import datetime
 import threading
 
 MasterIP = None
 MasterPort = None
 seis = False
+
+# Funktio jolla tulostetaan myös viestin ajan hetki
+def Lokiin(mika, viesti):
+	print(datetime.now(), " - ", mika, ": ", viesti)
 
 # Mahdollista tehdä paremmin.
 # Muutetaan viestin pituus esitettäväksi neljällä bytellä
@@ -24,7 +29,7 @@ def Laske_pituus(viesti, pituus=4):
 # Säie/funktio joka kuuntelee broadcast viestejä.
 def Broadcast_communication():
 	# Luodaan socket broadcastia varten.
-	print("Broadcast")
+	Lokiin("Broadcast", "Aloitus")
 	bSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	bSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
 	bSocket.bind(("", 1732))
@@ -65,6 +70,7 @@ def Broadcast_communication():
 				break
 	'''
 
+# Luodaan WFM viesti annetuista parametreista.
 def Luo_NCM(tyyppi, id, tila):
 	viesti = bytearray([2])
 	viestin_loppu = bytearray([tyyppi, id, 0, 0, 0, tila])
@@ -76,7 +82,7 @@ def Luo_NCM(tyyppi, id, tila):
 	for b in viestin_loppu:
 		viesti.append(b)
 	
-	print("NCM: ", viesti)
+	Lokiin("NCM", viesti)
 	
 	return viesti
 
@@ -92,7 +98,7 @@ def Luo_WFM(vastaukseksi, virhe, suoritus, tila):
 	for b in viestin_loppu:
 		viesti.append(b)
 	
-	print("WFM: ", viesti)
+	Lokiin("WFM", viesti)
 	
 	return viesti
 
@@ -127,7 +133,7 @@ if __name__ == "__main__":
 	ID = 55
 	tila = 1
 	
-	print("Odotetaan UR5 yhteyttä.")
+	Lokiin("Main", "Odotetaan UR5 yhteyttä.")
 	
 	URIP = "192.168.100.11"
 	URPort = 30000
@@ -138,10 +144,10 @@ if __name__ == "__main__":
 	
 	URYhteys, URAddr = URSocket.accept()
 	
-	print("Odotetaan Masterin IP.")
+	Lokiin("Main", "Odotetaan Masterin IP.")
 	while MasterIP is None:
 		pass
-	print("IP saatu.")
+	Lokiin("Main", "IP saatu.")
 	
 	MasterSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	MasterSocket.connect((MasterIP, MasterPort))
@@ -150,49 +156,46 @@ if __name__ == "__main__":
 	
 	# Niin kauan kuin seis ei ole True niin kuunnellaan mestarilta käskyjä ja toteutetaan ne if elif lausekkeissa.
 	while not seis:
+		Lokiin("Main", "Odotetaan Masterin viestejä.")
 		MasterData = MasterSocket.recv(512)
-		print(MasterData)
+		Lokiin("Main", MasterData)
 		try:
 			if MasterData[0] == 3:		# Setup Connection Message
-				print("Setup Connection Message saatu")
+				Lokiin("Main", "Setup Connection Message saatu")
 				ID = MasterData[6]
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
-				# continue
 				
 			elif MasterData[0] == 5:	# Closed Connection Message
-				print("Closed Connection Message saatu")
+				Lokiin("Main", "Closed Connection Message saatu")
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei tueta"], 1, tila))
-				# break
 				
 			elif MasterData[0] == 6:	# Status Query Message
-				print("Status Query Message saatu")
+				Lokiin("Main", "Status Query Message saatu")
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
-				# continue
 				
 			elif MasterData[0] == 7:	# System Startup Message
-				print("System Shutdown Message saatu")
+				Lokiin("Main", "System Shutdown Message saatu")
 				tila = 1
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 				
 			elif MasterData[0] == 8:	# System Shutdown Message
-				print("System Shutdown Message saatu")
+				Lokiin("Main", "System Shutdown Message saatu")
 				tila = 2
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 				
 			elif MasterData[0] == 12:	# Move Product Message
-				print("Move Product Message saatu")
+				Lokiin("Main", "Move Product Message saatu")
 				
 				data = str.encode("(") + str.encode(str(MasterData[5])) + paikat[MasterData[6]]
-				print(data)
+				Lokiin("Main", data)
 				URYhteys.sendall(data)
 				valmis = False
 				while not valmis:
 					
 					URData = URYhteys.recv(512)
 					
-					print(URData)
 					utf = URData.decode("utf-8")
-					print(utf)
+					Lokiin("Main UR5", utf)
 					
 					if "Valmis" in utf:
 						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
@@ -203,16 +206,18 @@ if __name__ == "__main__":
 					
 				
 			elif MasterData[0] == 9 or MasterData[0] == 10 or MasterData[0] == 11 or MasterData[0] == 13 or MasterData[0] == 14:
-				print("Ei tuettu komento")
+				Lokiin("Main", "Ei tuettu komento")
+				print(MasterData[0])
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Kieltäytyi"], 1, tila))
 			
 			else:
-				print("Tuntematon komento")
+				Lokiin("Main", "Tuntematon komento")
 				MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei tueta"], 1, tila))
-		# Jos saadaan IndexError niin oletetaan sen johtuvan siitä että mestarilta saatiin tyhjä tieto minkä oletetaan tarkoittavan yhteyden poikki olemista.
+		
+		# Jos saadaaLokiinn IndexError niin oletetaan sen johtuvan siitä että mestarilta saatiin tyhjä tieto minkä oletetaan tarkoittavan yhteyden poikki olemista.
 		except IndexError:
 			sleep(1)
-			print("Yhteys poikki.")
+			Lokiin("Main", "Yhteys poikki.")
 			seis = True
 			continue
 		# except socket.error as msg:
@@ -226,4 +231,4 @@ if __name__ == "__main__":
 			seis = True
 	MasterSocket.close()
 	URSocket.close()
-	print("Valmis")
+	Lokiin("Main", "Valmis")
