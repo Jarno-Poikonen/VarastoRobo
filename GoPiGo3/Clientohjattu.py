@@ -9,23 +9,13 @@ import traceback
 
 import easygopigo3 as easy
 import time
+import esteentunnistus
 
-esteetaisyysk = 230 #raja-arvo eteen 
-esteetaisyysvjo = 230 #raja-arvo vasen ja oikea
-
-
-etaisyyskeski = 0
-etaisyysvasen = 0
-etaisyysoikea = 0
-
-estek = 0
-estev = 0
-esteo = 0
-
+Este = False
 vasen = False
 oikea = False
-Aloitus = [0,0]
-position = Aloitus.copy()    #Koordinaatit määritetään leveys,korkeus järjestyksessä
+Aloitus = [0,0]     #Aloituspisteen asetus muuttujaan. Koordinaatit järjestyksessä x,y
+position = Aloitus.copy() #Kopioidaan aloituspisteen arvo position tracking muuttujaan
 orientation = 0     #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
 
 gpg = easy.EasyGoPiGo3()
@@ -42,56 +32,10 @@ except:
 my_linefollower.read_position()
 my_linefollower.read_position()
 
-
 perus = 250
 korjaus = 150
 servo.rotate_servo(95)
 gpg.set_speed(perus)
-
-######
-def lahella():
-    global estek
-    global estev 
-    global esteo
-    
-    gpg.stop()
-    servo.rotate_servo(40)
-    time.sleep(0.2)
-    etaisyysoikea = etaisyys.read_mm()
-
-    servo.rotate_servo(95)
-    time.sleep(0.2)
-    etaisyyskeski = etaisyys.read_mm()
-
-    servo.rotate_servo(150)
-    time.sleep(0.2)
-    etaisyysvasen = etaisyys.read_mm()
-
-    servo.rotate_servo(95)
-
-
-    if etaisyysoikea <= esteetaisyysvjo:
-        esteo = 1
-        print("este oikealla")
-        gpg.stop()
-    if etaisyyskeski <= esteetaisyysk:
-        estek = 1
-        gpg.stop()
-        print("este keskella")
-    if etaisyysvasen <= esteetaisyysvjo:
-        estev = 1
-        gpg.stop()
-        print("este vasemmalla")
-
-
-    while esteo or estek or estev == 1:
-            gpg.stop()
-            esteo = 0
-            estek = 0
-            estev = 0
-            break
-            #Liiku(int(input("Anna suunta-arvo: ")))
-######
 
 def Left():
     gpg.turn_degrees(-90)
@@ -110,8 +54,8 @@ def PosOri():
     print("Orientation:",orientation)
     return (position, orientation)
 
-######
-def Orientation(): # Voinee poistaa, lähinnä debuggausta varten
+###### Käytetään konsolidebuggauksessa näyttämään laitteen suunta
+def Orientation(): 
     if(orientation == 0): #Oikea
         print("East")
     elif(orientation == 1): #Ylös
@@ -120,14 +64,14 @@ def Orientation(): # Voinee poistaa, lähinnä debuggausta varten
         print("West")
     elif(orientation == 3): #Alas
         print("South")
-    elif(orientation>3): #Lost
+    else: #Lost
         print("Lost")
 
 ######
 def Turn(suunta):    #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
     global orientation
     global position
-    Orientation()
+    #Orientation()
     print(suunta)
     if(orientation == 0): #Suunta Itään
         if(suunta == 0): #Suoraan
@@ -205,10 +149,13 @@ def Parkki():
 def Eteen():
     global vasen
     global oikea
+    global Este
+    Este = False
+    
     try:
         while True:
             paikka = my_linefollower.read(representation="bivariate")
-            print(paikka)
+            #print(paikka)
             if(paikka[0] == 0): vasen = True
             if(paikka[len(paikka)-1] == 0): oikea = True
             
@@ -236,8 +183,7 @@ def Eteen():
             if my_linefollower.read_position() == 'white':
                 gpg.stop()
                 input("HJALP, I'm Lost!!!")
-                gpg.drive_cm(-6)
-                
+                gpg.drive_cm(-6) 
                 
         gpg.stop()
     except Exception:
@@ -246,12 +192,15 @@ def Eteen():
 
 ######
 def Liiku(suunta):
+    global Este
     Turn(suunta)
-    lahella()
-    Eteen()
+    Este = esteentunnistus.lahella()
+    if(Este == False):
+        Eteen()
+    else:
+        print("Este havaittu suunnassa: ",suunta)
     if(position == Aloitus):
         Parkki()
-    PosOri()
 while True: #Konsolitestausta varten
     PosOri()
     Liiku(int(input("Anna suunta-arvo: ")))
