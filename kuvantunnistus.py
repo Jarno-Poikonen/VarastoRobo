@@ -33,20 +33,20 @@ while True:
             #tunnisteaan muodot
             if len(approx) == 3:
                 #cv2.putText(crop_frame, "Triangle", (x, y), font, 1, (0, 255, 0)) #lisataan teksti ruudulle ja maaritellaan sen vari
-                shape = 1 #annetaan muodolle haluttu nimi tai merkki
-                print(shape)
+                TuoteID = 2 #annetaan muodolle haluttu nimi tai merkki
+                print(TuoteID)
             elif len(approx) == 4:
                 #cv2.putText(crop_frame, "Rectangle", (x, y), font, 1, (0, 255, 0))
-                shape = 2
-                print(shape)
+                TuoteID = 0
+                print(TuoteID)
             elif len(approx) == 5:
                 #cv2.putText(crop_frame, "Pentagon", (x, y), font, 1, (0, 255, 0))
-                shape = 3
-                print(shape)
+                TuoteID = 3
+                print(TuoteID)
             elif 7 < len(approx) < 10:
                 #cv2.putText(crop_frame, "Circle", (x, y), font, 1, (0, 255, 0))
-                shape = 4
-                print(shape)
+                TuoteID = 1
+                print(TuoteID)
       
     #avataan kameran kuvaa nayttava ikkuna 
     #cv2.imshow("Frame", crop_frame)
