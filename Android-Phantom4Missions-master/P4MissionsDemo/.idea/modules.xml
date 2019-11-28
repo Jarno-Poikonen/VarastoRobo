@@ -3,8 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Android-Phantom4Missions-master-P4MissionsDemo.iml" filepath="$PROJECT_DIR$/Android-Phantom4Missions-master-P4MissionsDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/Android-Phantom4Missions-master-P4MissionsDemo-app.iml" filepath="$PROJECT_DIR$/app/Android-Phantom4Missions-master-P4MissionsDemo-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/P4MissionsDemo.iml" filepath="$PROJECT_DIR$/P4MissionsDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/P4MissionsDemo-app.iml" filepath="$PROJECT_DIR$/app/P4MissionsDemo-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VarastoRobo-Android-Phantom4Missions-master-P4MissionsDemo.iml" filepath="$PROJECT_DIR$/VarastoRobo-Android-Phantom4Missions-master-P4MissionsDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

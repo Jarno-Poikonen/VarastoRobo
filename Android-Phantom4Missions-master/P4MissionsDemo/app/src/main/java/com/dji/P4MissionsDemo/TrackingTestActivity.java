@@ -3,6 +3,7 @@
 package com.dji.P4MissionsDemo;
 
 
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -55,9 +56,11 @@ import dji.common.mission.activetrack.ActiveTrackMissionEvent;
 import dji.common.mission.activetrack.ActiveTrackMode;
 import dji.common.mission.activetrack.ActiveTrackState;
 import dji.common.mission.activetrack.ActiveTrackTargetState;
+import dji.common.mission.activetrack.ActiveTrackTargetType;
 import dji.common.mission.activetrack.ActiveTrackTrackingState;
 import dji.common.mission.activetrack.QuickShotMode;
 import dji.common.mission.activetrack.SubjectSensingState;
+import dji.common.util.CommonCallbacks;
 import dji.common.util.CommonCallbacks.CompletionCallbackWith;
 import dji.keysdk.CameraKey;
 import dji.keysdk.DJIKey;
@@ -108,7 +111,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private Switch mAutoCaptureSw;
     private Button mConfirmBtn;
     private Button mRejectBtn;
-
+    private Handler mTimerHandler = new Handler();
+    private ActiveTrackMission mActiveTrackMission;
     private static BaseProduct mProduct;
     private ActiveTrackOperator mActiveTrackOperator;
     private final DJIKey trackModeKey = FlightControllerKey.createFlightAssistantKey(FlightControllerKey.ACTIVE_TRACK_MODE);
@@ -123,12 +127,14 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private Handler photoCaptureTimerHandler = new Handler();
     private Handler stopAlertTimerHandler = new Handler();
     File destDir = new File(Environment.getExternalStorageDirectory().getPath() + "/TrackerApp/");
-
+    private Timer mTimer1;
+    private boolean flag = true;
     ServerSocket serverSocket;
     Socket clientSocket;
     Thread SocketThread = null;
     BufferedReader input;
-
+    float i = 0.0f;
+    float ret = 0.0f;
 
 
     // Toast        @param string
@@ -147,7 +153,152 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         TrackingTestActivity.this.runOnUiThread(() -> mPushInfoTv.setText(string));
     }
 
+    private void setResultToToast(final String string) {
+        TrackingTestActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(TrackingTestActivity.this, string, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    // @Override
+    private void startTimer()
+    {
+        mTimer1 = new Timer();
 
+        TimerTask mTt1 = new TimerTask()
+        {
+            public void run()
+            {
+                mTimerHandler.post(() -> track());
+
+            }
+        };
+
+        mTimer1.schedule(mTt1, 2000, 2000);
+    }
+
+
+    private void stopTimer()
+    {
+        if ( mTimer1 != null )
+        {
+            mTimer1.cancel();
+            mTimer1.purge();
+        }
+    }
+
+    private float moveX(){
+        if(i<0.8f) {
+            i = i + 0.05f;
+        }
+        else{
+            i = 0.0f;
+        }
+        setResultToToast("i:"+i);
+        return i;
+    }
+    TextView textScreen;
+
+    public void track()
+    {
+        /*
+        WiFiLink wifilink = new WiFiLink();
+        wifilink.getChannelNumber(new CompletionCallbackWith<Integer>() {
+            @Override
+            public void onSuccess(Integer channelNumber) {
+                //runOnUiThread(()->textScreen.setText("channelNumber"+channelNumber));
+            }
+
+            @Override
+            public void onFailure(DJIError djiError) {
+                //runOnUiThread(()->textScreen.setText("Failed to get channelNumber"+djiError));
+            }
+        });
+        */
+
+      /*
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                isDrawingRect = false;
+                downX = event.getX();
+                downY = event.getY();
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                if (calcManhattanDistance(downX, downY, event.getX(), event.getY()) < MOVE_OFFSET && !isDrawingRect) {
+                trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
+
+                mSendRectIV.setVisibility(View.VISIBLE);
+                int l = (int) (downX < event.getX() ? downX : event.getX());
+                int t = (int) (downY < event.getY() ? downY : event.getY());
+                int r = (int) (downX >= event.getX() ? downX : event.getX());
+                int b = (int) (downY >= event.getY() ? downY : event.getY());
+                mSendRectIV.setX(l);
+                mSendRectIV.setY(t);
+                mSendRectIV.getLayoutParams().width = r - l;
+                mSendRectIV.getLayoutParams().height = b - t;
+                mSendRectIV.requestLayout();
+                break;
+
+            case MotionEvent.ACTION_UP:
+            */
+
+        // float downX = 0.2f;
+        // float downY = 0.2f;
+
+        //  if (calcManhattanDistance(downX, downY, 0.5f, 0.5f) < MOVE_OFFSET && !isDrawingRect) {
+
+
+        //  trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
+        //  DJILog.d(TAG,trackingIndex);
+        trackingIndex = INVALID_INDEX;
+        // mSendRectIV.setVisibility(View.VISIBLE);
+        //mSendRectIV.setX(0.3f);
+        // mSendRectIV.setY(0.7f);
+        //mSendRectIV.getLayoutParams().width = (int)0.2;
+        // mSendRectIV.getLayoutParams().height = (int)0.6;
+        //    mSendRectIV.requestLayout();
+
+
+
+        //RectF rectF = getActiveTrackRect(mSendRectIV);
+        if (flag) {
+            ret = moveX();
+
+            // for (float i = 0.0f; i<0.4f;i=i+0.1f){
+            RectF rectF = new RectF(0.1f + ret, 0.2f, 0.2f + ret, 0.8f);
+
+            if (targetViewHashMap.get(trackingIndex) != null) {
+                Objects.requireNonNull(targetViewHashMap.get(trackingIndex)).setBackgroundColor(Color.RED);
+            }
+
+            mActiveTrackMission = new ActiveTrackMission(rectF, startMode);
+
+            //  }
+
+
+            if (startMode == ActiveTrackMode.QUICK_SHOT) {
+                mActiveTrackMission.setQuickShotMode(quickShotMode);
+                checkStorageStates();
+            }
+
+            mActiveTrackOperator.startTracking(mActiveTrackMission, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(DJIError error) {
+                    if (error == null) {
+
+                    }
+                    //stopTimer();
+                    setResultToToast("Start Tracking: " + (error == null
+                            ? "Success"
+                            : error.getDescription()));
+
+                }
+            });
+            clearCurrentView();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -161,6 +312,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     // InitUI
     private void initUI()
     {
+        startTimer();
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 
         mPushDrawerIb = findViewById(R.id.tracking_drawer_control_ib);
@@ -210,79 +362,109 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
     @Override
-    public void onClick(View v)
-    {
-        if (mActiveTrackOperator == null)
+    public void onClick(View v) {
+        if (mActiveTrackOperator == null) {
             return;
+        }
+        switch (v.getId()) {
 
-        switch (v.getId())
-        {
+
             case R.id.confirm_btn:
+                flag = false;
                 boolean isAutoTracking =
                         isAutoSensingSupported &&
                                 (mActiveTrackOperator.isAutoSensingEnabled() ||
                                         mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
-                if (isAutoTracking)
-                {
+                if (isAutoTracking) {
                     startAutoSensingMission();
-                    runOnUiThread(() ->
-                    {
-                        mStopBtn.setVisibility(View.VISIBLE);
-                        mRejectBtn.setVisibility(View.VISIBLE);
-                        mConfirmBtn.setVisibility(View.INVISIBLE);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mStopBtn.setVisibility(View.VISIBLE);
+                            mRejectBtn.setVisibility(View.VISIBLE);
+                            mConfirmBtn.setVisibility(View.INVISIBLE);
+                        }
                     });
-                }
-                else
-                {
+                } else {
                     trackingIndex = INVALID_INDEX;
-                    mActiveTrackOperator.acceptConfirmation(error -> writeToast(error == null  ?  "Accept Confirm Success!"  :  error.getDescription()));
+                    mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
 
-                    runOnUiThread(() ->
-                    {
-                        mStopBtn.setVisibility(View.VISIBLE);
-                        mRejectBtn.setVisibility(View.VISIBLE);
-                        mConfirmBtn.setVisibility(View.INVISIBLE);
+                        @Override
+                        public void onResult(DJIError error) {
+                            setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                        }
                     });
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mStopBtn.setVisibility(View.VISIBLE);
+                            mRejectBtn.setVisibility(View.VISIBLE);
+                            mConfirmBtn.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
                 }
                 break;
 
             case R.id.tracking_stop_btn:
+                stopTimer();
                 trackingIndex = INVALID_INDEX;
-                mActiveTrackOperator.stopTracking(error -> writeToast(error == null  ?  "Stop track Success!"  :  error.getDescription()));
+                flag = true;
+                mActiveTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
 
-                runOnUiThread(() ->
-                {
-                    if ( mTrackingImage != null )
-                    {
-                        mTrackingImage.setVisibility(View.INVISIBLE);
-                        mStopBtn.setVisibility(View.INVISIBLE);
-                        mRejectBtn.setVisibility(View.INVISIBLE);
-                        mConfirmBtn.setVisibility(View.VISIBLE);
+                    @Override
+                    public void onResult(DJIError error) {
+                        setResultToToast(error == null ? "Stop track Success!" : error.getDescription());
+                    }
+                });
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mTrackingImage != null) {
+                            mTrackingImage.setVisibility(View.INVISIBLE);
+                            //mSendRectIV.setVisibility(View.INVISIBLE);
+                            mStopBtn.setVisibility(View.INVISIBLE);
+                            mRejectBtn.setVisibility(View.INVISIBLE);
+                            mConfirmBtn.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
                 break;
 
             case R.id.reject_btn:
                 trackingIndex = INVALID_INDEX;
-                mActiveTrackOperator.rejectConfirmation(error -> writeToast(error == null  ?  "Reject Confirm Success!"  :  error.getDescription()));
-                runOnUiThread(() ->
-                {
-                    mStopBtn.setVisibility(View.VISIBLE);
-                    mRejectBtn.setVisibility(View.VISIBLE);
-                    mConfirmBtn.setVisibility(View.INVISIBLE);
+                mActiveTrackOperator.rejectConfirmation(new CommonCallbacks.CompletionCallback() {
+
+                    @Override
+                    public void onResult(DJIError error) {
+
+                        setResultToToast(error == null ? "Reject Confirm Success!" : error.getDescription());
+                    }
+                });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStopBtn.setVisibility(View.VISIBLE);
+                        mRejectBtn.setVisibility(View.VISIBLE);
+                        mConfirmBtn.setVisibility(View.INVISIBLE);
+                    }
                 });
                 break;
 
             case R.id.tracking_drawer_control_ib:
-                if ( mPushInfoSd.isOpened() )
+                if (mPushInfoSd.isOpened()) {
                     mPushInfoSd.animateClose();
-                else
+                } else {
                     mPushInfoSd.animateOpen();
+                }
                 break;
 
             default:
                 break;
         }
+
     }
 
 
@@ -386,79 +568,208 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
     @Override
-    public void onUpdate(ActiveTrackMissionEvent event)
-    {
-        StringBuffer sb = new StringBuffer();
-        String errorInformation = (event.getError() == null ? "null" : event.getError().getDescription()) + "\n";
-        String currentState = event.getCurrentState() == null ? "null" : event.getCurrentState().getName();
-        String previousState = event.getPreviousState() == null ? "null" : event.getPreviousState().getName();
+    public void onUpdate(ActiveTrackMissionEvent event) {
+    StringBuffer sb = new StringBuffer();
+    String errorInformation = (event.getError() == null ? "null" : event.getError().getDescription()) + "\n";
+    String currentState = event.getCurrentState() == null ? "null" : event.getCurrentState().getName();
+    String previousState = event.getPreviousState() == null ? "null" : event.getPreviousState().getName();
 
-        ActiveTrackTargetState targetState = ActiveTrackTargetState.UNKNOWN;
+    ActiveTrackTargetState targetState = ActiveTrackTargetState.UNKNOWN;
+    if (event.getTrackingState() != null) {
+        targetState = event.getTrackingState().getState();
+    }
+    Utils.addLineToSB(sb, "CurrentState: ", currentState);
+    Utils.addLineToSB(sb, "PreviousState: ", previousState);
+    Utils.addLineToSB(sb, "TargetState: ", targetState);
+    Utils.addLineToSB(sb, "Error:", errorInformation);
 
-        if (event.getTrackingState() != null)
-            targetState = event.getTrackingState().getState();
+    Object value = KeyManager.getInstance().getValue(trackModeKey);
+    if (value instanceof ActiveTrackMode) {
+        Utils.addLineToSB(sb, "TrackingMode:", value.toString());
+    }
 
-        Utils.addLineToSB(sb, "CurrentState: ", currentState);
-        Utils.addLineToSB(sb, "PreviousState: ", previousState);
-        Utils.addLineToSB(sb, "TargetState: ", targetState);
-        Utils.addLineToSB(sb, "Error:", errorInformation);
-
-        Object value = KeyManager.getInstance().getValue(trackModeKey);
-
-        if (value instanceof ActiveTrackMode)
-            Utils.addLineToSB(sb, "TrackingMode:", value.toString());
-
-        ActiveTrackTrackingState trackingState = event.getTrackingState();
-
-        if (trackingState != null)
-        {
-            final SubjectSensingState[] targetSensingInformations = trackingState.getAutoSensedSubjects();
-
-            if (targetSensingInformations != null)
-            {
-                for (SubjectSensingState subjectSensingState : targetSensingInformations)
-                {
-                    RectF trackingRect = subjectSensingState.getTargetRect();
-
-                    if (trackingRect != null)
-                    {
-                        Utils.addLineToSB(sb, "Rect center x: ", trackingRect.centerX());
-                        Utils.addLineToSB(sb, "Rect center y: ", trackingRect.centerY());
-                        Utils.addLineToSB(sb, "Rect Width: ", trackingRect.width());
-                        Utils.addLineToSB(sb, "Rect Height: ", trackingRect.height());
-                        Utils.addLineToSB(sb, "Reason", trackingState.getReason().name());
-                        Utils.addLineToSB(sb, "Target Index: ", subjectSensingState.getIndex());
-                        Utils.addLineToSB(sb, "Target Type", subjectSensingState.getTargetType().name());
-                        Utils.addLineToSB(sb, "Target State", subjectSensingState.getState().name());
-                        isAutoSensingSupported = true;
-                    }
-                }
-            }
-            else
-            {
-                RectF trackingRect = trackingState.getTargetRect();
-
-                if (trackingRect != null)
-                {
+    ActiveTrackTrackingState trackingState = event.getTrackingState();
+    if (trackingState != null) {
+        final SubjectSensingState[] targetSensingInformations = trackingState.getAutoSensedSubjects();
+        if (targetSensingInformations != null) {
+            for (SubjectSensingState subjectSensingState : targetSensingInformations) {
+                RectF trackingRect = subjectSensingState.getTargetRect();
+                if (trackingRect != null) {
                     Utils.addLineToSB(sb, "Rect center x: ", trackingRect.centerX());
                     Utils.addLineToSB(sb, "Rect center y: ", trackingRect.centerY());
                     Utils.addLineToSB(sb, "Rect Width: ", trackingRect.width());
                     Utils.addLineToSB(sb, "Rect Height: ", trackingRect.height());
                     Utils.addLineToSB(sb, "Reason", trackingState.getReason().name());
-                    Utils.addLineToSB(sb, "Target Index: ", trackingState.getTargetIndex());
-                    Utils.addLineToSB(sb, "Target Type", trackingState.getType().name());
-                    Utils.addLineToSB(sb, "Target State", trackingState.getState().name());
-                    isAutoSensingSupported = false;
+                    Utils.addLineToSB(sb, "Target Index: ", subjectSensingState.getIndex());
+                    Utils.addLineToSB(sb, "Target Type", subjectSensingState.getTargetType().name());
+                    Utils.addLineToSB(sb, "Target State", subjectSensingState.getState().name());
+                    isAutoSensingSupported = true;
+                    if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
+                        flag = false;
+                        trackingIndex = INVALID_INDEX;
+                        setResultToToast("Tracking success");
+
+                        mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+
+                            @Override
+                            public void onResult(DJIError error) {
+                                setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                            }
+                        });
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mStopBtn.setVisibility(View.VISIBLE);
+                                mRejectBtn.setVisibility(View.VISIBLE);
+                                mConfirmBtn.setVisibility(View.INVISIBLE);
+                            }
+                        });
+
+                    }
                 }
-
-                clearCurrentView();
             }
-        }
+        } else {
+            RectF trackingRect = trackingState.getTargetRect();
+            if (trackingRect != null) {
+                Utils.addLineToSB(sb, "Rect center x: ", trackingRect.centerX());
+                Utils.addLineToSB(sb, "Rect center y: ", trackingRect.centerY());
+                Utils.addLineToSB(sb, "Rect Width: ", trackingRect.width());
+                Utils.addLineToSB(sb, "Rect Height: ", trackingRect.height());
+                Utils.addLineToSB(sb, "Reason", trackingState.getReason().name());
+                Utils.addLineToSB(sb, "Target Index: ", trackingState.getTargetIndex());
+                Utils.addLineToSB(sb, "Target Type", trackingState.getType().name());
+                Utils.addLineToSB(sb, "Target State", trackingState.getState().name());
 
-        setResultToText(sb.toString());
-        updateActiveTrackRect(mTrackingImage, event);
-        updateButtonVisibility(event);
+
+                    /*
+                    if(trackingState.getState().name()== "WAITING_FOR_CONFIRMATION"){
+                       // trackingIndex = INVAVID_INDEX;
+                        //mActiveTrackOperator.acceptConfirmation(null);
+                        flag = false;
+
+                    }
+                    if(trackingState.getState().name()== "FINDING_TRACKED_TARGET"){
+                        //mActiveTrackOperator.acceptConfirmation(null);
+                        flag = false;
+                    }
+
+                    */
+                //  setResultToToast("Type:" + trackingState.getType().name());
+
+                // textScreen = findViewById(R.id.textView2);
+                // runOnUiThread(()-> textScreen.setText("Type:"));
+                if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
+                    flag = false;
+                    trackingIndex = INVALID_INDEX;
+                    setResultToToast("Tracking success");
+
+                    mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+
+                        @Override
+                        public void onResult(DJIError error) {
+                            setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                        }
+                    });
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mStopBtn.setVisibility(View.VISIBLE);
+                            mRejectBtn.setVisibility(View.VISIBLE);
+                            mConfirmBtn.setVisibility(View.INVISIBLE);
+                        }
+                    }); mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+
+                        @Override
+                        public void onResult(DJIError error) {
+                            setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                        }
+                    });
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mStopBtn.setVisibility(View.VISIBLE);
+                            mRejectBtn.setVisibility(View.VISIBLE);
+                            mConfirmBtn.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                        /*
+
+                        boolean isAutoTracking =
+                                isAutoSensingSupported &&
+                                        (mActiveTrackOperator.isAutoSensingEnabled() ||
+                                                mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
+                        if (isAutoTracking) {
+                            startAutoSensingMission();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mStopBtn.setVisibility(View.VISIBLE);
+                                    mRejectBtn.setVisibility(View.VISIBLE);
+                                    mConfirmBtn.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        } else {
+
+
+                           // trackingIndex = INVAVID_INDEX;
+                            mActiveTrackOperator.acceptConfirmation(new CompletionCallback() {
+
+                                @Override
+                                public void onResult(DJIError error) {
+                                    setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                                }
+                            });
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mStopBtn.setVisibility(View.VISIBLE);
+                                    mRejectBtn.setVisibility(View.VISIBLE);
+                                    mConfirmBtn.setVisibility(View.INVISIBLE);
+                                }
+                            });
+
+                        }
+                    */
+                }
+                else{
+                    flag = true;
+                    trackingIndex = INVALID_INDEX;
+                    mActiveTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
+
+                        @Override
+                        public void onResult(DJIError error) {
+                            setResultToToast(error == null ? "Stop track Success!" : error.getDescription());
+                        }
+                    });
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mTrackingImage != null) {
+                                mTrackingImage.setVisibility(View.INVISIBLE);
+                                //mSendRectIV.setVisibility(View.INVISIBLE);
+                                mStopBtn.setVisibility(View.INVISIBLE);
+                                mRejectBtn.setVisibility(View.INVISIBLE);
+                                mConfirmBtn.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+                isAutoSensingSupported = false;
+            }
+
+            clearCurrentView();
+        }
     }
+
+    setResultToText(sb.toString());
+    updateActiveTrackRect(mTrackingImage, event);
+    updateButtonVisibility(event);
+}
 
 
      // Update ActiveTrack Rect'        @param iv       @param event
