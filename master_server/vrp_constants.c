@@ -3,12 +3,17 @@
 */
 
 #include "vrp_constants.h"
+#include <assert.h>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 6384)
+#endif
 
 const char* vrp_get_message_type_string(int message_type_number, int short_name)
 {
+	assert(message_type_number >= 0 && short_name >= 0);
+
 	static const char* unknown = "unknown message";
 	static const char* short_unknown = "UM";
 	static const char* string_table[] = {
@@ -37,6 +42,8 @@ const char* vrp_get_message_type_string(int message_type_number, int short_name)
 
 const char* vrp_get_error_string(int error_number)
 {
+	assert(error_number >= 0);
+
 	static const char* unknown = "unknown or invalid error";
 	static const char* string_table[] = {
 		"no error",
@@ -60,6 +67,8 @@ const char* vrp_get_error_string(int error_number)
 
 const char* vrp_get_status_string(int status_number)
 {
+	assert(status_number >= 0);
+
 	static const char* unknown = "unknown";
 	static const char* string_table[] = {
 		"frozen",
@@ -77,6 +86,8 @@ const char* vrp_get_status_string(int status_number)
 
 const char* vrp_get_device_type_string(int device_type_number)
 {
+	assert(device_type_number >= 0);
+
 	static const char* unknown = "unknown";
 	static const char* string_table[] = {
 		"master",
@@ -94,6 +105,8 @@ const char* vrp_get_device_type_string(int device_type_number)
 
 const char* vrp_get_direction_string(int direction_number)
 {
+	assert(direction_number >= 0);
+
 	static const char* unknown = "unknown";
 	static const char* undefined = "undefined";
 	static const char* string_table[] = {
@@ -113,6 +126,8 @@ const char* vrp_get_direction_string(int direction_number)
 
 const char* vrp_get_product_string(int product_number, int product_marker_shape)
 {
+	assert(product_number >= 0 && product_marker_shape >= 0);
+
 	static const char* unknown = "unknown";
 	static const char* undefined = "undefined";
 	static const char* string_table[] = {
@@ -130,4 +145,6 @@ const char* vrp_get_product_string(int product_number, int product_marker_shape)
 		return unknown;
 }
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif

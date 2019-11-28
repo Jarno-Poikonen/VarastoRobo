@@ -74,7 +74,7 @@ extern "C" {
 #define VRP_PRODUCT_TYPE_GOPIGO_WHEEL  0x01
 #define VRP_PRODUCT_TYPE_UNDEFINED     0xFF
 
-// do not try to deallocate or write to the strings returned by these functions. they are part of the program image
+// do not try to deallocate or write to the strings returned by these functions. they are part of the program image. also never give negative inputs to these functions.
 
 const char* vrp_get_message_type_string(int message_type_number, int short_name);
 
