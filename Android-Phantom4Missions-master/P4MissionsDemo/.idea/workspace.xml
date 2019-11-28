@@ -6,7 +6,7 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="warn" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Firebase" />
   </component>
   <component name="ChangeListManager">
@@ -52,7 +52,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -112,27 +111,186 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4012">
-              <caret line="88" column="38" lean-forward="true" selection-start-line="88" selection-start-column="38" selection-end-line="88" selection-end-column="38" />
+            <state relative-caret-position="2159">
+              <caret line="314" column="21" selection-start-line="314" selection-start-column="21" selection-end-line="314" selection-end-column="21" />
+              <folding>
+                <element signature="e#4902#5119#0" />
+                <element signature="e#5126#5420#0" />
+                <element signature="e#5427#5645#0" />
+                <element signature="class#7469:7893" />
+                <element signature="method#onItemSelected#0;class#7469:7893" />
+                <element signature="method#onNothingSelected#0;class#7469:7893" />
+                <element signature="e#10822#10925#0" />
+                <element signature="e#10932#10973#0" />
+                <element signature="e#10932#11781#0" />
+                <element signature="class#11358:11773" />
+                <element signature="method#onSuccess#0;class#11358:11773" />
+                <element signature="method#onFailure#0;class#11358:11773" />
+                <element signature="e#11788#12006#0" />
+                <element signature="e#12013#12478#0" />
+                <element signature="e#12112#12203#0" />
+                <element signature="e#12224#12268#0" />
+                <element signature="e#12485#13672#0" />
+                <element signature="e#12703#13666#0" />
+                <element signature="e#13099#13380#0" />
+                <element signature="e#17300#18224#0" />
+                <element signature="e#17651#18218#1" />
+                <element signature="e#17728#17943#1" />
+                <element signature="e#17973#18208#1" />
+                <element signature="e#19311#19720#1" />
+                <element signature="e#19365#19708#0" />
+                <element signature="e#19742#20219#1" />
+                <element signature="e#19796#20207#0" />
+                <element signature="e#20232#21855#0" />
+                <element signature="e#20888#21847#0" />
+                <element signature="e#21862#22833#0" />
+                <element signature="e#22525#22825#0" />
+                <element signature="e#22840#24393#0" />
+                <element signature="e#23140#23781#1" />
+                <element signature="e#23263#23492#1" />
+                <element signature="e#23522#23771#1" />
+                <element signature="e#23909#24220#1" />
+                <element signature="e#24049#24138#1" />
+                <element signature="e#24270#24387#1" />
+                <element signature="e#24401#25061#0" />
+                <element signature="e#24581#25055#1" />
+                <element signature="e#24622#24990#1" />
+                <element signature="e#24691#24973#0" />
+                <element signature="e#25068#25849#0" />
+                <element signature="e#25187#25843#1" />
+                <element signature="e#25241#25831#0" />
+                <element signature="e#25317#25715#1" />
+                <element signature="e#25353#25655#0" />
+                <element signature="e#25856#26580#0" />
+                <element signature="e#25985#26574#1" />
+                <element signature="e#26239#26562#0" />
+                <element signature="e#26313#26471#1" />
+                <element signature="e#26587#27994#0" />
+                <element signature="e#26978#27447#1" />
+                <element signature="class#27080:27435" />
+                <element signature="method#onFailure#0;class#27080:27435" />
+                <element signature="e#27469#27988#1" />
+                <element signature="class#27581:27976" />
+                <element signature="method#onFailure#0;class#27581:27976" />
+                <element signature="e#28001#29383#0" />
+                <element signature="e#29390#31127#0" />
+                <element signature="e#29783#31099#1" />
+                <element signature="e#31134#33123#0" />
+                <element signature="e#31823#32013#1" />
+                <element signature="e#32098#32298#1" />
+                <element signature="e#32513#33117#1" />
+                <element signature="e#32568#33107#1" />
+                <element signature="class#32681:33091" />
+                <element signature="method#onFailure#0;class#32681:33091" />
+                <element signature="e#33130#33726#0" />
+                <element signature="e#33281#33720#1" />
+                <element signature="e#33437#33710#1" />
+                <element signature="e#33736#34901#0" />
+                <element signature="e#33878#34054#1" />
+                <element signature="class#34117:34893" />
+                <element signature="method#onFailure#0;class#34117:34893" />
+                <element signature="method#onProgress#0;class#34117:34893" />
+                <element signature="method#onRateUpdate#0;class#34117:34893" />
+                <element signature="method#onSuccess#0;class#34117:34893" />
+                <element signature="e#34908#36245#0" />
+                <element signature="e#35074#36239#1" />
+                <element signature="e#35307#36229#1" />
+                <element signature="e#35416#36213#0" />
+                <element signature="e#35510#36075#1" />
+                <element signature="e#35699#36051#0" />
+                <element signature="e#36252#36446#0" />
+                <element signature="e#36453#36611#0" />
+                <element signature="e#36618#36985#0" />
+                <element signature="e#52680#52842#0" expanded="true" />
+                <element signature="e#52841#52842#0" expanded="true" />
+                <element signature="e#36992#37180#0" />
+                <element signature="e#37084#37174#1" />
+                <element signature="e#37187#37826#0" />
+                <element signature="e#37345#37764#1" />
+                <element signature="e#37459#37499#0" />
+                <element signature="e#37538#37752#0" />
+                <element signature="e#37836#38187#0" />
+                <element signature="e#53891#54053#0" expanded="true" />
+                <element signature="e#54052#54053#0" expanded="true" />
+                <element signature="e#38194#38370#0" />
+                <element signature="e#38280#38364#1" />
+                <element signature="e#38377#38708#0" />
+                <element signature="e#38623#38702#1" />
+                <element signature="e#38717#38975#0" />
+                <element signature="e#38817#38967#0" />
+                <element signature="e#38982#39438#0" />
+                <element signature="e#39445#40155#0" />
+                <element signature="e#39498#39561#0" />
+                <element signature="e#39609#39717#0" />
+                <element signature="e#39739#39912#0" />
+                <element signature="e#39951#40063#0" />
+                <element signature="e#40162#40884#0" />
+                <element signature="e#40215#40878#0" />
+                <element signature="e#40289#40697#0" />
+                <element signature="e#40744#40868#0" />
+                <element signature="e#40891#41995#0" />
+                <element signature="e#40953#41989#0" />
+                <element signature="e#41036#41979#1" />
+                <element signature="e#41074#41773#0" />
+                <element signature="e#41442#41755#1" />
+                <element signature="e#41828#41965#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="valueResourceFile" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>execution</find>
-      <find>dji</find>
-      <find>djimissionerror</find>
-      <find>vision_data_abnormal</find>
-      <find>slidingdrawer</find>
-      <find>loginAccount</find>
-      <find>targetSensingInformations</find>
-      <find>mProduct</find>
       <find>mQuickShotSw</find>
-      <find>stopTimer</find>
+      <find>startTimer</find>
+      <find>mTimer1</find>
+      <find>mTimerHandler</find>
+      <find>mAutoCaptureSw</find>
+      <find>photoCaptureInterval</find>
+      <find>setResultToToast</find>
+      <find>photoCaptureTimer</find>
+      <find>mTrackingImage</find>
+      <find>down</find>
+      <find>message</find>
+      <find>e.</find>
+      <find>writeToast</find>
+      <find>alert</find>
+      <find>can't</find>
+      <find>Thread1</find>
+      <find>socketThread</find>
+      <find>showToast</find>
+      <find>pls wait</find>
+      <find>pls</find>
+      <find>ReceiveThread</find>
+      <find>SERVER_PORT</find>
+      <find>8080</find>
+      <find>socket</find>
+      <find>runonuit</find>
+      <find>ClientStatus</find>
+      <find>spinn</find>
+      <find>STATUS</find>
+      <find>SPIN</find>
+      <find>stop</find>
     </findStrings>
+    <replaceStrings>
+      <replace>photoCaptureTimer</replace>
+      <replace>photoCaptureTimerHandler</replace>
+      <replace>alertTimer</replace>
+      <replace>socketThread</replace>
+      <replace>SocketThread</replace>
+      <replace>writeToast</replace>
+      <replace>clientSocket</replace>
+      <replace>ClientStatusUI</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
@@ -141,15 +299,17 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/ints.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DJIDemoApplication.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="260" />
     <option name="y" value="40" />
     <option name="width" value="1400" />
@@ -161,8 +321,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -209,13 +367,17 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="73QDU17A21001920" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2019-11-26T12:31:46.740Z" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../SocketExampleClient" />
     <property name="not.eligible.for.single.variant.sync" value="true" />
     <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
@@ -482,11 +644,12 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="7" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="simpleUML" />
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.12080537" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.24496645" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -494,7 +657,6 @@
       <window_info id="Designer" order="6" />
       <window_info id="Resources Explorer" order="7" />
       <window_info id="Capture Tool" order="8" />
-      <window_info id="simpleUML" order="9" />
       <window_info anchor="bottom" id="Run" order="0" weight="0.32917964" />
       <window_info anchor="bottom" id="Logcat" order="1" weight="0.32917964" />
       <window_info anchor="bottom" id="TODO" order="2" />
@@ -502,7 +664,7 @@
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.32917964" />
       <window_info anchor="bottom" id="Event Log" order="5" side_tool="true" weight="0.32917964" />
       <window_info anchor="bottom" id="Version Control" order="6" weight="0.32917964" />
-      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.16997167" />
+      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.33144477" />
       <window_info anchor="bottom" id="Android Profiler" order="8" />
       <window_info anchor="bottom" id="Find" order="9" weight="0.32917964" />
       <window_info anchor="right" id="Device File Explorer" order="0" side_tool="true" />
@@ -521,7 +683,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/com/dji/P4MissionsDemo/BuildConfig.java" />
+    <entry file="file://$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/com/dji/P4MissionsDemo/BuildConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-28/android.jar!/java/lang/Object.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="66">
@@ -594,20 +762,13 @@
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DJIDemoApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1136">
-          <caret line="111" column="37" selection-start-line="111" selection-start-column="37" selection-end-line="111" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/demo_info_item.xml">
-      <provider editor-type-id="text-editor" />
       <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/layout_multi_tracking.xml">
-      <provider editor-type-id="text-editor" />
       <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/PointingTestActivity.java" />
     <entry file="jar://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-28/android.jar!/java/util/ArrayList.class">
@@ -635,13 +796,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/Utils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="34" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_pointing_test.xml" />
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.dji/dji-sdk-provided/4.11/f0120d4c5ea5fc368bedf0954edc397e13e29a1f/dji-sdk-provided-4.11.jar!/dji/sdk/mission/activetrack/ActiveTrackOperator.class">
       <provider selected="true" editor-type-id="text-editor">
@@ -650,29 +804,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/ints.xml" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/black_rectangle.9.png" />
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DJIDemoApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="92" column="22" selection-start-line="92" selection-start-column="22" selection-end-line="92" selection-end-column="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1046#1047#0" expanded="true" />
+            <element signature="e#1084#1085#0" expanded="true" />
+            <element signature="e#1145#1146#0" expanded="true" />
+            <element signature="e#1176#1177#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/Utils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="23" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
       <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1445">
-          <caret line="85" column="63" selection-start-line="85" selection-start-column="35" selection-end-line="85" selection-end-column="63" />
+        <state relative-caret-position="119">
+          <caret line="7" column="73" selection-start-line="7" selection-start-column="73" selection-end-line="7" selection-end-column="73" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="782">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
-        </state>
-      </provider>
       <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DemoBaseActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="524">
-          <caret line="118" column="16" lean-forward="true" selection-start-line="118" selection-start-column="16" selection-end-line="118" selection-end-column="16" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="731">
+          <caret line="43" column="28" lean-forward="true" selection-start-line="43" selection-start-column="28" selection-end-line="43" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -683,29 +850,164 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="237" column="23" selection-start-line="237" selection-start-column="23" selection-end-line="237" selection-end-column="23" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="382">
-          <caret line="77" column="47" selection-start-line="77" selection-start-column="47" selection-end-line="77" selection-end-column="47" />
+        <state relative-caret-position="1003">
+          <caret line="121" column="30" selection-start-line="121" selection-start-column="30" selection-end-line="121" selection-end-column="30" />
           <folding>
-            <element signature="e#6642#6643#0" expanded="true" />
-            <element signature="e#6675#6676#0" expanded="true" />
+            <element signature="method#onCreate#0;class#MainActivity#0" />
+            <element signature="method#checkAndRequestPermissions#0;class#MainActivity#0" />
+            <element signature="method#onRequestPermissionsResult#0;class#MainActivity#0" />
+            <element signature="method#onReturn#0;class#MainActivity#0" />
+            <element signature="method#altStart#0;class#MainActivity#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
+      <provider editor-type-id="android-designer2" />
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1105">
+          <caret line="65" column="21" lean-forward="true" selection-start-line="65" selection-start-column="21" selection-end-line="65" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DemoBaseActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1734">
+          <caret line="118" column="16" lean-forward="true" selection-start-line="118" selection-start-column="16" selection-end-line="118" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4012">
-          <caret line="88" column="38" lean-forward="true" selection-start-line="88" selection-start-column="38" selection-end-line="88" selection-end-column="38" />
+        <state relative-caret-position="2159">
+          <caret line="314" column="21" selection-start-line="314" selection-start-column="21" selection-end-line="314" selection-end-column="21" />
+          <folding>
+            <element signature="e#4902#5119#0" />
+            <element signature="e#5126#5420#0" />
+            <element signature="e#5427#5645#0" />
+            <element signature="class#7469:7893" />
+            <element signature="method#onItemSelected#0;class#7469:7893" />
+            <element signature="method#onNothingSelected#0;class#7469:7893" />
+            <element signature="e#10822#10925#0" />
+            <element signature="e#10932#10973#0" />
+            <element signature="e#10932#11781#0" />
+            <element signature="class#11358:11773" />
+            <element signature="method#onSuccess#0;class#11358:11773" />
+            <element signature="method#onFailure#0;class#11358:11773" />
+            <element signature="e#11788#12006#0" />
+            <element signature="e#12013#12478#0" />
+            <element signature="e#12112#12203#0" />
+            <element signature="e#12224#12268#0" />
+            <element signature="e#12485#13672#0" />
+            <element signature="e#12703#13666#0" />
+            <element signature="e#13099#13380#0" />
+            <element signature="e#17300#18224#0" />
+            <element signature="e#17651#18218#1" />
+            <element signature="e#17728#17943#1" />
+            <element signature="e#17973#18208#1" />
+            <element signature="e#19311#19720#1" />
+            <element signature="e#19365#19708#0" />
+            <element signature="e#19742#20219#1" />
+            <element signature="e#19796#20207#0" />
+            <element signature="e#20232#21855#0" />
+            <element signature="e#20888#21847#0" />
+            <element signature="e#21862#22833#0" />
+            <element signature="e#22525#22825#0" />
+            <element signature="e#22840#24393#0" />
+            <element signature="e#23140#23781#1" />
+            <element signature="e#23263#23492#1" />
+            <element signature="e#23522#23771#1" />
+            <element signature="e#23909#24220#1" />
+            <element signature="e#24049#24138#1" />
+            <element signature="e#24270#24387#1" />
+            <element signature="e#24401#25061#0" />
+            <element signature="e#24581#25055#1" />
+            <element signature="e#24622#24990#1" />
+            <element signature="e#24691#24973#0" />
+            <element signature="e#25068#25849#0" />
+            <element signature="e#25187#25843#1" />
+            <element signature="e#25241#25831#0" />
+            <element signature="e#25317#25715#1" />
+            <element signature="e#25353#25655#0" />
+            <element signature="e#25856#26580#0" />
+            <element signature="e#25985#26574#1" />
+            <element signature="e#26239#26562#0" />
+            <element signature="e#26313#26471#1" />
+            <element signature="e#26587#27994#0" />
+            <element signature="e#26978#27447#1" />
+            <element signature="class#27080:27435" />
+            <element signature="method#onFailure#0;class#27080:27435" />
+            <element signature="e#27469#27988#1" />
+            <element signature="class#27581:27976" />
+            <element signature="method#onFailure#0;class#27581:27976" />
+            <element signature="e#28001#29383#0" />
+            <element signature="e#29390#31127#0" />
+            <element signature="e#29783#31099#1" />
+            <element signature="e#31134#33123#0" />
+            <element signature="e#31823#32013#1" />
+            <element signature="e#32098#32298#1" />
+            <element signature="e#32513#33117#1" />
+            <element signature="e#32568#33107#1" />
+            <element signature="class#32681:33091" />
+            <element signature="method#onFailure#0;class#32681:33091" />
+            <element signature="e#33130#33726#0" />
+            <element signature="e#33281#33720#1" />
+            <element signature="e#33437#33710#1" />
+            <element signature="e#33736#34901#0" />
+            <element signature="e#33878#34054#1" />
+            <element signature="class#34117:34893" />
+            <element signature="method#onFailure#0;class#34117:34893" />
+            <element signature="method#onProgress#0;class#34117:34893" />
+            <element signature="method#onRateUpdate#0;class#34117:34893" />
+            <element signature="method#onSuccess#0;class#34117:34893" />
+            <element signature="e#34908#36245#0" />
+            <element signature="e#35074#36239#1" />
+            <element signature="e#35307#36229#1" />
+            <element signature="e#35416#36213#0" />
+            <element signature="e#35510#36075#1" />
+            <element signature="e#35699#36051#0" />
+            <element signature="e#36252#36446#0" />
+            <element signature="e#36453#36611#0" />
+            <element signature="e#36618#36985#0" />
+            <element signature="e#52680#52842#0" expanded="true" />
+            <element signature="e#52841#52842#0" expanded="true" />
+            <element signature="e#36992#37180#0" />
+            <element signature="e#37084#37174#1" />
+            <element signature="e#37187#37826#0" />
+            <element signature="e#37345#37764#1" />
+            <element signature="e#37459#37499#0" />
+            <element signature="e#37538#37752#0" />
+            <element signature="e#37836#38187#0" />
+            <element signature="e#53891#54053#0" expanded="true" />
+            <element signature="e#54052#54053#0" expanded="true" />
+            <element signature="e#38194#38370#0" />
+            <element signature="e#38280#38364#1" />
+            <element signature="e#38377#38708#0" />
+            <element signature="e#38623#38702#1" />
+            <element signature="e#38717#38975#0" />
+            <element signature="e#38817#38967#0" />
+            <element signature="e#38982#39438#0" />
+            <element signature="e#39445#40155#0" />
+            <element signature="e#39498#39561#0" />
+            <element signature="e#39609#39717#0" />
+            <element signature="e#39739#39912#0" />
+            <element signature="e#39951#40063#0" />
+            <element signature="e#40162#40884#0" />
+            <element signature="e#40215#40878#0" />
+            <element signature="e#40289#40697#0" />
+            <element signature="e#40744#40868#0" />
+            <element signature="e#40891#41995#0" />
+            <element signature="e#40953#41989#0" />
+            <element signature="e#41036#41979#1" />
+            <element signature="e#41074#41773#0" />
+            <element signature="e#41442#41755#1" />
+            <element signature="e#41828#41965#0" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -39,8 +39,9 @@
         android:id="@+id/buttonStart"
         android:layout_width="128dp"
         android:layout_height="64dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="115dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="130dp"
+        android:onClick="altStart"
         android:text="START"
         android:textSize="20sp" />
 

@@ -119,7 +119,7 @@ public class DemoBaseActivity extends FragmentActivity implements SurfaceTexture
         super.onDestroy();
     }
     
-    private void showToast(final String msg) {
+    private void writeToast(final String msg) {
         runOnUiThread(new Runnable() {
             public void run() {
                 Toast.makeText(DemoBaseActivity.this, msg, Toast.LENGTH_SHORT).show();
