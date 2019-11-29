@@ -8,18 +8,21 @@ font = cv2.FONT_HERSHEY_COMPLEX
 while True:
     _, frame = cap.read()
     
-    crop_frame = frame[140:400, 70:550] #rajataan kuva-alue
-    
+    crop_frame = frame[200:400, 70:550] #rajataan kuva-alue 140
+    #blurred = cv2.GaussianBlur(crop_frame, (5, 5), 0)
     hsv_frame = cv2.cvtColor(crop_frame, cv2.COLOR_BGR2HSV) #muunnetaan BGR varit HSV vareiksi
     
-    low_red = np.array([161, 50, 0]) #aseteaan varin alaraja-arvo 
+    low_red = np.array([161, 100, 0]) #aseteaan varin alaraja-arvo 
     high_red = np.array([255, 255, 255]) #asetetaan varin ylaraja-arvo
     red_mask = cv2.inRange(hsv_frame, low_red, high_red) #etsitaan maaritelty vari kuvasta
     red = cv2.bitwise_and(crop_frame, crop_frame, mask = red_mask) #poistetaan muut paitsi haluttu vari kuvasta
     
+    #blurred = cv2.GaussianBlur(red, (5, 5), 0)
+    #gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
+    #thresh = cv2.threshold(gray, 40, 255, cv2.THRESH_BINARY)[1]
     gray = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY) #muutetaan varit harmaaksi
-    blurred = cv2.GaussianBlur(gray, (11, 11), 0) #sumennetaan kuvaa
-    thresh = cv2.threshold(blurred, 5, 255, cv2.THRESH_BINARY)[1] #luodaan mustavalko kuva raja-arvon ylittavista alueista
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0) #sumennetaan kuvaa
+    thresh = cv2.threshold(gray, 5, 255, cv2.THRESH_BINARY)[1] #luodaan mustavalko kuva raja-arvon ylittavista alueista
     kernel = np.ones((5, 5), np.uint8) #luodaan ykkosilla taytetty array
     mask = cv2.erode(thresh, kernel) #kutistetaan kohdetta
     
@@ -32,28 +35,28 @@ while True:
         y = approx.ravel()[1]
         
         if area > 400: #maaritetaan muotojen minimikoko
-            cv2.drawContours(crop_frame, [approx], 0, (0, 255, 0), 2) #piirretaan muodon aariviivat kuvaan ja maaritellaan sen vari
+            #cv2.drawContours(crop_frame, [approx], 0, (0, 255, 0), 2) #piirretaan muodon aariviivat kuvaan ja maaritellaan sen vari
             
             #tunnisteaan muodot
             if len(approx) == 3:
-                cv2.putText(crop_frame, "Triangle", (x, y), font, 1, (0, 255, 0)) #lisataan teksti ruudulle ja maaritellaan sen vari
-                TuoteID = 1 #annetaan muodolle haluttu nimi tai merkki
+                #cv2.putText(crop_frame, "Triangle", (x, y), font, 1, (0, 255, 0)) #lisataan teksti ruudulle ja maaritellaan sen vari
+                TuoteID = 2 #annetaan muodolle haluttu nimi tai merkki
                 print(TuoteID)
             elif len(approx) == 4:
-                cv2.putText(crop_frame, "Rectangle", (x, y), font, 1, (0, 255, 0))
-                TuoteID = 2
+                #cv2.putText(crop_frame, "Rectangle", (x, y), font, 1, (0, 255, 0))
+                TuoteID = 0
                 print(TuoteID)
             elif len(approx) == 5:
-                cv2.putText(crop_frame, "Pentagon", (x, y), font, 1, (0, 255, 0))
+                #cv2.putText(crop_frame, "Pentagon", (x, y), font, 1, (0, 255, 0))
                 TuoteID = 3
                 print(TuoteID)
-            elif 7 < len(approx) < 10:
-                cv2.putText(crop_frame, "Circle", (x, y), font, 1, (0, 255, 0))
-                TuoteID = 4
+            elif 7 < len(approx):
+                #cv2.putText(crop_frame, "Circle", (x, y), font, 1, (0, 255, 0))
+                TuoteID = 1
                 print(TuoteID)
       
     #avataan kameran kuvaa nayttava ikkuna 
-    cv2.imshow("Frame", crop_frame)
+    #cv2.imshow("Frame", crop_frame)
     #cv2.imshow("Red", red)
     #cv2.imshow("Gray", gray)
     #cv2.imshow("Blurred", blurred)
