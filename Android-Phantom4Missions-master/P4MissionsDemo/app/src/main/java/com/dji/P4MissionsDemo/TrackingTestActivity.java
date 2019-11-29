@@ -195,7 +195,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         else{
             i = 0.0f;
         }
-        setResultToToast("i:"+i);
+       // setResultToToast("i:"+i);
         return i;
     }
     TextView textScreen;
@@ -217,52 +217,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         });
         */
 
-      /*
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                isDrawingRect = false;
-                downX = event.getX();
-                downY = event.getY();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (calcManhattanDistance(downX, downY, event.getX(), event.getY()) < MOVE_OFFSET && !isDrawingRect) {
-                trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
-
-                mSendRectIV.setVisibility(View.VISIBLE);
-                int l = (int) (downX < event.getX() ? downX : event.getX());
-                int t = (int) (downY < event.getY() ? downY : event.getY());
-                int r = (int) (downX >= event.getX() ? downX : event.getX());
-                int b = (int) (downY >= event.getY() ? downY : event.getY());
-                mSendRectIV.setX(l);
-                mSendRectIV.setY(t);
-                mSendRectIV.getLayoutParams().width = r - l;
-                mSendRectIV.getLayoutParams().height = b - t;
-                mSendRectIV.requestLayout();
-                break;
-
-            case MotionEvent.ACTION_UP:
-            */
-
-        // float downX = 0.2f;
-        // float downY = 0.2f;
-
-        //  if (calcManhattanDistance(downX, downY, 0.5f, 0.5f) < MOVE_OFFSET && !isDrawingRect) {
-
-
-        //  trackingIndex = getTrackingIndex(downX, downY, targetViewHashMap);
-        //  DJILog.d(TAG,trackingIndex);
         trackingIndex = INVALID_INDEX;
-        // mSendRectIV.setVisibility(View.VISIBLE);
-        //mSendRectIV.setX(0.3f);
-        // mSendRectIV.setY(0.7f);
-        //mSendRectIV.getLayoutParams().width = (int)0.2;
-        // mSendRectIV.getLayoutParams().height = (int)0.6;
-        //    mSendRectIV.requestLayout();
 
-
-
-        //RectF rectF = getActiveTrackRect(mSendRectIV);
         if (flag) {
             ret = moveX();
 
@@ -289,7 +245,6 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     if (error == null) {
 
                     }
-                    //stopTimer();
                     setResultToToast("Start Tracking: " + (error == null
                             ? "Success"
                             : error.getDescription()));
@@ -299,6 +254,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
             clearCurrentView();
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -370,7 +326,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
             case R.id.confirm_btn:
-                flag = false;
+              //  flag = false;
                 boolean isAutoTracking =
                         isAutoSensingSupported &&
                                 (mActiveTrackOperator.isAutoSensingEnabled() ||
@@ -408,14 +364,14 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 break;
 
             case R.id.tracking_stop_btn:
-                stopTimer();
                 trackingIndex = INVALID_INDEX;
+
                 flag = true;
                 mActiveTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
 
                     @Override
                     public void onResult(DJIError error) {
-                        setResultToToast(error == null ? "Stop track Success!" : error.getDescription());
+                        setResultToToast(error == null ? "Stop track button pressed!" : error.getDescription());
                     }
                 });
 
@@ -431,6 +387,23 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                         }
                     }
                 });
+/*
+                mActiveTrackOperator.startTracking(mActiveTrackMission, new CommonCallbacks.CompletionCallback() {
+                    @Override
+                    public void onResult(DJIError error) {
+                        if (error == null) {
+
+                        }
+                        setResultToToast("Start Tracking: " + (error == null
+                                ? "Success"
+                                : error.getDescription()));
+
+                    }
+                });
+                */
+
+                clearCurrentView();
+
                 break;
 
             case R.id.reject_btn:
@@ -605,7 +578,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     Utils.addLineToSB(sb, "Target State", subjectSensingState.getState().name());
                     isAutoSensingSupported = true;
                     if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
-                        flag = false;
+                        //flag = false;
                         trackingIndex = INVALID_INDEX;
                         setResultToToast("Tracking success");
 
@@ -641,99 +614,46 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 Utils.addLineToSB(sb, "Target Type", trackingState.getType().name());
                 Utils.addLineToSB(sb, "Target State", trackingState.getState().name());
 
-
-                    /*
-                    if(trackingState.getState().name()== "WAITING_FOR_CONFIRMATION"){
-                       // trackingIndex = INVAVID_INDEX;
-                        //mActiveTrackOperator.acceptConfirmation(null);
-                        flag = false;
-
-                    }
-                    if(trackingState.getState().name()== "FINDING_TRACKED_TARGET"){
-                        //mActiveTrackOperator.acceptConfirmation(null);
-                        flag = false;
-                    }
-
-                    */
-                //  setResultToToast("Type:" + trackingState.getType().name());
-
                 // textScreen = findViewById(R.id.textView2);
                 // runOnUiThread(()-> textScreen.setText("Type:"));
                 if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
-                    flag = false;
+                    //flag = false;
                     trackingIndex = INVALID_INDEX;
                     setResultToToast("Tracking success");
+                    boolean isAutoTracking =
+                            isAutoSensingSupported &&
+                                    (mActiveTrackOperator.isAutoSensingEnabled() ||
+                                            mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
+                    if (isAutoTracking) {
+                        // startAutoSensingMission();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mStopBtn.setVisibility(View.VISIBLE);
+                                mRejectBtn.setVisibility(View.VISIBLE);
+                                mConfirmBtn.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    } else {
+                        mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
 
-                    mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+                            @Override
+                            public void onResult(DJIError error) {
+                                setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                            }
+                        });
 
-                        @Override
-                        public void onResult(DJIError error) {
-                            setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
-                        }
-                    });
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mStopBtn.setVisibility(View.VISIBLE);
-                            mRejectBtn.setVisibility(View.VISIBLE);
-                            mConfirmBtn.setVisibility(View.INVISIBLE);
-                        }
-                    }); mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
-
-                        @Override
-                        public void onResult(DJIError error) {
-                            setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
-                        }
-                    });
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mStopBtn.setVisibility(View.VISIBLE);
-                            mRejectBtn.setVisibility(View.VISIBLE);
-                            mConfirmBtn.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                        /*
-
-                        boolean isAutoTracking =
-                                isAutoSensingSupported &&
-                                        (mActiveTrackOperator.isAutoSensingEnabled() ||
-                                                mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
-                        if (isAutoTracking) {
-                            startAutoSensingMission();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStopBtn.setVisibility(View.VISIBLE);
-                                    mRejectBtn.setVisibility(View.VISIBLE);
-                                    mConfirmBtn.setVisibility(View.INVISIBLE);
-                                }
-                            });
-                        } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mStopBtn.setVisibility(View.VISIBLE);
+                                mRejectBtn.setVisibility(View.VISIBLE);
+                                mConfirmBtn.setVisibility(View.INVISIBLE);
+                            }
+                        });
 
 
-                           // trackingIndex = INVAVID_INDEX;
-                            mActiveTrackOperator.acceptConfirmation(new CompletionCallback() {
-
-                                @Override
-                                public void onResult(DJIError error) {
-                                    setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
-                                }
-                            });
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStopBtn.setVisibility(View.VISIBLE);
-                                    mRejectBtn.setVisibility(View.VISIBLE);
-                                    mConfirmBtn.setVisibility(View.INVISIBLE);
-                                }
-                            });
-
-                        }
-                    */
+                    }
                 }
                 else{
                     flag = true;
