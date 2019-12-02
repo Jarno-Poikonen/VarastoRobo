@@ -30,7 +30,7 @@ def udp_broadcast():
 def form_NCM(devType,devID,cordX,cordY,direction,devState):
     content_length = 6
     message = bytearray([2])
-    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray((content_length).to_bytes(4, 'little')))
     message.extend(bytearray([devType,devID,cordX,cordY,direction,devState]))
     
     return message
@@ -41,7 +41,7 @@ def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum)
         content_length = +1
         
     message = bytearray([4])
-    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray((content_length).to_bytes(4, 'little')))
     message.extend(bytearray([commandNum,errorCode,atom,cordX,cordY,direction,devState]))
     if packetNum != no_packet:
         message.append(packetNum)
