@@ -8,15 +8,6 @@ masterIp = None
 deviceID = None
 no_packet = 128
 
-def count_length(message, length=4):   
-    returnVar = bytearray([])
-    returnVar.append(message)
-    
-    for x in range(length-1):
-        returnVar.append(0)
-    
-    return returnVar
-
 def udp_broadcast():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
@@ -37,16 +28,11 @@ def udp_broadcast():
                 waitMessage = False
 
 def form_NCM(devType,devID,cordX,cordY,direction,devState):
+    content_length = 6
     message = bytearray([2])
-    mesEndPart = bytearray([devType,devID,cordX,cordY,direction,devState])
-    length = count_length(len(mesEndPart))
+    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray([devType,devID,cordX,cordY,direction,devState]))
     
-    for i in length:
-        message.append(i)
-    
-    for i in mesEndPart:
-        message.append(i)
-        
     return message
 
 def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum):
