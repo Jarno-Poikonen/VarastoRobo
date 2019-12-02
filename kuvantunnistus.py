@@ -2,14 +2,13 @@ import cv2
 import numpy as np
 
 cap = cv2.VideoCapture(0) 
-
+     
 font = cv2.FONT_HERSHEY_COMPLEX
 
 while True:
     _, frame = cap.read()
     
-    crop_frame = frame[200:400, 70:550] #rajataan kuva-alue 140
-    #blurred = cv2.GaussianBlur(crop_frame, (5, 5), 0)
+    crop_frame = frame[160:380, 200:640] #rajataan kuva-alue 140
     hsv_frame = cv2.cvtColor(crop_frame, cv2.COLOR_BGR2HSV) #muunnetaan BGR varit HSV vareiksi
     
     low_red = np.array([161, 100, 0]) #aseteaan varin alaraja-arvo 
@@ -17,9 +16,6 @@ while True:
     red_mask = cv2.inRange(hsv_frame, low_red, high_red) #etsitaan maaritelty vari kuvasta
     red = cv2.bitwise_and(crop_frame, crop_frame, mask = red_mask) #poistetaan muut paitsi haluttu vari kuvasta
     
-    #blurred = cv2.GaussianBlur(red, (5, 5), 0)
-    #gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
-    #thresh = cv2.threshold(gray, 40, 255, cv2.THRESH_BINARY)[1]
     gray = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY) #muutetaan varit harmaaksi
     blurred = cv2.GaussianBlur(gray, (5, 5), 0) #sumennetaan kuvaa
     thresh = cv2.threshold(gray, 5, 255, cv2.THRESH_BINARY)[1] #luodaan mustavalko kuva raja-arvon ylittavista alueista
@@ -65,9 +61,9 @@ while True:
     #cv2.imshow("Red mask", red_mask)
     
     #odotetaan esc nappaimen painamista scriptin lopettamiseksi
-    key = cv2.waitKey(1)
-    if key == 27:
-        break
+    #key = cv2.waitKey(1)
+    #if key == 27:
+     #   break
 
 cap.release()
 cv2.destroyAllWindows()
