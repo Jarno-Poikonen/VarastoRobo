@@ -2,27 +2,17 @@
 import socket
 import time
 import threading
+import Clientohjattu
 
-masterIp = None
-systemStop = False
+masterIp = None 
 deviceID = None
-
-def count_length(message, length=4):
-    
-    returnVar = bytearray([])    
-    returnVar.append(message)
-    
-    for x in range(length-1):
-        returnVar.append(0)
-    
-    return returnVar
+no_packet = 128
 
 def udp_broadcast():
-    #Thread for broadcast messages
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
     sock.bind(("", 1732))
-    waitMessage = True
+    waitMessage = False
     while waitMessage == True:
         message, masterAddress = sock.recvfrom(512)
         message = bytearray(message)
@@ -35,38 +25,34 @@ def udp_broadcast():
                 global masterIp
                 masterIp = str(masterAddress[0])
                 print(masterIp)
-                #waitMessage = False
-            
-            else:
-                systemStop = True
+                waitMessage = False
 
-def form_NCM(devType,devID,devX,devY,direction,devState):
+def form_NCM(devType,devID,cordX,cordY,direction,devState):
+    content_length = 6
     message = bytearray([2])
-    mesEndPart = bytearray([devType,devID,devX,devY,direction,devState])
-    length = count_length(len(mesEndPart))
+    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray([devType,devID,cordX,cordY,direction,devState]))
     
-    for i in length:
-        message.append(i)
-    
-    for i in mesEndPart:
-        message.append(i)
-        
     return message
 
-def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,deviceState):
+def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum):
+    content_length = 7
+    if packetNum != no_packet:
+        content_length = +1
+        
     message = bytearray([4])
-    mesEndPart = bytearray([commandNum,errorCode,atom,cordX,cordY,direction,deviceState])
-    length = count_length(len(mesEndPart))
-    
-    for i in length:
-        message.append(i)
-    
-    for i in mesEndPart:
-        message.append(i)
+    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray([commandNum,errorCode,atom,cordX,cordY,direction,devState]))
+    if packetNum != no_packet:
+        message.append(packetNum)
         
     return message
-
-if __name__ == "__main__":    
+    
+def main():
+    systemStop = 0
+    deviceState = 0
+    latestDir = 0
+    carriedPacket = no_packet
     broadcast_thread = threading.Thread(target=udp_broadcast,args=())
     broadcast_thread.start()
 
@@ -75,25 +61,60 @@ if __name__ == "__main__":
         #time.sleep(1)
         pass
     
-    print("IP saatu")
+    #print("Ip saatu")
     masterSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     masterSocket.connect((masterIp, 1739))
-    message = form_NCM(2,255,0,0,0,1)
+    #print("Yhteys muodostettu")
+    #systemStatus = 1
+    message = form_NCM(2,255,0,0,0,deviceState)
+    #print(message)
     masterSocket.send(message)
     
-    while not systemStop:
+    while systemStop == 0:
         fromMaster = masterSocket.recv(512)
-        
+        print("Masterin vastaus",fromMaster)
+
         #SCM
         if fromMaster[0] == 3:
             deviceID = fromMaster[6]
-            #print("%s %s %s %s %s %s %s"% tuple(fromMaster))
-            #print(deviceID)
-            reply = form_WFM(3,0,1,0,0,0,1)
+            deviceState = 1
+            pos, orientation = Clientohjattu.PosOri()
+            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
             masterSocket.send(reply)
-            #time.sleep(1)
-            
+            #print(reply)
+            print("SCM vastattu")
+
+        #CCM
+        elif fromMaster[0] == 5:
+            print("Vastaanotettu CCM")
+            pos, orientation = Clientohjattu.PosOri()
+            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
+            masterSocket.send(reply)
+            systemStop = 1
+
         #SQM    
-        #if fromMaster[0] == 6:
+        elif fromMaster[0] == 6:
+            pos, orientation = Clientohjattu.PosOri()
+            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
+            masterSocket.send(reply)
+            print("SQM vastattu")
+
+        #MCM
+        elif fromMaster[0] == 13 and deviceState == 1:
+            direction = fromMaster[5]
+            Clientohjattu.Liiku(direction)
+            pos, orientation = Clientohjattu.PosOri()
+            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
+            masterSocket.send(reply)
             
-            
+        else:
+            print("Komentoa ei tueta/tunnistettu")
+            pos, orientation = Clientohjattu.PosOri()
+            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
+            masterSocket.send(reply)
+    
+    masterSocket.close()
+    print("Yhteys katkaistiin")   
+
+if __name__ == "__main__":    
+    main()

@@ -19,16 +19,20 @@ def lahella():
             if etaisyys.read_mm() > 300:
                 break
                 
-sensor_readings = None
+#sensor_readings = None #mahollisesti turha
 
-Position = [0,0]
-Orientation = 0
+Position = [0,0]    #Koordinaatita määritetään leveys,korkeus järjestyksessä
+Orientation = 0     #Suunta 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
+#def orientation()
+    
+#def position()
+
 def Left():
     servo.rotate_servo(179)
     gpg.blinker_on(1)
     lahella()
                 
-    gpg.drive_cm(6)
+    #gpg.drive_cm(6)
     gpg.turn_degrees(-90)
     
     gpg.blinker_off(1)
@@ -38,7 +42,7 @@ def Right():
     gpg.blinker_on(0)
     lahella()
 
-    gpg.drive_cm(6)
+    #gpg.drive_cm(6)
     gpg.turn_degrees(90)
 
     gpg.blinker_off(0)
@@ -65,7 +69,6 @@ except:
 my_linefollower.read_position()
 my_linefollower.read_position()
 
-#risteykset = [0, 1, 0, None, None, 1, None, None, None, 1, 0, None, 2, None, 1, 0, None, None, None, 0, None, None, 1, 0, 1, 2]
 vasen = False
 oikea = False
 Go = False
@@ -91,10 +94,13 @@ try:
                 print("Risteys vasemmalle.")
             elif oikea:
                 print("Risteys oikealle.")
+            vasen = False
+            oikea = False
             
             gpg.stop()
-            PosOri()
-            suunta = int(input("Suunta (vasen:0, oikea:1, ympäri:2 suoraan: 4):"))
+            gpg.drive_cm(6) #Ajaa risteyksestä hiukan eteenpäin, tarpeellinen pakettia noutaessa.
+            PosOri()        #Tulostaa Positionin ja Orientaation
+            suunta = int(input("Suunta (vasen:0, oikea:1, ympäri:2, parkkiin:3, suoraan: 4):"))
             
             if(suunta == 4): #Suoraan
                 suunta = None
@@ -102,20 +108,24 @@ try:
             if(suunta is None):
                 lahella()
                 gpg.drive_cm(3)
-                ##Position[1] = Position[1]+1
+                #Position[1] = Position[1]+1
                 
             elif(suunta == 2): #Täyskäännös
                 Around()
+            
+            elif(suunta == 3): #Täyskäännös parkkiin
+                print("Parking");
+                Around()
+                PosOri()
+                input("Parked. Push enter to go")
 
             elif(suunta == 0): #Vasen
                 Left()
                 
-                
             elif(suunta == 1): #Oikea
                 Right()
 
-            vasen = False
-            oikea = False
+            
             
             
         if my_linefollower.read_position() == 'center':
@@ -129,6 +139,8 @@ try:
             gpg.right()
         if my_linefollower.read_position() == 'white':
             gpg.stop()
+            input("HJALP, I'm Lost!!!")
+            gpg.drive_cm(-6)
             #gpg.turn_degrees(180)
             
             
