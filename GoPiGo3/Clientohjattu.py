@@ -176,8 +176,10 @@ def Eteen():
                 gpg.right()
             if my_linefollower.read_position() == 'white':
                 gpg.stop()
-                input("HJALP, I'm Lost!!!")
-                gpg.drive_cm(-6) 
+                arvo = 9
+                print("HJALP, I'm Lost!!!")
+                break
+                #gpg.drive_cm(-6) 
                 
         gpg.stop()
     except Exception:
