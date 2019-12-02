@@ -14,6 +14,7 @@ import esteentunnistus
 Este = False
 vasen = False
 oikea = False
+
 Aloitus = [0,0]     #Aloituspisteen asetus muuttujaan. Koordinaatit järjestyksessä x,y
 position = Aloitus.copy() #Kopioidaan aloituspisteen arvo position tracking muuttujaan
 orientation = 0     #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
@@ -54,85 +55,76 @@ def PosOri():
     print("Orientation:",orientation)
     return (position, orientation)
 
-###### Käytetään konsolidebuggauksessa näyttämään laitteen suunta
-def Orientation(): 
-    if(orientation == 0): #Oikea
-        print("East")
-    elif(orientation == 1): #Ylös
-        print("North")
-    elif(orientation == 2): #Vasen
-        print("West")
-    elif(orientation == 3): #Alas
-        print("South")
-    else: #Lost
-        print("Lost")
+######
+def Position(suunta):
+    if(suunta == 0): #Suoraan
+        position[0] = position[0] + 1
+    
+    elif(suunta == 1): #Vasen
+        position[1] = position[1] + 1
 
+    elif(suunta == 2): #Täyskäännös
+        position[0] = position[0] - 1
+
+    elif(suunta == 3): #Oikea
+        position[1] = position[1] - 1
 ######
 def Turn(suunta):    #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
     global orientation
     global position
-    #Orientation()
-    print(suunta)
+    #print(suunta)
     if(orientation == 0): #Suunta Itään
         if(suunta == 0): #Suoraan
-            position[0] = position[0] + 1
+            pass
         
         elif(suunta == 1): #Vasen
             Left()
-            position[1] = position[1] + 1
     
         elif(suunta == 2): #Täyskäännös
             Around()
-            position[0] = position[0] - 1
 
         elif(suunta == 3): #Oikea
             Right()
-            position[1] = position[1] - 1
+
     elif(orientation == 1): #Suunta Pohjoiseen
         if(suunta == 1): #Suoraan
-            position[1] = position[1] + 1
+            pass
         
         elif(suunta == 2): #Vasen
             Left()
-            position[0] = position[0] - 1
     
         elif(suunta == 3): #Täyskäännös
             Around()
-            position[1] = position[1] - 1
 
         elif(suunta == 0): #Oikea
             Right()
-            position[0] = position[0] + 1
+            
     elif(orientation == 2): #Suunta Länteen
         if(suunta == 2): #Suoraan
-            position[0] = position[0] - 1
+            pass
         
         elif(suunta == 3): #Vasen
             Left()
-            position[1] = position[1] - 1
     
         elif(suunta == 0): #Täyskäännös
             Around()
-            position[0] = position[0] + 1
 
         elif(suunta == 1): #Oikea
             Right()
-            position[1] = position[1] + 1
+
     elif(orientation == 3): #Suunta Etelään
         if(suunta == 3): #Suoraan
-            position[1] = position[1] - 1
+            pass
         
         elif(suunta == 0): #Vasen
             Left()
-            position[0] = position[0] + 1
     
         elif(suunta == 1): #Täyskäännös
             Around()
-            position[1] = position[1] + 1
 
         elif(suunta == 2): #Oikea
             Right()
-            position[0] = position[0] - 1
+
     orientation = suunta
 
 ######
@@ -197,6 +189,7 @@ def Liiku(suunta):
     Este = esteentunnistus.lahella()
     if(Este == False):
         Eteen()
+        Position(suunta)
     else:
         print("Este havaittu suunnassa: ",suunta)
     if(position == Aloitus):
