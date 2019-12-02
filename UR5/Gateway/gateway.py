@@ -3,6 +3,7 @@ import socket
 from time import sleep
 from datetime import datetime
 import threading
+import RPi.GPIO as GPIO
 
 MasterIP = None
 MasterPort = None
@@ -28,6 +29,12 @@ def Laske_pituus(viesti, pituus=4):
 
 # Säie/funktio joka kuuntelee broadcast viestejä.
 def Broadcast_communication():
+	
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(26, GPIO.OUT)
+	
+	GPIO.output(26, GPIO.LOW)
+	
 	# Luodaan socket broadcastia varten.
 	Lokiin("Broadcast", "Aloitus")
 	bSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,11 +56,6 @@ def Broadcast_communication():
 			global MasterPort 
 			MasterIP, MasterPort = master_address
 			MasterPort = 1739
-	'''
-	# Luodaan socket hätäseis toiminnallisuutta varten
-	SEISsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	SEISsocket.bind(("192.168.100.11", 30001))
-	SEISsocket.listen()
 	
 	# Luetaan broadcast viestejä ja reagoidaan hätäseis käskyyn.
 	while True:
@@ -64,11 +66,11 @@ def Broadcast_communication():
 			if system_status != 1:
 				global seis
 				seis = True
-				SEISyhteys, SEISosoite = SEISsocket.accept()
-				SEISyhteys.sendall("seis")
-				SEISyhteys.close()
+				GPIO.output(26, GPIO.HIGH)
+				sleep(5)
+				GPIO.output(26, GPIO.LOW)
+				GPIO.cleanup()
 				break
-	'''
 
 # Luodaan WFM viesti annetuista parametreista.
 def Luo_NCM(tyyppi, id, tila):
