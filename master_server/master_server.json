@@ -8,7 +8,7 @@
 	"debug_no_emergency_listen" : false,
 	"debug_no_broadcast" : false,
 	"master_device_id" : 42,
-	"initial_system_status" : 0,
+	"initial_system_status" : 1,
 	"min_temporal_id" : 100,
 	"max_temporal_id" : 199,
 	"static_map" : [

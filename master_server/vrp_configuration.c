@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.5.0 2019-11-26 by Santtu Nyman.
 */
 
 #include <Winsock2.h>

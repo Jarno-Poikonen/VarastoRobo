@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.3 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 0.5.0 2019-11-26 by Santtu Nyman.
 */
 
 #ifndef VRP_MASTER_SERVER_BASE_H
@@ -23,7 +23,6 @@ extern "C" {
 #include "vrp_configuration.h"
 #include "jsonpl.h"
 #include <stdio.h>
-#include "vrp_test_client.h"
 #include "ntdll_time.h"
 #include "vrp_log.h"
 #include "vrp_ip_addresses_info.h"
@@ -36,6 +35,7 @@ extern "C" {
 #define VRP_MAX_PICKUP_LOCATION_COUNT 128
 #define VRP_MAX_PRODUCT_ORDER_COUNT 128
 #define VRP_MAX_DEVICE_COUNT 32
+#define VRP_MAX_IMMEDIATE_PATH_LENGTH 8
 #define VRP_LOG_ENTRY_BUFFER_SIZE 0x400
 #define VRP_DEVICE_IO_MEMORY_SIZE 0x100000
 #define VRP_IO_IDLE 0
@@ -55,8 +55,9 @@ extern "C" {
 #define VRP_CONNECTION_REMOTE_COMMAND 8
 #define VRP_ORDER_NOT_AVAILABLE 0
 #define VRP_ORDER_IN_STORAGE 1
-#define VRP_ORDER_ON_MOVE 2
-#define VRP_ORDER_FINAL_WAITING 3
+#define VRP_ORDER_PICKUP 2
+#define VRP_ORDER_ON_MOVE 3
+#define VRP_ORDER_FINAL_WAITING 4
 
 typedef struct vrp_device_t
 {
@@ -89,6 +90,16 @@ typedef struct vrp_device_t
 	DWORD io_transfered;
 	WSABUF io_buffer;
 	OVERLAPPED io_result;
+	size_t immediate_path_length;
+	struct
+	{
+		uint8_t x;
+		uint8_t y;
+	} immediate_path[VRP_MAX_IMMEDIATE_PATH_LENGTH];
+#ifndef _NDEBUG
+	uint8_t debug_controling_device_id;
+	int debug_priority;
+#endif
 } vrp_device_t;
 
 typedef struct vrp_map_state_t
@@ -173,6 +184,7 @@ typedef struct vrp_server_t
 	size_t log_entry_buffer_size;
 	size_t device_io_buffer_size;
 	size_t total_allocation_size;
+	int broadcast_immediately;
 	DWORD last_broadcast_time;
 	int broadcast_io_state;
 	uint8_t* broadcast_io_memory;
@@ -193,9 +205,18 @@ typedef struct vrp_server_t
 #ifndef _NDEBUG
 	vrp_device_t* debug_device_table[VRP_MAX_DEVICE_COUNT];
 #endif
+#ifndef _NDEBUG
+	vrp_product_order_t* debug_product_order_table[VRP_MAX_PRODUCT_ORDER_COUNT];
+#endif
 } vrp_server_t;
 
 uint64_t vrp_get_valid_device_entries(vrp_server_t* server);
+
+int vrp_calculate_device_movement_priority(vrp_server_t* server, uint8_t device_id);
+
+int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y);
+
+int vrp_remove_block(vrp_server_t* server, uint8_t x, uint8_t y);
 
 uint32_t vrp_create_product_order_number(vrp_server_t* server, uint8_t optional_client_id);
 

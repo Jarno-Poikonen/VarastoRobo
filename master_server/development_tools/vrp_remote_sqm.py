@@ -89,7 +89,7 @@ sock.send(ncm_data)
 scm_data = bytearray(sock.recv(4096))
 #assume valid scm received
 
-rcm_data = bytearray(b'\x0E\x07\x00\x00\x00\x01\x01\x06\x00\x00\x00\x00')
+rcm_data = bytearray(b'\x0E\x07\x00\x00\x00\x64\x01\x06\x00\x00\x00\x00')
 sock.send(rcm_data)
 #assume rcm sent
 

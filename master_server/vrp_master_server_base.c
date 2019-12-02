@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.3 2019-11-20 by Santtu Nyman.
+	VarastoRobo master server version 0.5.0 2019-11-26 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
@@ -22,6 +22,67 @@ uint64_t vrp_get_valid_device_entries(vrp_server_t* server)
 	assert(set_bit_count == server->device_count);
 #endif
 	return valid_device_entry_mask;
+}
+
+int vrp_calculate_device_movement_priority(const vrp_server_t* server, uint8_t device_id)
+{
+	int device_priority = 0;
+	size_t device_index = vrp_get_device_index_by_id(server, device_id);
+	if (device_index == (size_t)~0)
+	{
+		assert(device_priority == 0);
+		return device_priority;
+	}
+	size_t order_index = vrp_get_order_index_of_transport_device(server, vrp_get_device_index_by_id(server, device_id));
+	if (order_index == (size_t)~0)
+	{
+		device_priority = (int)(0xFF - device_id);
+		assert((device_priority > 0) && (device_priority < 0x4000));
+		return device_priority;
+	}
+	device_priority = 0x4000 | ((int)(0x3F - (order_index & 0x3F)) << 8) | (int)(0xFF - device_id);
+	assert(device_priority > 0x4000);
+	return device_priority;
+}
+
+int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y)
+{
+	if (server->block_count == VRP_MAX_BLOCK_COUNT)
+		return 0;
+
+	if (!((server->map_bitmap[((size_t)y * (size_t)server->map_width + (size_t)x) / 8] >> (int)(((size_t)y * (size_t)server->map_width + (size_t)x) % 8)) & 1))
+		return 0;
+
+	for (size_t i = 0; i != server->device_count; ++i)
+		if ((server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) &&
+			(server->device_table[i].x == x) &&
+			(server->device_table[i].y == y))
+			return 0;
+
+	for (size_t i = 0; i != server->block_count; ++i)
+		if ((server->block_table[i].x == x) &&
+			(server->block_table[i].y == y))
+			return 0;
+
+	server->block_table[server->block_count].x = x;
+	server->block_table[server->block_count].y = y;
+	server->block_count++;
+	return 1;
+}
+
+int vrp_remove_block(vrp_server_t* server, uint8_t x, uint8_t y)
+{
+	for (size_t i = 0; i != server->block_count; ++i)
+		if ((server->block_table[i].x == x) &&
+			(server->block_table[i].y == y))
+		{
+			if (i != (server->block_count - 1))
+				memcpy(server->block_table + i, server->block_table + (server->block_count - 1), sizeof(*server->block_table));
+			server->block_count--;
+			return 1;
+		}
+
+	return 0;
 }
 
 uint32_t vrp_create_product_order_number(vrp_server_t* server, uint8_t optional_client_id)
@@ -50,7 +111,7 @@ int vrp_remove_product_order(vrp_server_t* server, uint32_t order_number)
 		if (server->product_order_table[i].order_number == order_number)
 		{
 			if (i != server->product_order_count - 1)
-				memcpy(server->product_order_table + i, server->product_order_table - (server->product_order_count - 1), sizeof(*server->product_order_table));
+				memcpy(server->product_order_table + i, server->product_order_table + (server->product_order_count - 1), sizeof(*server->product_order_table));
 
 			server->product_order_count--;
 			return 1;
@@ -105,6 +166,9 @@ int vrp_choose_product_order_destination(vrp_server_t* server, size_t coordinate
 
 size_t vrp_get_nonstarted_product_order_index(vrp_server_t* server)
 {
+	if (!server->product_order_count)
+		return (size_t)~0;
+
 	for (size_t i = 0; i != server->product_order_count; ++i)
 		if ((server->product_order_table[i].order_status == VRP_ORDER_IN_STORAGE) && (server->product_order_table[i].transport_device_id == VRP_ID_UNDEFINED))
 			return i;
@@ -327,12 +391,12 @@ int vrp_process_possible_emergency(vrp_server_t* server)
 {
 	int emergency_stop = 0;
 	DWORD io_transfered;
-	if (WSAGetOverlappedResult(server->emergency_sock, &server->emergency_io_result, &io_transfered, FALSE, &server->emergency_io_flags) && io_transfered)
+	if ((server->emergency_io_state == VRP_IO_READ) && WSAGetOverlappedResult(server->emergency_sock, &server->emergency_io_result, &io_transfered, FALSE, &server->emergency_io_flags) && io_transfered)
 	{
-		if (io_transfered >= 8 && server->emergency_io_memory[0] == 0x01 && server->emergency_io_memory[1] == 0x07 && server->emergency_io_memory[2] != server->id && server->emergency_io_memory[3] == 0x00)
+		if ((io_transfered >= 8) && (server->emergency_io_memory[0] == 0x01) && (server->emergency_io_memory[1] == 0x07) && !server->emergency_io_memory[2] && (server->emergency_io_memory[3] != server->id))
 		{
 			server->status = 0;
-			server->last_broadcast_time = 0;
+			server->broadcast_immediately = 1;
 			emergency_stop = 1;
 		}
 	}
@@ -363,6 +427,8 @@ size_t vrp_wait_for_io(vrp_server_t* server)
 
 	if (!server->debug_no_emergency_listen && server->emergency_io_state == VRP_IO_IDLE)
 	{
+		assert(server->emergency_io_buffer_size >= 0x200);
+
 		server->emergency_io_flags = 0;
 		server->emergency_io_buffer.buf = (CHAR*)server->emergency_io_memory;
 		server->emergency_io_buffer.len = 0x200;
@@ -658,10 +724,17 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 #endif
 	}
 
+#ifndef _NDEBUG
+	for (size_t i = 0; i != VRP_MAX_PRODUCT_ORDER_COUNT; ++i)
+		server->debug_product_order_table[i] = server->product_order_table + i;
+#endif
+
 	server->log.handle = INVALID_HANDLE_VALUE;
 	server->emergency_sock = INVALID_SOCKET;
 	server->broadcast_sock = INVALID_SOCKET;
 	server->listen_sock = INVALID_SOCKET;
+
+	server->broadcast_immediately = 0;
 
 	const BOOL broadcast_enable = TRUE;
 
@@ -863,6 +936,7 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	server->time = NtGetTickCount();
 	*server_instance = server;
 	*error_information_text = "";
+	server->broadcast_immediately = 1;
 	return 0;
 }
 
@@ -882,6 +956,8 @@ void vrp_remove_device(vrp_server_t* server, size_t i)
 
 size_t vrp_send_system_broadcast_message(vrp_server_t* server)
 {
+	assert(server->broadcast_io_buffer_size >= 0x200);
+
 	size_t map_size = (((size_t)server->map_height * (size_t)server->map_width) + 7) / 8;
 	size_t block_array_size = server->block_count * 2;
 	size_t device_array_size = server->device_count * 8;
@@ -934,6 +1010,7 @@ size_t vrp_send_system_broadcast_message(vrp_server_t* server)
 	{
 		server->broadcast_io_state = VRP_IO_WRITE;
 		server->last_broadcast_time = server->time;
+		server->broadcast_immediately = 0;
 		return packet_size;
 	}
 	else

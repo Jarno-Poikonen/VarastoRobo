@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
+	VarastoRobo master server version 0.5.0 2019-11-26 by Santtu Nyman.
 */
 
 #ifdef __cplusplus
@@ -11,6 +11,17 @@ extern "C" {
 #include <stdlib.h>
 #include "vrp_thread_group.h"
 #include "vrp_ip_addresses_info.h"
+#include "vrp_master_server_base.h"
+#include <assert.h>
+
+static struct
+{
+	int w;
+	int h;
+	uint8_t map[9 * 6];
+	volatile uint32_t blocks[9 * 6];
+	volatile uint32_t items[9 * 6];
+} vrp_test_map;
 
 typedef struct vrp_test_client_configuration_t
 {
@@ -247,19 +258,22 @@ SOCKET vrp_test_connect(uint8_t* id, uint8_t type, uint8_t x, uint8_t y, uint8_t
 	return sock;
 }
 
-void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
+void vrp_test_gopigo(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
 {
+	const uint8_t destination_x = 8;
+	const uint8_t destination_y = 2;
+
 	int random_delay = configuration->random_delays;
 
 	srand((int)(GetCurrentThreadId() >> 2));
 
-	printf("vrp_test_client %ul: starting in 3\n", GetCurrentThreadId());
+	printf("gopigo %ul: starting in 3\n", GetCurrentThreadId());
 	Sleep(1000);
-	printf("vrp_test_client %ul: starting in 2\n", GetCurrentThreadId());
+	printf("gopigo %ul: starting in 2\n", GetCurrentThreadId());
 	Sleep(1000);
-	printf("vrp_test_client %ul: starting in 1\n", GetCurrentThreadId());
+	printf("gopigo %ul: starting in 1\n", GetCurrentThreadId());
 	Sleep(1000);
-	printf("vrp_test_client %ul: starting in 0\n", GetCurrentThreadId());
+	printf("gopigo %ul: starting in 0\n", GetCurrentThreadId());
 
 	uint8_t id = 1 + (uint8_t)thread_index;
 	uint8_t type = VRP_DEVICE_TYPE_GOPIGO;
@@ -272,11 +286,11 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 	if (random_delay && !(rand() & 3))
 		Sleep(rand() % 1000);
 
-	printf("vrp_test_client %ul: Connecting...\n", GetCurrentThreadId());
+	printf("gopigo %ul: Connecting...\n", GetCurrentThreadId());
 	SOCKET sock = vrp_test_connect(&id, type, x, y, direction, state, 0, configuration->on_wire_server_address);
 	if (sock == INVALID_SOCKET)
 	{
-		printf("vrp_test_client %ul error: Failed to connect\n", GetCurrentThreadId());
+		printf("gopigo %ul error: Failed to connect\n", GetCurrentThreadId());
 		return;
 	}
 
@@ -288,14 +302,20 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 		if (random_delay && !(rand() & 3))
 			Sleep(rand() % 1000);
 
-		printf("vrp_test_client %ul: Waiting for command...\n", GetCurrentThreadId());
+		printf("gopigo %ul: Waiting for command...\n", GetCurrentThreadId());
 		size_t message_size = vrp_receive_message(sock, sizeof(message_buffer), message_buffer);
 		if (!message_size)
 		{
-			printf("vrp_test_client %ul error: Receiving command failed\n", GetCurrentThreadId());
+
+
+			printf("gopigo %ul error: Receiving command failed\n", GetCurrentThreadId());
 			closesocket(sock);
 			return;
 		}
+
+		MemoryBarrier();
+		uint32_t item = (uint32_t)vrp_test_map.items[((int)y * (int)vrp_test_map.w) + (int)x];
+
 		uint8_t command = message_buffer[0];
 		switch (command)
 		{
@@ -304,7 +324,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				if ((message_size != 7) || message_buffer[5] || (message_buffer[6] == 0xFF))
 				{
 					message_buffer[0] = VRP_MESSAGE_WFM;
-					message_buffer[1] = 7;
+					message_buffer[1] = 7 + ((item != 0xFFFFFFFF) ? 1 : 0);
 					message_buffer[2] = 0;
 					message_buffer[3] = 0;
 					message_buffer[4] = 0;
@@ -315,22 +335,24 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 					message_buffer[9] = y;
 					message_buffer[10] = direction;
 					message_buffer[11] = state;
+					if (item != 0xFFFFFFFF)
+						message_buffer[12] = (uint8_t)item;
 
 					if (random_delay && !(rand() & 3))
 						Sleep(rand() % 1000);
 
-					if (!vrp_send_message(sock, 12, message_buffer))
+					if (!vrp_send_message(sock, 12 + ((item != 0xFFFFFFFF) ? 1 : 0), message_buffer))
 					{
-						printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
+						printf("gopigo %ul error: Sending response failed\n", GetCurrentThreadId());
 						closesocket(sock);
 						return;
 					}
-					printf("vrp_test_client %ul: Setup executed\n", GetCurrentThreadId());
+					printf("gopigo %ul: Setup executed\n", GetCurrentThreadId());
 				}
 				else
 				{
 					message_buffer[0] = VRP_MESSAGE_WFM;
-					message_buffer[1] = 7;
+					message_buffer[1] = 7 + ((item != 0xFFFFFFFF) ? 1 : 0);
 					message_buffer[2] = 0;
 					message_buffer[3] = 0;
 					message_buffer[4] = 0;
@@ -341,24 +363,26 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 					message_buffer[9] = y;
 					message_buffer[10] = direction;
 					message_buffer[11] = state;
+					if (item != 0xFFFFFFFF)
+						message_buffer[12] = (uint8_t)item;
 
 					if (random_delay && !(rand() & 3))
 						Sleep(rand() % 1000);
 
-					if (!vrp_send_message(sock, 12, message_buffer))
+					if (!vrp_send_message(sock, 12 + ((item != 0xFFFFFFFF) ? 1 : 0), message_buffer))
 					{
-						printf("vrp_test_client %ul error: sending response failed\n", GetCurrentThreadId());
+						printf("gopigo %ul error: sending response failed\n", GetCurrentThreadId());
 						closesocket(sock);
 						return;
 					}
-					printf("vrp_test_client %ul: Setup again? This seems to be wrong\n", GetCurrentThreadId());
+					printf("gopigo %ul: Setup again? This seems to be wrong\n", GetCurrentThreadId());
 				}
 				break;
 			}
 			case VRP_MESSAGE_CCM:
 			{
 				message_buffer[0] = VRP_MESSAGE_WFM;
-				message_buffer[1] = 7;
+				message_buffer[1] = 7 + ((item != 0xFFFFFFFF) ? 1 : 0);
 				message_buffer[2] = 0;
 				message_buffer[3] = 0;
 				message_buffer[4] = 0;
@@ -369,12 +393,14 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				message_buffer[9] = y;
 				message_buffer[10] = direction;
 				message_buffer[11] = state;
+				if (item != 0xFFFFFFFF)
+					message_buffer[12] = (uint8_t)item;
 
 				if (random_delay && !(rand() & 3))
 					Sleep(rand() % 1000);
 
-				vrp_send_message(sock, 12, message_buffer);
-				printf("vrp_test_client %ul: Connection closed\n", GetCurrentThreadId());
+				vrp_send_message(sock, 12 + ((item != 0xFFFFFFFF) ? 1 : 0), message_buffer);
+				printf("gopigo %ul: Connection closed\n", GetCurrentThreadId());
 
 				shutdown(sock, SD_BOTH);
 				closesocket(sock);
@@ -382,8 +408,14 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 			}
 			case VRP_MESSAGE_SQM:
 			{
+				if ((x == destination_x) && (y == destination_y) && (item != 0xFFFFFFFF))
+				{
+					item = 0xFFFFFFFF;
+					InterlockedExchange((volatile LONG*)&vrp_test_map.items[((int)y * (int)vrp_test_map.w) + (int)x], item);
+				}
+
 				message_buffer[0] = VRP_MESSAGE_WFM;
-				message_buffer[1] = 7;
+				message_buffer[1] = 7 + ((item != 0xFFFFFFFF) ? 1 : 0);
 				message_buffer[2] = 0;
 				message_buffer[3] = 0;
 				message_buffer[4] = 0;
@@ -394,29 +426,33 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				message_buffer[9] = y;
 				message_buffer[10] = direction;
 				message_buffer[11] = state;
+				if (item != 0xFFFFFFFF)
+					message_buffer[12] = (uint8_t)item;
 
 				if (random_delay && !(rand() & 3))
 					Sleep(rand() % 1000);
 
-				if (!vrp_send_message(sock, 12, message_buffer))
+				if (!vrp_send_message(sock, 12 + ((item != 0xFFFFFFFF) ? 1 : 0), message_buffer))
 				{
-					printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
+					printf("gopigo %ul error: Sending response failed\n", GetCurrentThreadId());
 					closesocket(sock);
 					return;
 				}
-				printf("vrp_test_client %ul: Executed SQM\n", GetCurrentThreadId());
+				printf("gopigo %ul: Executed SQM\n", GetCurrentThreadId());
 				break;
 			}
 			case VRP_MESSAGE_MCM:
 			{
 				int cant_move = 0;
+				uint8_t new_x = x;
+				uint8_t new_y = y;
 				switch (message_buffer[5])
 				{
 					case VRP_DIRECTION_LEFT:
 						if (x)
 						{
 							direction = VRP_DIRECTION_LEFT;
-							x -= 1;
+							new_x -= 1;
 						}
 						else
 							cant_move = 1;
@@ -425,7 +461,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 						if (y < 5)
 						{
 							direction = VRP_DIRECTION_UP;
-							y += 1;
+							new_y += 1;
 						}
 						else
 							cant_move = 1;
@@ -434,7 +470,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 						if (x < 8)
 						{
 							direction = VRP_DIRECTION_RIGHT;
-							x += 1;
+							new_x += 1;
 						}
 						else
 							cant_move = 1;
@@ -443,7 +479,7 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 						if (y)
 						{
 							direction = VRP_DIRECTION_DOWN;
-							y -= 1;
+							new_y -= 1;
 						}
 						else
 							cant_move = 1;
@@ -453,8 +489,17 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 						break;
 				}
 
+				if (item != 0xFFFFFFFF)
+				{
+					InterlockedExchange((volatile LONG*)&vrp_test_map.items[((int)y * (int)vrp_test_map.w) + (int)x], 0xFFFFFFFF);
+					InterlockedExchange((volatile LONG*)&vrp_test_map.items[((int)new_y * (int)vrp_test_map.w) + (int)new_x], item);
+				}
+
+				x = new_x;
+				y = new_y;
+
 				message_buffer[0] = VRP_MESSAGE_WFM;
-				message_buffer[1] = 7;
+				message_buffer[1] = 7 + ((item != 0xFFFFFFFF) ? 1 : 0);
 				message_buffer[2] = 0;
 				message_buffer[3] = 0;
 				message_buffer[4] = 0;
@@ -465,24 +510,26 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				message_buffer[9] = y;
 				message_buffer[10] = direction;
 				message_buffer[11] = state;
+				if (item != 0xFFFFFFFF)
+					message_buffer[12] = (uint8_t)item;
 
 				Sleep(2000 + (rand() % 500));
 				if (random_delay && !(rand() & 3))
 					Sleep(rand() % 1000);
 
-				if (!vrp_send_message(sock, 12, message_buffer))
+				if (!vrp_send_message(sock, 12 + ((item != 0xFFFFFFFF) ? 1 : 0), message_buffer))
 				{
-					printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
+					printf("gopigo %ul error: Sending response failed\n", GetCurrentThreadId());
 					closesocket(sock);
 					return;
 				}
-				printf("vrp_test_client %ul: Executed MCM\n", GetCurrentThreadId());
+				printf("gopigo %ul: Executed MCM\n", GetCurrentThreadId());
 				break;
 			}
 			default:
 			{
 				message_buffer[0] = VRP_MESSAGE_WFM;
-				message_buffer[1] = 7;
+				message_buffer[1] = 7 + ((item != 0xFFFFFFFF) ? 1 : 0);
 				message_buffer[2] = 0;
 				message_buffer[3] = 0;
 				message_buffer[4] = 0;
@@ -493,17 +540,19 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 				message_buffer[9] = y;
 				message_buffer[10] = direction;
 				message_buffer[11] = state;
+				if (item != 0xFFFFFFFF)
+					message_buffer[12] = (uint8_t)item;
 
 				if (random_delay && !(rand() & 3))
 					Sleep(rand() % 1000);
 
-				if (!vrp_send_message(sock, 12, message_buffer))
+				if (!vrp_send_message(sock, 12 + ((item != 0xFFFFFFFF) ? 1 : 0), message_buffer))
 				{
-					printf("vrp_test_client %ul error: Sending response failed\n", GetCurrentThreadId());
+					printf("gopigo %ul error: Sending response failed\n", GetCurrentThreadId());
 					closesocket(sock);
 					return;
 				}
-				printf("vrp_test_client %ul: Received unsupported command\n", GetCurrentThreadId());
+				printf("gopigo %ul: Received unsupported command\n", GetCurrentThreadId());
 				break;
 			}
 		}
@@ -513,6 +562,8 @@ void vrp_test_client(vrp_test_client_configuration_t* configuration, size_t thre
 
 void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
 {
+	struct { uint8_t x; uint8_t y; } pickeup_table[3] = { { 3, 0 }, { 3, 1 }, { 3, 2 } };
+
 	int random_delay = configuration->random_delays;
 
 	srand((int)(GetCurrentThreadId() >> 2));
@@ -678,6 +729,8 @@ void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_
 					uint8_t product_id = message_buffer[5];
 					uint8_t destination = message_buffer[6];
 
+					assert(product_id < 3);
+
 					message_buffer[0] = VRP_MESSAGE_WFM;
 					message_buffer[1] = 7;
 					message_buffer[2] = 0;
@@ -692,6 +745,9 @@ void vrp_test_ur5(vrp_test_client_configuration_t* configuration, size_t thread_
 					message_buffer[11] = state;
 
 					Sleep(1000 + (rand() % 1000));
+
+					//assert(vrp_test_map.items[((int)pickeup_table[destination].y * vrp_test_map.w) + (int)pickeup_table[destination].x] == 0xFFFFFFFF);
+					//InterlockedExchange((volatile LONG*)&vrp_test_map.items[((int)pickeup_table[destination].y * vrp_test_map.w) + (int)pickeup_table[destination].x], (LONG)product_id);
 
 					if (!vrp_send_message(sock, 12, message_buffer))
 					{
@@ -865,21 +921,51 @@ void vrp_test_client_order(vrp_test_client_configuration_t* configuration, size_
 	return;
 }
 
+void vrp_test_client_order2(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
+{
+	printf("client %ul: starting in 30 seconds\n", GetCurrentThreadId());
+	Sleep(20000);
+	vrp_test_client_order(configuration, thread_count, thread_index);
+}
+
+void vrp_test_client_order3(vrp_test_client_configuration_t* configuration, size_t thread_count, size_t thread_index)
+{
+	printf("client %ul: starting in 40 seconds\n", GetCurrentThreadId());
+	Sleep(30000);
+	vrp_test_client_order(configuration, thread_count, thread_index);
+}
+
 void vrp_free_test_client_configuraton(uint32_t flags, void* thread_group_parameter, size_t thread_count)
 {
 	VirtualFree(thread_group_parameter, 0, MEM_RELEASE);
 }
 
-DWORD vrp_create_test_clients()
+DWORD vrp_create_test_clients(vrp_server_t* server)
 {
+	assert(server->map_height == 6 && server->map_width == 9);
+
+	vrp_test_map.w = server->map_width;
+	vrp_test_map.h = server->map_height;
+	for (int y = 0; y != vrp_test_map.h; ++y)
+		for (int x = 0; x != vrp_test_map.w; ++x)
+			vrp_test_map.map[y * vrp_test_map.w + x] = (server->map_bitmap[(y * vrp_test_map.w + x) / 8] >> ((y * vrp_test_map.w + x) % 8)) & 1;
+
+	for (int y = 0; y != vrp_test_map.h; ++y)
+		for (int x = 0; x != vrp_test_map.w; ++x)
+			vrp_test_map.items[y * vrp_test_map.w + x] = 0xFFFFFFFF;
+
 	vrp_test_client_configuration_t* gopigo_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	vrp_test_client_configuration_t* ur5_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	vrp_test_client_configuration_t* client_order_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	vrp_test_client_configuration_t* client2_order_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	vrp_test_client_configuration_t* client3_order_configuration = (vrp_test_client_configuration_t*)VirtualAlloc(0, sizeof(vrp_test_client_configuration_t), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
 	// BuT COAMputterS HAv InfinET MeMori so Tsis CAn NOT be zEro right?
-	__assume(gopigo_configuration);
-	__assume(ur5_configuration);
-	__assume(client_order_configuration);
+	assert(gopigo_configuration);
+	assert(ur5_configuration);
+	assert(client_order_configuration);
+	assert(client2_order_configuration);
+	assert(client3_order_configuration);
 
 	uint32_t server_ip;
 	uint32_t subnet_mask;
@@ -894,9 +980,17 @@ DWORD vrp_create_test_clients()
 	client_order_configuration->on_wire_server_address = INADDR_ANY;
 	client_order_configuration->random_delays = 1;
 
-	vrp_create_thread_group(0, 3, gopigo_configuration, (void(*)(void*, size_t, size_t))vrp_test_client, vrp_free_test_client_configuraton);
+	client2_order_configuration->on_wire_server_address = INADDR_ANY;
+	client2_order_configuration->random_delays = 1;
+
+	client3_order_configuration->on_wire_server_address = INADDR_ANY;
+	client3_order_configuration->random_delays = 1;
+
+	vrp_create_thread_group(0, 3, gopigo_configuration, (void(*)(void*, size_t, size_t))vrp_test_gopigo, vrp_free_test_client_configuraton);
 	vrp_create_thread_group(0, 1, ur5_configuration, (void(*)(void*, size_t, size_t))vrp_test_ur5, vrp_free_test_client_configuraton);
 	vrp_create_thread_group(0, 1, client_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, client2_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order2, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, client3_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order3, vrp_free_test_client_configuraton);
 	
 	printf("server: client threads created\n");
 	return 0;// also there were no errors, because no errors were checked
