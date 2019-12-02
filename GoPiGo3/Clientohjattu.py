@@ -14,6 +14,7 @@ import esteentunnistus
 Este = False
 vasen = False
 oikea = False
+arvo = 0
 
 Aloitus = [0,0]     #Aloituspisteen asetus muuttujaan. Koordinaatit järjestyksessä x,y
 position = Aloitus.copy() #Kopioidaan aloituspisteen arvo position tracking muuttujaan
@@ -142,6 +143,7 @@ def Eteen():
     global vasen
     global oikea
     global Este
+    global arvo
     Este = False
     
     try:
@@ -160,7 +162,7 @@ def Eteen():
 
                 gpg.stop()
                 arvo = 0
-                return arvo
+                #return arvo
                 break
                 
             if my_linefollower.read_position() == 'center':
@@ -186,14 +188,18 @@ def Eteen():
 def Liiku(suunta):
     global Este
     Turn(suunta)
+    global arvo
     Este = esteentunnistus.lahella()
     if(Este == False):
         Eteen()
         Position(suunta)
     else:
+        arvo = 10
         print("Este havaittu suunnassa: ",suunta)
     if(position == Aloitus):
         Parkki()
+    print("Arvo: ",arvo)
+    return arvo
 while True: #Konsolitestausta varten
     PosOri()
     Liiku(int(input("Anna suunta-arvo: ")))
