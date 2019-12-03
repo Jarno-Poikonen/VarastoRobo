@@ -16,7 +16,7 @@ vasen = False
 oikea = False
 arvo = 0
 
-Aloitus = [0,0]     #Aloituspisteen asetus muuttujaan. Koordinaatit järjestyksessä x,y
+Aloitus = [0,1]     #Aloituspisteen asetus muuttujaan. Koordinaatit järjestyksessä x,y
 position = Aloitus.copy() #Kopioidaan aloituspisteen arvo position tracking muuttujaan
 orientation = 0     #Orientaatio 0 = Itä/Oikea, 1 = Pohjoinen/Ylös, 2 = Länsi/Vasen, 3 = Etelä/Alas
 
@@ -31,8 +31,8 @@ except:
     print('Line Follower not responding')
     time.sleep(0.2)
     exit()
-my_linefollower.read_position()
-my_linefollower.read_position()
+# my_linefollower.read_position()
+# my_linefollower.read_position()
 
 perus = 250
 korjaus = 150
@@ -139,7 +139,7 @@ def Parkki():
         Right()
     orientation = 0
 ######
-def Eteen():
+def Eteen(suunta):
     global vasen
     global oikea
     global Este
@@ -162,6 +162,7 @@ def Eteen():
 
                 gpg.stop()
                 arvo = 0
+                Position(suunta)
                 #return arvo
                 break
                 
@@ -193,8 +194,8 @@ def Liiku(suunta):
     global arvo
     Este = esteentunnistus.lahella()
     if(Este == False):
-        Eteen()
-        Position(suunta)
+        Eteen(suunta)
+        #Position(suunta)
     else:
         arvo = 10
         print("Este havaittu suunnassa: ",suunta)
