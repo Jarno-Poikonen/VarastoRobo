@@ -67,6 +67,7 @@ def Broadcast_communication():
 				seis = True
 				GPIO.output(26, GPIO.HIGH)
 				sleep(5)
+				GPIO.output(26, GPIO.LOW)
 				GPIO.cleanup()
 				break
 
