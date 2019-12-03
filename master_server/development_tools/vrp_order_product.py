@@ -89,7 +89,7 @@ sock.send(ncm_data)
 scm_data = bytearray(sock.recv(4096))
 #assume valid scm
 
-pom_data = bytearray(b'\x0B\x03\x00\x00\x00\x01\x07\x01')
+pom_data = bytearray(b'\x0B\x03\x00\x00\x00\x00\x07\x01')
 sock.send(pom_data)
 #assume pom sent
 print("send order for product id 1 to coordinate 7,1")

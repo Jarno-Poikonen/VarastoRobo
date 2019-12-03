@@ -1,5 +1,5 @@
 /*
-	VarastoRobo common code 2019-11-28 by Santtu Nyman.
+	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
 */
 
 #include "vrp_constants.h"

@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.5.0 2019-11-26 by Santtu Nyman.
+	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
@@ -133,6 +133,8 @@ size_t vrp_create_product_order(vrp_server_t* server, uint8_t product_id, uint8_
 	server->product_order_table[i].transport_device_id = VRP_ID_UNDEFINED;
 	server->product_order_table[i].destination_x = x;
 	server->product_order_table[i].destination_y = y;
+	server->product_order_table[i].ur5_pickup_complete = 0;
+	server->product_order_table[i].gopigo_pickup_complete = 0;
 
 	server->product_order_count++;
 	return i;
@@ -185,6 +187,17 @@ size_t vrp_get_order_index_of_transport_device(vrp_server_t* server, size_t devi
 			return i;
 	}
 	return (size_t)~0;
+}
+
+int vrp_is_valid_product_id(const vrp_server_t* server, uint8_t product_id, int is_not_undefined)
+{
+	if ((product_id > 3) && (product_id != VRP_PRODUCT_TYPE_UNDEFINED))
+		return 0;
+
+	if ((product_id == VRP_PRODUCT_TYPE_UNDEFINED) && is_not_undefined)
+		return 0;
+	
+	return ((uint8_t)server->acceptable_product_mask & (uint8_t)(1 << product_id)) ? 1 : 0;
 }
 
 uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
@@ -909,6 +922,11 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	server->io_timeout = configuration->io_ms_timeout;
 	server->command_timeout = configuration->command_ms_timeout;
 	server->broadcast_delay = configuration->broadcast_ms_delay;
+	server->idle_status_query_delay = configuration->idle_status_query_delay;
+	server->product_pickup_status_query_delay = configuration->product_pickup_status_query_delay;
+	server->acceptable_product_mask = configuration->acceptable_product_mask;
+	server->carried_product_confidence_max = configuration->carried_product_confidence_max;
+	server->carried_product_confidence_pickup_limit = configuration->carried_product_confidence_pickup_limit;
 	server->status = configuration->system_status;
 	server->id = configuration->master_id;
 	server->map_height = configuration->map_height;

@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.5.0 2019-11-26 by Santtu Nyman.
+	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
 */
 
 #ifndef VRP_MASTER_SERVER_BASE_H
@@ -138,6 +138,8 @@ typedef struct vrp_product_order_t
 	uint8_t transport_device_id;
 	uint8_t destination_x;
 	uint8_t destination_y;
+	uint8_t ur5_pickup_complete;
+	uint8_t gopigo_pickup_complete;
 } vrp_product_order_t;
 
 typedef struct vrp_server_t
@@ -150,6 +152,11 @@ typedef struct vrp_server_t
 	DWORD io_timeout;
 	DWORD command_timeout;
 	DWORD broadcast_delay;
+	DWORD idle_status_query_delay;
+	DWORD product_pickup_status_query_delay;
+	DWORD acceptable_product_mask;
+	uint32_t carried_product_confidence_max;
+	uint32_t carried_product_confidence_pickup_limit;
 	uint8_t status;
 	uint8_t id;
 	uint8_t map_height;
@@ -212,7 +219,7 @@ typedef struct vrp_server_t
 
 uint64_t vrp_get_valid_device_entries(vrp_server_t* server);
 
-int vrp_calculate_device_movement_priority(vrp_server_t* server, uint8_t device_id);
+int vrp_calculate_device_movement_priority(const vrp_server_t* server, uint8_t device_id);
 
 int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y);
 
@@ -231,6 +238,8 @@ int vrp_choose_product_order_destination(vrp_server_t* server, size_t coordinate
 size_t vrp_get_nonstarted_product_order_index(vrp_server_t* server);
 
 size_t vrp_get_order_index_of_transport_device(vrp_server_t* server, size_t device_index);
+
+int vrp_is_valid_product_id(const vrp_server_t* server, uint8_t product_id, int is_not_undefined);
 
 uint8_t vrp_get_temporal_device_id(vrp_server_t* server);
 
