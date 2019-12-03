@@ -1,0 +1,71 @@
+ Program
+   BeforeStart
+     MoveJ
+       aloitus
+     mData≔socket_open("192.168.100.11", 30000)
+   Robot Program
+     'Loop'
+     Loop mData≟ False 
+       Wait: 1.0
+       mData≔socket_open("192.168.100.11", 30000)
+     kasky≔socket_read_ascii_float(7)
+     Loop kasky[0]≠7
+       kasky≔socket_read_ascii_float(7)
+       socket_send_string("Odottaa")
+       Wait: 1.0
+     'Popup'
+     tuote≔kasky[1]
+     asento≔[kasky[2], kasky[3], kasky[4], kasky[5], kasky[6], kasky[7]]
+     If tuote≟0
+       'Rectangle=0'
+       Cam Locate
+         For next object
+           MoveL
+             Waypoint_2
+             Gripper Open (1)
+             Waypoint_1
+             Gripper Close (1)
+             Waypoint_3
+           MoveJ
+             Waypoint_4
+           MoveJ
+             asento
+           Gripper Open (1)
+           socket_send_string("Valmis")
+           MoveJ
+             'paluu'
+             Waypoint_4
+             aloitus
+         If no object found
+           socket_send_string("Fail")
+           'No rectangles detected'
+     ElseIf tuote≟1
+       'Cylinder=1'
+       Cam Locate
+         For next object
+           'MoveL'
+           MoveL
+             Approach_Poin_1
+             Gripper Open (1)
+             Pick_Point_1
+             Gripper Close (1)
+             Retract_Point_1
+           MoveJ
+             Waypoint_4
+           MoveJ
+             asento
+           Gripper Open (1)
+           socket_send_string("Valmis")
+           MoveJ
+             'paluu'
+             Waypoint_4
+             aloitus
+         If no object found
+           socket_send_string("Fail")
+           'No cylinder detected'
+     'Loop'
+   'Thread_1'
+   Thread_2
+     Wait AI[0]>3.0
+     Popup
+     Halt

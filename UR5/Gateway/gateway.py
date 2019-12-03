@@ -3,6 +3,7 @@ import socket
 from time import sleep
 from datetime import datetime
 import threading
+import RPi.GPIO as GPIO
 
 MasterIP = None
 MasterPort = None
@@ -28,6 +29,11 @@ def Laske_pituus(viesti, pituus=4):
 
 # Säie/funktio joka kuuntelee broadcast viestejä.
 def Broadcast_communication():
+	
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(26, GPIO.OUT)
+	GPIO.output(26, GPIO.LOW)
+	
 	# Luodaan socket broadcastia varten.
 	Lokiin("Broadcast", "Aloitus")
 	bSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,11 +55,6 @@ def Broadcast_communication():
 			global MasterPort 
 			MasterIP, MasterPort = master_address
 			MasterPort = 1739
-	'''
-	# Luodaan socket hätäseis toiminnallisuutta varten
-	SEISsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	SEISsocket.bind(("192.168.100.11", 30001))
-	SEISsocket.listen()
 	
 	# Luetaan broadcast viestejä ja reagoidaan hätäseis käskyyn.
 	while True:
@@ -64,11 +65,11 @@ def Broadcast_communication():
 			if system_status != 1:
 				global seis
 				seis = True
-				SEISyhteys, SEISosoite = SEISsocket.accept()
-				SEISyhteys.sendall("seis")
-				SEISyhteys.close()
+				GPIO.output(26, GPIO.HIGH)
+				sleep(5)
+				GPIO.output(26, GPIO.LOW)
+				GPIO.cleanup()
 				break
-	'''
 
 # Luodaan WFM viesti annetuista parametreista.
 def Luo_NCM(tyyppi, id, tila):
@@ -116,15 +117,15 @@ if __name__ == "__main__":
 	"Resurssit ei riitä": 7,
 	"Pysäytetty": 8,
 	"Reittiä ei olemassa": 9,
-	"Reittiä ei voi kulkea": 10,
+	"Reittiä ei voi kulkea": 10
 	}
 	
 	# Käsien paikat.
 	# Ensimämisenä tuotteen numero, sen jälkeen 6 float arvoa servojen asennoille.
 	paikat = [
-	str.encode(",4.25674,-2.39935,-1.5091,-0.827786,1.62284,1.02993)"),
-	str.encode(",4.04182,-2.09472,-2.12977,-0.506068,1.58517,0.867442)"),
-	str.encode(",3.60708,-1.8002,-2.46198,-0.392773,1.59138,0.444104)")
+	str.encode(",4.25055,-2.26264,-1.68326,-0.763072,1.57923,1.09164)"),
+	str.encode(",3.9939,-2.01335,-2.21448,-0.482631,1.59763,0.872768)"),
+	str.encode(",3.51784,-1.8909,-2.4487,-0.383809,1.59626,0.396642)")
 	]
 	
 	broadcast_saie = threading.Thread(target=Broadcast_communication, args=())
