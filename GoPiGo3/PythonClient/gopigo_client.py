@@ -39,7 +39,7 @@ def form_NCM(devType,devID,cordX,cordY,direction,devState):
 def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum):
     content_length = 7
     if packetNum != no_packet:
-        content_length = +1
+        content_length += 1
         
     message = bytearray([4])
     message.extend(bytearray((content_length).to_bytes(4, 'little')))
