@@ -80,55 +80,39 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/TextModes"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start|center_vertical"
                 android:text="Modes"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold" />
 
-            <LinearLayout
-                android:id="@+id/LayoutRetreat"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="72dp"
-                    android:layout_height="match_parent"
-                    android:gravity="start|center_vertical"
-                    android:text="Retreat"
-                    android:textColor="@color/white" />
-
-                <Switch
-                    android:id="@+id/tracking_pull_back_tb"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end|center_vertical" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/set_enable_bg_layout"
+            <Switch
+                android:id="@+id/switchAutoLand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="2dp">
+                android:layout_gravity="right"
+                android:text="AutoLand"
+                android:textSize="14sp" />
 
-                <TextView
-                    android:layout_width="72dp"
-                    android:layout_height="match_parent"
-                    android:gravity="start|center_vertical"
-                    android:text="QuickShot"
-                    android:textColor="@color/white" />
+            <Switch
+                android:id="@+id/switchRetreat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:gravity="end|center_vertical"
+                android:text="Retreat"
+                android:textSize="14sp" />
 
-                <Switch
-                    android:id="@+id/set_multiquickshot_enabled"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end|center_vertical" />
+            <Switch
+                android:id="@+id/switchQuickShot"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:gravity="end|center_vertical"
+                android:text="QuickShot"
+                android:textSize="14sp" />
 
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -160,7 +144,6 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="end|center_vertical"
@@ -169,43 +152,23 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <Switch
+                android:id="@+id/switchAutocapture"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Switch
-                    android:id="@+id/switchAutocapture"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="end|center_vertical"
-                    android:text="Autocapture"
-                    android:textColor="#FFFFFF" />
-
-            </LinearLayout>
+                android:text="AutoCapture"
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/buttonDL"
-                android:layout_width="match_parent"
-                android:onClick="downloadLast"
+                android:layout_width="wrap_content"
                 android:layout_height="42dp"
+                android:layout_gravity="right"
+                android:onClick="downloadLast"
                 android:text="Download last" />
 
         </LinearLayout>
 
-
-        <Switch
-            android:id="@+id/switchStartLanding"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/confirm_btn"
-            android:text="startLanding" />
 
         <Button
             android:id="@+id/confirm_btn"
@@ -235,14 +198,17 @@
             android:text="R"
             android:visibility="invisible" />
 
-        <TextView
-            android:id="@+id/textClientStatus"
+        <Button
+            android:id="@+id/buttonClientStatus"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_above="@id/textIP"
             android:layout_centerHorizontal="true"
+            android:background="#00000000"
+            android:onClick="SetForceDisconnect"
             android:text="NO CLIENT"
-            android:textColor="#FF0000" />
+            android:textColor="#FFFF0000"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/textIP"

@@ -60,7 +60,6 @@ import dji.common.mission.activetrack.ActiveTrackTargetType;
 import dji.common.mission.activetrack.ActiveTrackTrackingState;
 import dji.common.mission.activetrack.QuickShotMode;
 import dji.common.mission.activetrack.SubjectSensingState;
-import dji.common.util.CommonCallbacks;
 import dji.common.util.CommonCallbacks.CompletionCallbackWith;
 import dji.keysdk.CameraKey;
 import dji.keysdk.DJIKey;
@@ -72,6 +71,7 @@ import dji.log.DJILog;
 import dji.midware.media.DJIVideoDataRecver;
 import dji.sdk.base.BaseProduct;
 import dji.sdk.camera.Camera;
+import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.media.DownloadListener;
 import dji.sdk.media.MediaFile;
 import dji.sdk.media.MediaManager;
@@ -80,7 +80,7 @@ import dji.sdk.mission.activetrack.ActiveTrackMissionOperatorListener;
 import dji.sdk.mission.activetrack.ActiveTrackOperator;
 import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKManager;
-import dji.sdk.flightcontroller.FlightController;
+
 
 
 public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTextureListener, OnClickListener, CompoundButton.OnCheckedChangeListener, ActiveTrackMissionOperatorListener
@@ -95,16 +95,22 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private int stopAlertCounter = 0;
     private int SERVER_PORT = 5000;
 
+    private float i = 0.0f;
+
     private boolean isAutoSensingSupported = false;
     private boolean stopAlertVisible = false;
+    private boolean flag = true;
+    private boolean forceDisconnect = false;
+    private boolean startLandingFlag = false;
 
+    // UI elements
     private RelativeLayout.LayoutParams layoutParams;
     private RelativeLayout mBgLayout;
     private SlidingDrawer mPushInfoSd;
     private TextView mPushInfoTv;
     private TextView mStopMessage;
     private TextView mTextIP;
-    private TextView mClientStatus;
+    private TextView textScreen;
     private ImageView mTrackingImage;
     private ImageButton mStopBtn;
     private ImageButton mPushDrawerIb;
@@ -114,7 +120,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private Switch mAutoCaptureSw;
     private Button mConfirmBtn;
     private Button mRejectBtn;
-    private Handler mTimerHandler = new Handler();
+    private Button mClientStatusButton;
+
     private ActiveTrackMission mActiveTrackMission;
     private static BaseProduct mProduct;
     private ActiveTrackOperator mActiveTrackOperator;
@@ -125,21 +132,23 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private MediaManager mMediaManager;
     private List<MediaFile> mediaFileList = new ArrayList<>();
     private MediaManager.FileListState currentFileListState = MediaManager.FileListState.UNKNOWN;
+    private File destDir = new File(Environment.getExternalStorageDirectory().getPath() + "/TrackerApp/");
+
+    // Timers and their handlers
     private Timer photoCaptureTimer;
     private Timer stopAlertTimer;
+    private Timer trackTimer;
     private Handler photoCaptureTimerHandler = new Handler();
     private Handler stopAlertTimerHandler = new Handler();
-    File destDir = new File(Environment.getExternalStorageDirectory().getPath() + "/TrackerApp/");
-    private Timer mTimer1;
-    private boolean flag = true;
-    private boolean startLandingFlag = false;
+    private Handler trackTimerHandler = new Handler();
+
+    // Server related classes
     ServerSocket serverSocket;
     Socket clientSocket;
     Thread SocketThread = null;
     BufferedReader input;
-    float i = 0.0f;
-    float ret = 0.0f;
-    FlightController flightController;
+
+
 
     // Toast        @param string
     private void writeToast(final String msg)
@@ -157,93 +166,82 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         TrackingTestActivity.this.runOnUiThread(() -> mPushInfoTv.setText(string));
     }
 
-    private void setResultToToast(final String string) {
-        TrackingTestActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(TrackingTestActivity.this, string, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+
     // @Override
-    private void startTimer()
+    private void startTrackTimer()
     {
-        mTimer1 = new Timer();
+        trackTimer = new Timer();
 
         TimerTask mTt1 = new TimerTask()
         {
             public void run()
             {
-                mTimerHandler.post(() -> track());
+                trackTimerHandler.post(() -> track());
 
             }
         };
 
-        mTimer1.schedule(mTt1, 2000, 2000);
+        trackTimer.schedule(mTt1, 2000, 2000);
     }
 
 
     private void stopTimer()
     {
-        if ( mTimer1 != null )
+        if ( trackTimer != null )
         {
-            mTimer1.cancel();
-            mTimer1.purge();
+            trackTimer.cancel();
+            trackTimer.purge();
         }
     }
 
-    private float moveX(){
-        if(i<0.8f) {
-            i = i + 0.05f;
-        }
-        else{
+
+    private float moveX()
+    {
+        if (i < 0.8f)
+            i += 0.05f;
+        else
             i = 0.0f;
-        }
-       // setResultToToast("i:"+i);
+
+        writeToast("i:" + i);
         return i;
     }
-    TextView textScreen;
+
 
     public void track()
     {
-
         trackingIndex = INVALID_INDEX;
 
-        if (flag) {
-            ret = moveX();
+        if (flag)
+        {
+            float ret = moveX();
 
             // for (float i = 0.0f; i<0.4f;i=i+0.1f){
             RectF rectF = new RectF(0.1f + ret, 0.2f, 0.2f + ret, 0.8f);
 
-            if (targetViewHashMap.get(trackingIndex) != null) {
+            if (targetViewHashMap.get(trackingIndex) != null)
                 Objects.requireNonNull(targetViewHashMap.get(trackingIndex)).setBackgroundColor(Color.RED);
-            }
 
             mActiveTrackMission = new ActiveTrackMission(rectF, startMode);
 
             //  }
 
 
-            if (startMode == ActiveTrackMode.QUICK_SHOT) {
+            if (startMode == ActiveTrackMode.QUICK_SHOT)
+            {
                 mActiveTrackMission.setQuickShotMode(quickShotMode);
                 checkStorageStates();
             }
 
-            mActiveTrackOperator.startTracking(mActiveTrackMission, new CommonCallbacks.CompletionCallback() {
-                @Override
-                public void onResult(DJIError error) {
-                    if (error == null) {
-
-                    }
-                    setResultToToast("Start Tracking: " + (error == null
-                            ? "Success"
-                            : error.getDescription()));
-
-                }
+            mActiveTrackOperator.startTracking(mActiveTrackMission, error ->
+            {
+                //stopTimer();
+                writeToast("Start Tracking: " + (error == null  ?  "Success"  :  error.getDescription()));
             });
+
             clearCurrentView();
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -258,9 +256,10 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     // InitUI
     private void initUI()
     {
-        startTimer();
+        startTrackTimer();
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        mStartLanding = findViewById(R.id.switchStartLanding);
+
+        mStartLanding = findViewById(R.id.switchAutoLand);
         mPushDrawerIb = findViewById(R.id.tracking_drawer_control_ib);
         mPushInfoSd = findViewById(R.id.tracking_drawer_sd);
         mPushInfoTv = findViewById(R.id.tracking_push_tv);
@@ -269,20 +268,25 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         mConfirmBtn = findViewById(R.id.confirm_btn);
         mStopBtn = findViewById(R.id.tracking_stop_btn);
         mRejectBtn = findViewById(R.id.reject_btn);
-        mQuickShotSw = findViewById(R.id.set_multiquickshot_enabled);
-        mPushBackSw = findViewById(R.id.tracking_pull_back_tb);
+        mQuickShotSw = findViewById(R.id.switchQuickShot);
+        mPushBackSw = findViewById(R.id.switchRetreat);
         mAutoCaptureSw = findViewById(R.id.switchAutocapture);
         mStopMessage = findViewById(R.id.stopMessage);
         mTextIP = findViewById(R.id.textIP);
-        mClientStatus = findViewById(R.id.textClientStatus);
+        mClientStatusButton = findViewById(R.id.buttonClientStatus);
+        // textScreen = findViewById(R.id.textView);
+        // textScreen = findViewById(R.id.textView2);
+
+        mStartLanding.setChecked(false);
         mQuickShotSw.setChecked(false);
         mPushBackSw.setChecked(false);
         mStopMessage.setFocusable(false);
-        mStartLanding.setChecked(false);
+
         mQuickShotSw.setOnCheckedChangeListener(this);
         mPushBackSw.setOnCheckedChangeListener(this);
         mAutoCaptureSw.setOnCheckedChangeListener(this);
         mStartLanding.setOnCheckedChangeListener(this);
+
         mConfirmBtn.setOnClickListener(this);
         mStopBtn.setOnClickListener(this);
         mRejectBtn.setOnClickListener(this);
@@ -307,120 +311,80 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
     @Override
-    public void onClick(View v) {
-        if (mActiveTrackOperator == null) {
+    public void onClick(View v)
+    {
+        if (mActiveTrackOperator == null)
             return;
-        }
-        switch (v.getId()) {
 
-
+        switch (v.getId())
+        {
             case R.id.confirm_btn:
-              //  flag = false;
+                flag = false;
+
                 boolean isAutoTracking =
                         isAutoSensingSupported &&
                                 (mActiveTrackOperator.isAutoSensingEnabled() ||
                                         mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
-                if (isAutoTracking) {
+                if (isAutoTracking)
+                {
                     startAutoSensingMission();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mStopBtn.setVisibility(View.VISIBLE);
-                            mRejectBtn.setVisibility(View.VISIBLE);
-                            mConfirmBtn.setVisibility(View.INVISIBLE);
-                        }
+                    runOnUiThread(() ->
+                    {
+                        mStopBtn.setVisibility(View.VISIBLE);
+                        mRejectBtn.setVisibility(View.VISIBLE);
+                        mConfirmBtn.setVisibility(View.INVISIBLE);
                     });
-                } else {
+                }
+                else
+                {
                     trackingIndex = INVALID_INDEX;
-                    mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+                    mActiveTrackOperator.acceptConfirmation(error -> writeToast(error == null ? "Accept Confirm Success!" : error.getDescription()));
 
-                        @Override
-                        public void onResult(DJIError error) {
-                            setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
-                        }
-                    });
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mStopBtn.setVisibility(View.VISIBLE);
-                            mRejectBtn.setVisibility(View.VISIBLE);
-                            mConfirmBtn.setVisibility(View.INVISIBLE);
-                        }
+                    runOnUiThread(() ->
+                    {
+                        mStopBtn.setVisibility(View.VISIBLE);
+                        mRejectBtn.setVisibility(View.VISIBLE);
+                        mConfirmBtn.setVisibility(View.INVISIBLE);
                     });
 
                 }
                 break;
 
             case R.id.tracking_stop_btn:
+                stopTimer();
                 trackingIndex = INVALID_INDEX;
-
                 flag = true;
-                mActiveTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
+                mActiveTrackOperator.stopTracking(error -> writeToast(error == null ? "Stop track Success!" : error.getDescription()));
 
-                    @Override
-                    public void onResult(DJIError error) {
-                        setResultToToast(error == null ? "Stop track button pressed!" : error.getDescription());
+                runOnUiThread(() ->
+                {
+                    if (mTrackingImage != null)
+                    {
+                        mTrackingImage.setVisibility(View.INVISIBLE);
+                        //mSendRectIV.setVisibility(View.INVISIBLE);
+                        mStopBtn.setVisibility(View.INVISIBLE);
+                        mRejectBtn.setVisibility(View.INVISIBLE);
+                        mConfirmBtn.setVisibility(View.VISIBLE);
                     }
                 });
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mTrackingImage != null) {
-                            mTrackingImage.setVisibility(View.INVISIBLE);
-                            //mSendRectIV.setVisibility(View.INVISIBLE);
-                            mStopBtn.setVisibility(View.INVISIBLE);
-                            mRejectBtn.setVisibility(View.INVISIBLE);
-                            mConfirmBtn.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
-/*
-                mActiveTrackOperator.startTracking(mActiveTrackMission, new CommonCallbacks.CompletionCallback() {
-                    @Override
-                    public void onResult(DJIError error) {
-                        if (error == null) {
-
-                        }
-                        setResultToToast("Start Tracking: " + (error == null
-                                ? "Success"
-                                : error.getDescription()));
-
-                    }
-                });
-                */
-
-                clearCurrentView();
-
                 break;
 
             case R.id.reject_btn:
                 trackingIndex = INVALID_INDEX;
-                mActiveTrackOperator.rejectConfirmation(new CommonCallbacks.CompletionCallback() {
-
-                    @Override
-                    public void onResult(DJIError error) {
-
-                        setResultToToast(error == null ? "Reject Confirm Success!" : error.getDescription());
-                    }
-                });
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mStopBtn.setVisibility(View.VISIBLE);
-                        mRejectBtn.setVisibility(View.VISIBLE);
-                        mConfirmBtn.setVisibility(View.INVISIBLE);
-                    }
+                mActiveTrackOperator.rejectConfirmation(error -> writeToast(error == null ? "Reject Confirm Success!" : error.getDescription()));
+                runOnUiThread(() ->
+                {
+                    mStopBtn.setVisibility(View.VISIBLE);
+                    mRejectBtn.setVisibility(View.VISIBLE);
+                    mConfirmBtn.setVisibility(View.INVISIBLE);
                 });
                 break;
 
             case R.id.tracking_drawer_control_ib:
-                if (mPushInfoSd.isOpened()) {
+                if (mPushInfoSd.isOpened())
                     mPushInfoSd.animateClose();
-                } else {
+                else
                     mPushInfoSd.animateOpen();
-                }
                 break;
 
             default:
@@ -431,7 +395,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         initMissionManager();
     }
@@ -502,13 +467,14 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
         switch ( compoundButton.getId() )
         {
-            case R.id.set_multiquickshot_enabled:
+            case R.id.switchQuickShot:
                 startMode = ActiveTrackMode.QUICK_SHOT;
                 quickShotMode = QuickShotMode.CIRCLE;
                 checkStorageStates();
                 setAutoSensingForQuickShotEnabled(isChecked);
                 break;
-            case R.id.tracking_pull_back_tb:
+
+            case R.id.switchRetreat:
                 mActiveTrackOperator.setRetreatEnabled(isChecked, error ->
                 {
                     if (error != null)
@@ -517,6 +483,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     writeToast("Set Retreat Enabled: " + (error == null  ?  "Success"  :  error.getDescription()));
                 });
                 break;
+
             case R.id.switchAutocapture:
                 if (isChecked)
                     startPhotoCaptureTimer();
@@ -524,13 +491,9 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     stopPhotoCaptureTimer();
                 break;
 
-            case R.id.switchStartLanding:
-                if(isChecked)
-                    startLandingFlag = true;
-                else
-                    startLandingFlag = false;
+            case R.id.switchAutoLand:
+                startLandingFlag = isChecked;
                 break;
-
 
             default:
                 break;
@@ -539,7 +502,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
     @Override
-    public void onUpdate(ActiveTrackMissionEvent event) {
+    public void onUpdate(ActiveTrackMissionEvent event)
+    {
     StringBuffer sb = new StringBuffer();
     String errorInformation = (event.getError() == null ? "null" : event.getError().getDescription()) + "\n";
     String currentState = event.getCurrentState() == null ? "null" : event.getCurrentState().getName();
@@ -578,23 +542,14 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
                         //flag = false;
                         trackingIndex = INVALID_INDEX;
-                        setResultToToast("Tracking success");
+                        writeToast("Tracking success");
 
-                        mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+                        mActiveTrackOperator.acceptConfirmation(error -> writeToast(error == null ? "Accept Confirm Success!" : error.getDescription()));
 
-                            @Override
-                            public void onResult(DJIError error) {
-                                setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
-                            }
-                        });
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mStopBtn.setVisibility(View.VISIBLE);
-                                mRejectBtn.setVisibility(View.VISIBLE);
-                                mConfirmBtn.setVisibility(View.INVISIBLE);
-                            }
+                        runOnUiThread(() -> {
+                            mStopBtn.setVisibility(View.VISIBLE);
+                            mRejectBtn.setVisibility(View.VISIBLE);
+                            mConfirmBtn.setVisibility(View.INVISIBLE);
                         });
 
                     }
@@ -612,68 +567,78 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 Utils.addLineToSB(sb, "Target Type", trackingState.getType().name());
                 Utils.addLineToSB(sb, "Target State", trackingState.getState().name());
 
-                // textScreen = findViewById(R.id.textView2);
                 // runOnUiThread(()-> textScreen.setText("Type:"));
+
                 if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
                     //flag = false;
                     trackingIndex = INVALID_INDEX;
-                    setResultToToast("Tracking success");
-                    boolean isAutoTracking =
-                            isAutoSensingSupported &&
-                                    (mActiveTrackOperator.isAutoSensingEnabled() ||
-                                            mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
-                    if (isAutoTracking) {
-                        // startAutoSensingMission();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mStopBtn.setVisibility(View.VISIBLE);
-                                mRejectBtn.setVisibility(View.VISIBLE);
-                                mConfirmBtn.setVisibility(View.INVISIBLE);
-                            }
-                        });
-                    } else {
-                        mActiveTrackOperator.acceptConfirmation(new CommonCallbacks.CompletionCallback() {
+                    writeToast("Tracking success");
 
-                            @Override
-                            public void onResult(DJIError error) {
-                                setResultToToast(error == null ? "Accept Confirm Success!" : error.getDescription());
-                            }
-                        });
+                    mActiveTrackOperator.acceptConfirmation(error -> writeToast(error == null ? "Accept Confirm Success!" : error.getDescription()));
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mStopBtn.setVisibility(View.VISIBLE);
-                                mRejectBtn.setVisibility(View.VISIBLE);
-                                mConfirmBtn.setVisibility(View.INVISIBLE);
-                            }
-                        });
+                    runOnUiThread(() -> {
+                        mStopBtn.setVisibility(View.VISIBLE);
+                        mRejectBtn.setVisibility(View.VISIBLE);
+                        mConfirmBtn.setVisibility(View.INVISIBLE);
+                    }); mActiveTrackOperator.acceptConfirmation(error -> writeToast(error == null ? "Accept Confirm Success!" : error.getDescription()));
+
+                    runOnUiThread(() -> {
+                        mStopBtn.setVisibility(View.VISIBLE);
+                        mRejectBtn.setVisibility(View.VISIBLE);
+                        mConfirmBtn.setVisibility(View.INVISIBLE);
+                    });
+                        /*
+
+                        boolean isAutoTracking =
+                                isAutoSensingSupported &&
+                                        (mActiveTrackOperator.isAutoSensingEnabled() ||
+                                                mActiveTrackOperator.isAutoSensingForQuickShotEnabled());
+                        if (isAutoTracking) {
+                            startAutoSensingMission();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mStopBtn.setVisibility(View.VISIBLE);
+                                    mRejectBtn.setVisibility(View.VISIBLE);
+                                    mConfirmBtn.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                        } else {
 
 
-                    }
+                           // trackingIndex = INVAVID_INDEX;
+                            mActiveTrackOperator.acceptConfirmation(new CompletionCallback() {
+
+                                @Override
+                                public void onResult(DJIError error) {
+                                    writeToast(error == null ? "Accept Confirm Success!" : error.getDescription());
+                                }
+                            });
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mStopBtn.setVisibility(View.VISIBLE);
+                                    mRejectBtn.setVisibility(View.VISIBLE);
+                                    mConfirmBtn.setVisibility(View.INVISIBLE);
+                                }
+                            });
+
+                        }
+                    */
                 }
                 else{
                     flag = true;
                     trackingIndex = INVALID_INDEX;
-                    mActiveTrackOperator.stopTracking(new CommonCallbacks.CompletionCallback() {
+                    mActiveTrackOperator.stopTracking(error -> writeToast(error == null ? "Stop track Success!" : error.getDescription()));
 
-                        @Override
-                        public void onResult(DJIError error) {
-                            setResultToToast(error == null ? "Stop track Success!" : error.getDescription());
-                        }
-                    });
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mTrackingImage != null) {
-                                mTrackingImage.setVisibility(View.INVISIBLE);
-                                //mSendRectIV.setVisibility(View.INVISIBLE);
-                                mStopBtn.setVisibility(View.INVISIBLE);
-                                mRejectBtn.setVisibility(View.INVISIBLE);
-                                mConfirmBtn.setVisibility(View.VISIBLE);
-                            }
+                    runOnUiThread(() -> {
+                        if (mTrackingImage != null) {
+                            mTrackingImage.setVisibility(View.INVISIBLE);
+                            //mSendRectIV.setVisibility(View.INVISIBLE);
+                            mStopBtn.setVisibility(View.INVISIBLE);
+                            mRejectBtn.setVisibility(View.INVISIBLE);
+                            mConfirmBtn.setVisibility(View.VISIBLE);
                         }
                     });
                 }
@@ -937,11 +902,11 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private void switchStorageLocation(final SettingsDefinitions.StorageLocation storageLocation)
     {
         KeyManager keyManager = KeyManager.getInstance();
-        DJIKey storageLocationkey = CameraKey.create(CameraKey.CAMERA_STORAGE_LOCATION, MAIN_CAMERA_INDEX);
+        DJIKey storageLocationKey = CameraKey.create(CameraKey.CAMERA_STORAGE_LOCATION, MAIN_CAMERA_INDEX);
 
         if (storageLocation == SettingsDefinitions.StorageLocation.INTERNAL_STORAGE)
         {
-            keyManager.setValue(storageLocationkey, SettingsDefinitions.StorageLocation.SDCARD, new SetCallback()
+            keyManager.setValue(storageLocationKey, SettingsDefinitions.StorageLocation.SDCARD, new SetCallback()
             {
                 @Override
                 public void onSuccess() {
@@ -956,7 +921,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         }
         else
         {
-            keyManager.setValue(storageLocationkey, SettingsDefinitions.StorageLocation.INTERNAL_STORAGE, new SetCallback()
+            keyManager.setValue(storageLocationKey, SettingsDefinitions.StorageLocation.INTERNAL_STORAGE, new SetCallback()
             {
                 @Override
                 public void onSuccess()
@@ -1023,8 +988,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private void checkStorageStates()
     {
         KeyManager keyManager = KeyManager.getInstance();
-        DJIKey storageLocationkey = CameraKey.create(CameraKey.CAMERA_STORAGE_LOCATION, MAIN_CAMERA_INDEX);
-        Object storageLocationObj = keyManager.getValue(storageLocationkey);
+        DJIKey storageLocationKey = CameraKey.create(CameraKey.CAMERA_STORAGE_LOCATION, MAIN_CAMERA_INDEX);
+        Object storageLocationObj = keyManager.getValue(storageLocationKey);
         SettingsDefinitions.StorageLocation storageLocation = SettingsDefinitions.StorageLocation.INTERNAL_STORAGE;
 
         if (storageLocationObj instanceof SettingsDefinitions.StorageLocation)
@@ -1044,18 +1009,22 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
         DJIKey isRecordingKey = CameraKey.create(CameraKey.IS_RECORDING, MAIN_CAMERA_INDEX);
         Object isRecording = keyManager.getValue(isRecordingKey);
+
         if ( isRecording instanceof Boolean )
         {
             if ( (Boolean) isRecording )
             {
-                keyManager.performAction(CameraKey.create(CameraKey.STOP_RECORD_VIDEO, MAIN_CAMERA_INDEX), new ActionCallback() {
+                keyManager.performAction(CameraKey.create(CameraKey.STOP_RECORD_VIDEO, MAIN_CAMERA_INDEX), new ActionCallback()
+                {
                     @Override
-                    public void onSuccess() {
+                    public void onSuccess()
+                    {
                         writeToast("Stop Recording Success!");
                     }
 
                     @Override
-                    public void onFailure(@NonNull DJIError error) {
+                    public void onFailure(@NonNull DJIError error)
+                    {
                         writeToast("Stop Recording Fail，Error " + error.getDescription());
                     }
                 });
@@ -1232,7 +1201,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
 
 
-    public void startStopAlertTimer()
+    public void startAlertTimer()
     {
         stopAlertTimer = new Timer();
 
@@ -1248,7 +1217,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     }
 
 
-    private void stopStopAlertTimer()
+    private void stopAlertTimer()
     {
         if ( stopAlertTimer != null )
         {
@@ -1267,20 +1236,20 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         if (stopAlertCounter == 20)
         {
             stopAlertCounter = 0;
-            stopStopAlertTimer();
+            stopAlertTimer();
         }
     }
 
 
 
 
-    private void ClientStatusUI(String toastMsg, String uiMsg, int uiColor)
+    private void clientStatusUI(String toastMsg, String uiMsg, int uiColor)
     {
         runOnUiThread(() ->
         {
             writeToast(toastMsg);
-            mClientStatus.setText(uiMsg);
-            mClientStatus.setTextColor(uiColor);
+            mClientStatusButton.setText(uiMsg);
+            mClientStatusButton.setTextColor(uiColor);
         });
     }
 
@@ -1332,9 +1301,9 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         {
             try
             {
-                ClientStatusUI("Waiting for a new client...", "WAITING FOR CLIENT", 0xFFFFFF00 );
+                clientStatusUI("Waiting for a new client...", "WAITING FOR CLIENT", 0xFFFFFF00 );
                 clientSocket = serverSocket.accept();
-                ClientStatusUI("New client found.", "CLIENT CONNECTED", 0xFF00FF00 );
+                clientStatusUI("New client found.", "CLIENT CONNECTED", 0xFF00FF00 );
                 input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 new Thread(new ReceiveThread()).start();
             }
@@ -1358,31 +1327,34 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 {
                     String message = null;
 
-                    while (message == null)
-                    message = input.readLine();
+                    while ( !forceDisconnect  &&  message == null )
+                        message = input.readLine();
 
 
                     writeToast("Client: " + message);
 
-                    if (message.equals("STOP")){
-                        startStopAlertTimer();
-                        if(startLandingFlag) {
-                            try {
-                                BaseProduct aircraft = DJIDemoApplication.getProductInstance();
+                    if ( forceDisconnect  ||  message.equals("CLOSE") )
+                    {
+                        clientStatusUI("Closed client connection.", "NO CLIENT", 0xFFFF0000 );
+                        clientSocket.close();
+                        forceDisconnect = false;
+                        SocketThread = new Thread(new SocketThread());
+                        SocketThread.start();
+                        return;
+                    }
+                    else if ( message.equals("STOP") )
+                    {
+                        startAlertTimer();
 
-                                if (aircraft instanceof Aircraft) {
+                        if (startLandingFlag)
+                        {
+                            BaseProduct aircraft = DJIDemoApplication.getProductInstance();
 
-                                    FlightController flightController = ((Aircraft) aircraft).getFlightController();
-                                    flightController.startLanding(new CommonCallbacks.CompletionCallback() {
-                                        @Override
-                                        public void onResult(DJIError djiError) {
-                                            setResultToToast("Landing!: " + (djiError == null
-                                                    ? "Success"
-                                                    : djiError.getDescription()));
-                                        }
-                                    });
-
-                                }
+                            if (aircraft instanceof Aircraft)
+                            {
+                                FlightController flightController = ((Aircraft) aircraft).getFlightController();
+                                flightController.startLanding(djiError -> writeToast("Landing!: " + (djiError == null  ?  "Success"  :  djiError.getDescription())));
+                            }
 
 //                            flightController.startLanding(new CommonCallbacks.CompletionCallback() {
 //                                @Override
@@ -1392,25 +1364,9 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 //                                            : djiError.getDescription()));
 //                                }
 //                            });
-                            } catch (Exception i) {
-                                i.printStackTrace();
-                                //writeToast("Error at ReceiveThread: " + i.getMessage());
-                                textScreen = findViewById(R.id.textView);
-                                runOnUiThread(() -> textScreen.setText("Landing error:" + i.getMessage()));
-                            }
                         }
-                     }
-
-
-
-                    else if (message.equals("CLOSE"))
-                    {
-                        clientSocket.close();
-                        ClientStatusUI("Closed client connection.", "NO CLIENT", 0xFFFF0000 );
-                        SocketThread = new Thread(new SocketThread());
-                        SocketThread.start();
-                        return;
                     }
+
                 }
                 catch (IOException e)
                 {
@@ -1419,6 +1375,13 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 }
             }
         }
+    }
+
+
+    public void SetForceDisconnect(View view)
+    {
+        forceDisconnect = true;
+        clientStatusUI("Closing client socket...", "CLOSING SOCKET", 0xFF00FFFF);
     }
 }
 
