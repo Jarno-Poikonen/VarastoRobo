@@ -69,8 +69,33 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="20196">
-              <caret line="1287" lean-forward="true" selection-start-line="1287" selection-end-line="1287" />
+            <state relative-caret-position="174">
+              <caret line="286" column="42" lean-forward="true" selection-start-line="286" selection-end-line="287" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#35958#35959#0" expanded="true" />
+                <element signature="e#36038#36039#0" expanded="true" />
+                <element signature="e#36475#36476#0" expanded="true" />
+                <element signature="e#36563#36564#0" expanded="true" />
+                <element signature="e#41558#41559#0" expanded="true" />
+                <element signature="e#41643#41644#0" expanded="true" />
+                <element signature="e#43448#43449#0" expanded="true" />
+                <element signature="e#43511#43512#0" expanded="true" />
+                <element signature="e#45513#45675#0" expanded="true" />
+                <element signature="e#45674#45675#0" expanded="true" />
+                <element signature="e#46724#46886#0" expanded="true" />
+                <element signature="e#46885#46886#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
+          <provider editor-type-id="android-designer2" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="34">
+              <caret line="134" column="7" selection-start-line="134" selection-start-column="7" selection-end-line="134" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -86,15 +111,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>mTrackingImage</find>
-      <find>down</find>
-      <find>message</find>
-      <find>e.</find>
-      <find>writeToast</find>
-      <find>alert</find>
-      <find>can't</find>
-      <find>Thread1</find>
-      <find>socketThread</find>
       <find>showToast</find>
       <find>pls wait</find>
       <find>pls</find>
@@ -116,6 +132,15 @@
       <find>waiting</find>
       <find>waiting for</find>
       <find>flag = false</find>
+      <find>new Completio</find>
+      <find>new Common</find>
+      <find>textview</find>
+      <find>Aircraft</find>
+      <find>getPro</find>
+      <find>retreat</find>
+      <find>retreatenabled</find>
+      <find>startLanding</find>
+      <find>switchStartLanding</find>
     </findStrings>
     <replaceStrings>
       <replace>photoCaptureTimer</replace>
@@ -157,7 +182,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -200,12 +224,30 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="P4MissionsDemo" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="P4MissionsDemo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="P4MissionsDemo" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="layout" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -420,7 +462,7 @@
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="VarastoRobo-Android-Phantom4Missions-master-P4MissionsDemo-app" type="AndroidRunConfigurationType" factoryName="Android App">
+    <configuration name="VarastoRobo-Android-Phantom4Missions-master-P4MissionsDemo-app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="VarastoRobo-Android-Phantom4Missions-master-P4MissionsDemo-app" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
@@ -599,7 +641,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.24832214" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.24832214" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -617,7 +659,7 @@
       <window_info anchor="bottom" id="Version Control" order="6" sideWeight="0.49932885" weight="0.3286119" />
       <window_info anchor="bottom" id="Build" order="7" weight="0.33144477" />
       <window_info anchor="bottom" id="Android Profiler" order="8" />
-      <window_info active="true" anchor="bottom" id="Find" order="9" visible="true" weight="0.3286119" />
+      <window_info anchor="bottom" id="Find" order="9" weight="0.3286119" />
       <window_info anchor="right" id="Device File Explorer" order="0" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="1" />
       <window_info anchor="right" id="Gradle" order="2" weight="0.32995737" />
@@ -704,9 +746,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle" />
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/demo_info_item.xml">
       <provider selected="true" editor-type-id="android-designer2" />
       <provider editor-type-id="text-editor" />
@@ -751,20 +791,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/ints.xml" />
     <entry file="file://$PROJECT_DIR$/app/src/main/res/drawable/black_rectangle.9.png" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DJIDemoApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="92" column="22" selection-start-line="92" selection-start-column="22" selection-end-line="92" selection-end-column="22" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1046#1047#0" expanded="true" />
-            <element signature="e#1084#1085#0" expanded="true" />
-            <element signature="e#1145#1146#0" expanded="true" />
-            <element signature="e#1176#1177#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/Utils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -773,12 +799,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="73" selection-start-line="7" selection-start-column="73" selection-end-line="7" selection-end-column="73" />
         </state>
       </provider>
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
       <provider editor-type-id="android-designer2" />
@@ -809,14 +835,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
-      <provider editor-type-id="android-designer2" />
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1105">
-          <caret line="65" column="21" lean-forward="true" selection-start-line="65" selection-start-column="21" selection-end-line="65" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DemoBaseActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
@@ -827,10 +845,60 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/DJIDemoApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="52" column="37" lean-forward="true" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.dji/dji-sdk-provided/4.11/f0120d4c5ea5fc368bedf0954edc397e13e29a1f/dji-sdk-provided-4.11.jar!/dji/sdk/base/BaseProduct.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="1002" column="23" lean-forward="true" selection-start-line="1002" selection-start-column="23" selection-end-line="1002" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.dji/dji-sdk-provided/4.11/f0120d4c5ea5fc368bedf0954edc397e13e29a1f/dji-sdk-provided-4.11.jar!/dji/sdk/flightcontroller/FlightController.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="125" column="21" selection-start-line="125" selection-start-column="21" selection-end-line="125" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tracking_test.xml">
+      <provider editor-type-id="android-designer2" />
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="134" column="7" selection-start-line="134" selection-start-column="7" selection-end-line="134" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/dji/P4MissionsDemo/TrackingTestActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20196">
-          <caret line="1287" lean-forward="true" selection-start-line="1287" selection-end-line="1287" />
+        <state relative-caret-position="174">
+          <caret line="286" column="42" lean-forward="true" selection-start-line="286" selection-end-line="287" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#35958#35959#0" expanded="true" />
+            <element signature="e#36038#36039#0" expanded="true" />
+            <element signature="e#36475#36476#0" expanded="true" />
+            <element signature="e#36563#36564#0" expanded="true" />
+            <element signature="e#41558#41559#0" expanded="true" />
+            <element signature="e#41643#41644#0" expanded="true" />
+            <element signature="e#43448#43449#0" expanded="true" />
+            <element signature="e#43511#43512#0" expanded="true" />
+            <element signature="e#45513#45675#0" expanded="true" />
+            <element signature="e#45674#45675#0" expanded="true" />
+            <element signature="e#46724#46886#0" expanded="true" />
+            <element signature="e#46885#46886#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

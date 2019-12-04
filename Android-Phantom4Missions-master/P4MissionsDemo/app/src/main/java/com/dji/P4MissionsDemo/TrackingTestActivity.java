@@ -78,7 +78,9 @@ import dji.sdk.media.MediaManager;
 import dji.sdk.mission.MissionControl;
 import dji.sdk.mission.activetrack.ActiveTrackMissionOperatorListener;
 import dji.sdk.mission.activetrack.ActiveTrackOperator;
+import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKManager;
+import dji.sdk.flightcontroller.FlightController;
 
 
 public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTextureListener, OnClickListener, CompoundButton.OnCheckedChangeListener, ActiveTrackMissionOperatorListener
@@ -106,6 +108,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private ImageView mTrackingImage;
     private ImageButton mStopBtn;
     private ImageButton mPushDrawerIb;
+    private Switch mStartLanding;
     private Switch mPushBackSw;
     private Switch mQuickShotSw;
     private Switch mAutoCaptureSw;
@@ -129,13 +132,14 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     File destDir = new File(Environment.getExternalStorageDirectory().getPath() + "/TrackerApp/");
     private Timer mTimer1;
     private boolean flag = true;
+    private boolean startLandingFlag = false;
     ServerSocket serverSocket;
     Socket clientSocket;
     Thread SocketThread = null;
     BufferedReader input;
     float i = 0.0f;
     float ret = 0.0f;
-
+    FlightController flightController;
 
     // Toast        @param string
     private void writeToast(final String msg)
@@ -202,20 +206,6 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
     public void track()
     {
-        /*
-        WiFiLink wifilink = new WiFiLink();
-        wifilink.getChannelNumber(new CompletionCallbackWith<Integer>() {
-            @Override
-            public void onSuccess(Integer channelNumber) {
-                //runOnUiThread(()->textScreen.setText("channelNumber"+channelNumber));
-            }
-
-            @Override
-            public void onFailure(DJIError djiError) {
-                //runOnUiThread(()->textScreen.setText("Failed to get channelNumber"+djiError));
-            }
-        });
-        */
 
         trackingIndex = INVALID_INDEX;
 
@@ -270,7 +260,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     {
         startTimer();
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-
+        mStartLanding = findViewById(R.id.switchStartLanding);
         mPushDrawerIb = findViewById(R.id.tracking_drawer_control_ib);
         mPushInfoSd = findViewById(R.id.tracking_drawer_sd);
         mPushInfoTv = findViewById(R.id.tracking_push_tv);
@@ -285,15 +275,14 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         mStopMessage = findViewById(R.id.stopMessage);
         mTextIP = findViewById(R.id.textIP);
         mClientStatus = findViewById(R.id.textClientStatus);
-
         mQuickShotSw.setChecked(false);
         mPushBackSw.setChecked(false);
         mStopMessage.setFocusable(false);
-
+        mStartLanding.setChecked(false);
         mQuickShotSw.setOnCheckedChangeListener(this);
         mPushBackSw.setOnCheckedChangeListener(this);
         mAutoCaptureSw.setOnCheckedChangeListener(this);
-
+        mStartLanding.setOnCheckedChangeListener(this);
         mConfirmBtn.setOnClickListener(this);
         mStopBtn.setOnClickListener(this);
         mRejectBtn.setOnClickListener(this);
@@ -534,6 +523,15 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 else
                     stopPhotoCaptureTimer();
                 break;
+
+            case R.id.switchStartLanding:
+                if(isChecked)
+                    startLandingFlag = true;
+                else
+                    startLandingFlag = false;
+                break;
+
+
             default:
                 break;
         }
@@ -1361,13 +1359,50 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     String message = null;
 
                     while (message == null)
-                        message = input.readLine();
+                    message = input.readLine();
 
 
                     writeToast("Client: " + message);
 
-                    if (message.equals("STOP"))
+                    if (message.equals("STOP")){
                         startStopAlertTimer();
+                        if(startLandingFlag) {
+                            try {
+                                BaseProduct aircraft = DJIDemoApplication.getProductInstance();
+
+                                if (aircraft instanceof Aircraft) {
+
+                                    FlightController flightController = ((Aircraft) aircraft).getFlightController();
+                                    flightController.startLanding(new CommonCallbacks.CompletionCallback() {
+                                        @Override
+                                        public void onResult(DJIError djiError) {
+                                            setResultToToast("Landing!: " + (djiError == null
+                                                    ? "Success"
+                                                    : djiError.getDescription()));
+                                        }
+                                    });
+
+                                }
+
+//                            flightController.startLanding(new CommonCallbacks.CompletionCallback() {
+//                                @Override
+//                                public void onResult(DJIError djiError) {
+//                                    setResultToToast("Landing!: " + (djiError == null
+//                                            ? "Success"
+//                                            : djiError.getDescription()));
+//                                }
+//                            });
+                            } catch (Exception i) {
+                                i.printStackTrace();
+                                //writeToast("Error at ReceiveThread: " + i.getMessage());
+                                textScreen = findViewById(R.id.textView);
+                                runOnUiThread(() -> textScreen.setText("Landing error:" + i.getMessage()));
+                            }
+                        }
+                     }
+
+
+
                     else if (message.equals("CLOSE"))
                     {
                         clientSocket.close();
