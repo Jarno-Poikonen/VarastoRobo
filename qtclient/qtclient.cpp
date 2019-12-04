@@ -39,12 +39,11 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
 
     // LOAD IMAGES FROM RESOURCES:
 
-
     // white background :)
-    if(white_background.load(":/images/white_background", "png"))
+    if(pixmap_white_background.load(":/images/white_background", "png"))
     {
         qDebug() << "image load successful (:/images/white_background.png)";
-        graphics_item_pixmap_pointer_array[0] = scene.addPixmap(white_background);
+        graphics_item_white_background = scene.addPixmap(pixmap_white_background);
     }
     else
     {
@@ -52,10 +51,10 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     }
 
     // graphics view grid
-    if(graphicsview_grid.load(":/images/graphicsview_grid", "png"))
+    if(pixmap_graphicsview_grid.load(":/images/graphicsview_grid", "png"))
     {
         qDebug() << "image load successful (:/images/graphicsview_grid.png)";
-        graphics_item_pixmap_pointer_array[1] = scene.addPixmap(graphicsview_grid);
+        graphics_item_graphicsview_grid = scene.addPixmap(pixmap_graphicsview_grid);
     }
     else
     {
@@ -63,10 +62,10 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     }
 
     // tables
-    if(tables.load(":/images/tables", "png"))
+    if(pixmap_tables.load(":/images/tables", "png"))
     {
         qDebug() << "image load successful (:/images/tables.png)";
-        graphics_item_pixmap_pointer_array[2] = scene.addPixmap(tables);
+        graphics_item_tables = scene.addPixmap(pixmap_tables);
     }
     else
     {
@@ -74,10 +73,10 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     }
 
     // gopigo_grid
-    if(gopigo_grid.load(":/images/gopigo_grid", "png"))
+    if(pixmap_gopigo_grid.load(":/images/gopigo_grid", "png"))
     {
         qDebug() << "image load successful (:/images/gopigo_grid.png)";
-        graphics_item_pixmap_pointer_array[3] = scene.addPixmap(gopigo_grid);
+        graphics_item_gopigo_grid = scene.addPixmap(pixmap_gopigo_grid);
     }
     else
     {
@@ -85,10 +84,10 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     }
 
     // ur5
-    if(ur5.load(":/images/ur5", "png"))
+    if(pixmap_ur5.load(":/images/ur5", "png"))
     {
         qDebug() << "image load successful (:/images/ur5.png)";
-        graphics_item_pixmap_pointer_array[4] = scene.addPixmap(ur5);
+        graphics_item_ur5 = scene.addPixmap(pixmap_ur5);
     }
     else
     {
@@ -98,10 +97,12 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     // 4 instances of gopigo images
     for(quint8 i = 0; i < 4; ++i)
     {
-        if(gopigo_array[i].load(":/images/gopigo", "png"))
+        if(pixmap_gopigo_list[i].load(":/images/gopigo", "png"))
         {
             qDebug() << "image load successful (:/images/gopigo.png)";
-            graphics_item_pixmap_pointer_array[5+i] = scene.addPixmap(gopigo_array[i]);
+            graphics_item_gopigo[i] = scene.addPixmap(pixmap_gopigo_list[i]);
+            graphics_item_gopigo[i]->setPos(280-18, 490-i*70-18);
+            qDebug() << "graphics_item_gopigo: " << graphics_item_gopigo[i]->pos();
         }
         else
         {
@@ -109,16 +110,44 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
         }
     }
 
+    // 42 istances of obstacle images
+    quint8 i = 0;
+    for(quint8 y = 0; y < 6; ++y)
+    {
+        for(quint8 x = 0; x < 9; ++x)
+        {
+            if( ((y == 5 || y == 4) && (x == 0 || x == 1 || x == 7 || x == 8)) || (x == 4 && !(y == 4 || y == 5)) )
+                continue;
+
+            if(pixmap_obstacle_list[i].load(":/images/obstacle", "png"))
+            {
+                graphics_item_obstacle[i] = scene.addPixmap(pixmap_obstacle_list[i]);
+                graphics_item_obstacle[i]->hide();
+                graphics_item_obstacle[i]->setPos(280-18 + 70*x, 490-18 - 70*y);
+                qDebug() << "image load successful (:/images/obstacle.png)" << "x: " << x << "y:" << y << "graphics_item_obstacle:" << graphics_item_obstacle[i]->pos();
+                i++;
+            }
+            else
+            {
+                qDebug() << "image load failure (:/images/obstacle.png)";
+            }
+        }
+    }
+
     scene.setSceneRect(0, 0, 1120, 630);
-    graphics_item_pixmap_pointer_array[0]->setPos(0, 0);           // white background
-    graphics_item_pixmap_pointer_array[1]->setPos(0, 0);           // graphicsview grid
-    graphics_item_pixmap_pointer_array[2]->setPos(245-1, 105-1);   // tables       (-1 offset due to added border in the image)
-    graphics_item_pixmap_pointer_array[3]->setPos(280-1, 140-1);   // gopigo grid  (-1 offset due to added border in the image)
-    graphics_item_pixmap_pointer_array[4]->setPos(525-1, 350-1);   // ur5          (-1 offset due to added border in the image)
-    graphics_item_pixmap_pointer_array[5]->setPos(280-18, 490-18); // gopigo at (0, 0) (-18 offset to center on a grid node)
-    graphics_item_pixmap_pointer_array[6]->setPos(280-18, 420-18); // gopigo at (0, 1) (-18 offset to center on a grid node)
-    graphics_item_pixmap_pointer_array[7]->setPos(280-18, 350-18); // gopigo at (0, 2) (-18 offset to center on a grid node)
-    graphics_item_pixmap_pointer_array[8]->setPos(280-18, 280-18); // gopigo at (0, 3) (-18 offset to center on a grid node)
+    graphics_item_white_background->setPos(0, 0);    // occupies 1120x630, the whole graphicsview dimensions
+    graphics_item_graphicsview_grid->setPos(0, 0);   // occupies 1120x630, the whole graphicsview dimensions
+    graphics_item_tables->setPos(245-1, 105-1);      // (-1 offset due to added border in the image)
+    graphics_item_gopigo_grid->setPos(280-1, 140-1); // (-1 offset due to added border in the image)
+    graphics_item_ur5->setPos(525-1, 350-1);         // (-1 offset due to added border in the image)
+
+
+//    graphics_item_obstacle[0]->setPos(280-18, 490-18);
+//    graphics_item_obstacle[1]->setPos(280-18, 420-18);
+//    graphics_item_obstacle[2]->setPos(280-18, 350-18);
+//    graphics_item_obstacle[3]->setPos(280-18, 280-18);
+
+
     ui->graphicsView->setScene(&scene);
     ui->graphicsView->show();
 }
@@ -142,18 +171,62 @@ void QtClient::slot_readyRead_udp() // 1
         udp_socket.readDatagram(datagram, datagram_size, &qha, &master_udp_port);
         master_ip = qha.toString();
         master_ip.remove(0,7);
-        smb = SystemBroadcastMessage(datagram, datagram_size);
-        smb.parse_datagram();
+        sbm = SystemBroadcastMessage(datagram, datagram_size);
+        sbm.parse_datagram();
+
+        quint8 obstacle_index = 0;
+        for(quint8 i = 0; i < sbm.obstacle_count; ++i)
+        {
+            quint8 x = sbm.obstacle_list[i].x;
+            quint8 y = sbm.obstacle_list[i].y;
+
+            if( !(((y == 5 || y == 4) && (x == 0 || x == 1 || x == 7 || x == 8)) || (x == 4 && !(y == 4 || y == 5))) )
+            {
+                if(y <= 3)
+                {
+                    obstacle_index = y*9 - (y + (x > 4)) + x;
+                }
+                else if(y == 4)
+                {
+                    obstacle_index = 32 + x - 2;
+                }
+                else if(y == 5)
+                {
+                    obstacle_index = 37 + x - 2;
+                }
+                graphics_item_obstacle[obstacle_index]->show();
+            }
+        }
+
+        quint8 gopigo_index = 0;
+        for(quint8 i = 0; i < sbm.device_count; ++i)
+        {
+            if(sbm.device_list[i].type == 2)
+            {
+                quint8 x = sbm.device_list[i].point.x;
+                quint8 y = sbm.device_list[i].point.y;
+                graphics_item_gopigo[gopigo_index]->setPos(280-18 + 70*x, 490-18 - 70*y);
+                gopigo_index++;
+            }
+        }
+
+        // get gopigo coords and draw them in the graphicsview
+        /*
+        quint8 obstacle_count;              // max 54
+        quint8 device_count;                // 4x GoPiGo, UR5, Drone, QtClient = 7 (master not included here)
+        Point obstacle_list[54];            // x, y // 1, 1 [54*2]
+        VarastoRoboDevice device_list[32];  // type, id, x, y, ipv4 // 1, 1, 1, 1, 4 bytes [7*8]
+        */
     }
 }
 
 void QtClient::on_read_sbm_triggered() // 1
 {
-    ui->terminal->append(smb.str);
+    ui->terminal->append(sbm.str);
     ui->terminal->append(QString("Master advertized at: ") + master_ip + QString(":") + QString::number(master_udp_port));
 }
 
-void QtClient::on_pbSMBfreeze_clicked() // 1
+void QtClient::on_pbSBMfreeze_clicked() // 1
 {
     sent_bytes = udp_socket.writeDatagram(sbm_freeze_message, 8,  QHostAddress::Broadcast, 1732);
     ui->terminal->append(QString("SENT (")                        + QString::number(sent_bytes) + QString(" bytes)"));

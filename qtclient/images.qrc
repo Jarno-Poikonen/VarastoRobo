@@ -5,6 +5,7 @@
     <file>images/tables.png</file>
     <file>images/gopigo_grid.png</file>
     <file>images/ur5.png</file>
+    <file>images/obstacle.png</file>
     <file>images/gopigo.png</file>
 </qresource>
 </RCC>

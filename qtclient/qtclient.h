@@ -8,8 +8,8 @@
 #include <QHostAddress>
 #include <QGraphicsView>
 #include <QGraphicsScene>
-#include "systembroadcastmessage.h"
 #include <QGraphicsItem>
+#include "systembroadcastmessage.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class QtClient; }
@@ -43,7 +43,7 @@ private:
     qint64 datagram_size;
     char datagram[512];
 
-    SystemBroadcastMessage smb;
+    SystemBroadcastMessage sbm;
 
     // Message #1 System Broadcast Message FREEZE
     char sbm_freeze_message[8] = {
@@ -193,13 +193,21 @@ private:
     quint8 extra_data[4096];    
 
     QGraphicsScene scene;
-    QPixmap white_background;
-    QPixmap graphicsview_grid;
-    QPixmap tables;
-    QPixmap gopigo_grid;
-    QPixmap ur5;
-    QPixmap gopigo_array[4];
-    QGraphicsPixmapItem* graphics_item_pixmap_pointer_array[9];
+    QPixmap pixmap_white_background;
+    QPixmap pixmap_graphicsview_grid;
+    QPixmap pixmap_tables;
+    QPixmap pixmap_gopigo_grid;
+    QPixmap pixmap_ur5;
+    QPixmap pixmap_gopigo_list[4];
+    QPixmap pixmap_obstacle_list[42];
+
+    QGraphicsPixmapItem* graphics_item_white_background;
+    QGraphicsPixmapItem* graphics_item_graphicsview_grid;
+    QGraphicsPixmapItem* graphics_item_tables;
+    QGraphicsPixmapItem* graphics_item_gopigo_grid;
+    QGraphicsPixmapItem* graphics_item_ur5;
+    QGraphicsPixmapItem* graphics_item_gopigo[4];
+    QGraphicsPixmapItem* graphics_item_obstacle[42];
 
     signals:
         void finished();
@@ -218,7 +226,7 @@ private:
         void on_pbRLM_clicked();
         void on_pbPOM_clicked();
         void on_pbMCM_clicked();
-        void on_pbSMBfreeze_clicked();
+        void on_pbSBMfreeze_clicked();
         void on_read_sbm_triggered();
         void on_connect_to_host_triggered();
         void on_send_ncm_triggered();

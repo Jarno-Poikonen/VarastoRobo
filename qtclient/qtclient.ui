@@ -196,7 +196,7 @@ QSpinBox {
      <string>beginning row</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbSMBfreeze">
+   <widget class="QPushButton" name="pbSBMfreeze">
     <property name="geometry">
      <rect>
       <x>1360</x>
@@ -731,7 +731,7 @@ QCheckBox {
    <zorder>label_mode</zorder>
    <zorder>label_row_count</zorder>
    <zorder>label_4</zorder>
-   <zorder>pbSMBfreeze</zorder>
+   <zorder>pbSBMfreeze</zorder>
    <zorder>pbSSM</zorder>
    <zorder>pbSHM</zorder>
    <zorder>label_product_id</zorder>
@@ -828,7 +828,7 @@ QCheckBox {
   <tabstop>spinBox_mode</tabstop>
   <tabstop>spinBox_row_count</tabstop>
   <tabstop>spinBox_beginning_row</tabstop>
-  <tabstop>pbSMBfreeze</tabstop>
+  <tabstop>pbSBMfreeze</tabstop>
   <tabstop>terminal</tabstop>
  </tabstops>
  <resources/>
