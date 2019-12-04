@@ -91,8 +91,6 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
     private int trackingIndex = INVALID_INDEX;
     private int photoCaptureInterval = 5000;
-    private int stopAlertInterval = 500;
-    private int stopAlertCounter = 0;
     private int SERVER_PORT = 5000;
 
     private float i = 0.0f;
@@ -101,7 +99,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     private boolean stopAlertVisible = false;
     private boolean flag = true;
     private boolean forceDisconnect = false;
-    private boolean startLandingFlag = false;
+    private boolean autoLandingEnabled = false;
 
     // UI elements
     private RelativeLayout.LayoutParams layoutParams;
@@ -136,16 +134,15 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
     // Timers and their handlers
     private Timer photoCaptureTimer;
-    private Timer stopAlertTimer;
     private Timer trackTimer;
     private Handler photoCaptureTimerHandler = new Handler();
-    private Handler stopAlertTimerHandler = new Handler();
     private Handler trackTimerHandler = new Handler();
 
     // Server related classes
     ServerSocket serverSocket;
     Socket clientSocket;
     Thread SocketThread = null;
+    Thread AlertThread = null;
     BufferedReader input;
 
 
@@ -153,7 +150,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     // Toast        @param string
     private void writeToast(final String msg)
     {
-        TrackingTestActivity.this.runOnUiThread(() -> Toast.makeText(TrackingTestActivity.this, msg, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(TrackingTestActivity.this, msg, Toast.LENGTH_SHORT).show());
     }
 
 
@@ -163,7 +160,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         if ( mPushInfoTv == null )
             writeToast("Push info tv has not be init...");
 
-        TrackingTestActivity.this.runOnUiThread(() -> mPushInfoTv.setText(string));
+        runOnUiThread(() -> mPushInfoTv.setText(string));
     }
 
 
@@ -222,9 +219,6 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 Objects.requireNonNull(targetViewHashMap.get(trackingIndex)).setBackgroundColor(Color.RED);
 
             mActiveTrackMission = new ActiveTrackMission(rectF, startMode);
-
-            //  }
-
 
             if (startMode == ActiveTrackMode.QUICK_SHOT)
             {
@@ -492,7 +486,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 break;
 
             case R.id.switchAutoLand:
-                startLandingFlag = isChecked;
+                autoLandingEnabled = isChecked;
                 break;
 
             default:
@@ -687,7 +681,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 state == ActiveTrackState.AUTO_SENSING_FOR_QUICK_SHOT ||
                 state == ActiveTrackState.WAITING_FOR_CONFIRMATION)
         {
-            TrackingTestActivity.this.runOnUiThread(() ->
+            runOnUiThread(() ->
             {
                 mStopBtn.setVisibility(View.VISIBLE);
                 mStopBtn.setClickable(true);
@@ -703,7 +697,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 state == ActiveTrackState.CANNOT_CONFIRM ||
                 state == ActiveTrackState.PERFORMING_QUICK_SHOT)
         {
-            TrackingTestActivity.this.runOnUiThread(() ->
+            runOnUiThread(() ->
             {
                 mStopBtn.setVisibility(View.VISIBLE);
                 mStopBtn.setClickable(true);
@@ -715,7 +709,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         }
         else
         {
-            TrackingTestActivity.this.runOnUiThread(() ->
+            runOnUiThread(() ->
             {
                 mStopBtn.setVisibility(View.INVISIBLE);
                 mStopBtn.setClickable(false);
@@ -739,7 +733,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         final int r = (int) ((rectF.centerX() + rectF.width() / 2) * parent.getWidth());
         final int b = (int) ((rectF.centerY() + rectF.height() / 2) * parent.getHeight());
 
-        TrackingTestActivity.this.runOnUiThread(() ->
+        runOnUiThread(() ->
         {
             mTrackingImage.setVisibility(View.VISIBLE);
             if ( (targetState == ActiveTrackTargetState.CANNOT_CONFIRM)  ||  (targetState == ActiveTrackTargetState.UNKNOWN) )
@@ -770,7 +764,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         final int r = (int) ((rectF.centerX() + rectF.width() / 2) * parent.getWidth());
         final int b = (int) ((rectF.centerY() + rectF.height() / 2) * parent.getHeight());
 
-        TrackingTestActivity.this.runOnUiThread(() ->
+        runOnUiThread(() ->
         {
             mTrackingImage.setVisibility(View.INVISIBLE);
             iv.setX(l);
@@ -1045,7 +1039,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 Map.Entry<Integer, MultiTrackingView> entry = it.next();
                 final MultiTrackingView view = entry.getValue();
                 it.remove();
-                TrackingTestActivity.this.runOnUiThread(() -> mBgLayout.removeView(view));
+                runOnUiThread(() -> mBgLayout.removeView(view));
             }
         }
     }
@@ -1060,8 +1054,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
         if ( mediaFileList.size() == 0 )
         {
-            writeToast( "Current list size is zero, try downloading again." );
-//            writeToast( String.valueOf(mediaFileList.size()) );
+            writeToast( "Current list size returned zero, try downloading again." );
             return;
         }
 
@@ -1171,18 +1164,13 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
     private void capturePhoto()
     {
-        writeToast("SNAP");
+        writeToast("SNAP!");
 
         Camera camera = getProductInstance().getCamera();
 
         if (camera != null)
         {
-            writeToast("Camera found");
-
-            camera.setMode(SettingsDefinitions.CameraMode.SHOOT_PHOTO, djiError ->
-            {
-
-            });
+            camera.setMode( SettingsDefinitions.CameraMode.SHOOT_PHOTO, djiError -> {} );
 
             camera.startShootPhoto(djiError ->
             {
@@ -1194,51 +1182,8 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         }
         else
             writeToast("Camera is null");
-
     }
 
-
-
-
-
-    public void startAlertTimer()
-    {
-        stopAlertTimer = new Timer();
-
-        TimerTask mTt2 = new TimerTask()
-        {
-            public void run()
-            {
-                stopAlertTimerHandler.post(() -> toggleStopAlert());
-            }
-        };
-
-        stopAlertTimer.schedule(mTt2, stopAlertInterval, stopAlertInterval);
-    }
-
-
-    private void stopAlertTimer()
-    {
-        if ( stopAlertTimer != null )
-        {
-            stopAlertTimer.cancel();
-            stopAlertTimer.purge();
-        }
-    }
-
-
-    private void toggleStopAlert()
-    {
-        stopAlertCounter++;
-        stopAlertVisible = !stopAlertVisible;
-        mStopMessage.setVisibility(stopAlertVisible  ?  View.VISIBLE  :  View.INVISIBLE);
-
-        if (stopAlertCounter == 20)
-        {
-            stopAlertCounter = 0;
-            stopAlertTimer();
-        }
-    }
 
 
 
@@ -1316,6 +1261,29 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
     }
 
 
+    private class AlertThread implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            stopAlertVisible = true;
+            runOnUiThread( () -> mStopMessage.setVisibility(View.VISIBLE) );
+
+            try
+            {
+                Thread.sleep(1500);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+
+            stopAlertVisible = false;
+            runOnUiThread( () -> mStopMessage.setVisibility(View.INVISIBLE) );
+        }
+    }
+
+
     private class ReceiveThread implements Runnable
     {
         @Override
@@ -1344,26 +1312,33 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     }
                     else if ( message.equals("STOP") )
                     {
-                        startAlertTimer();
+                        if (!stopAlertVisible)
+                        {
+                            AlertThread = new Thread(new AlertThread());
+                            AlertThread.start();
+                        }
 
-                        if (startLandingFlag)
+                        if (autoLandingEnabled)
                         {
                             BaseProduct aircraft = DJIDemoApplication.getProductInstance();
 
                             if (aircraft instanceof Aircraft)
                             {
                                 FlightController flightController = ((Aircraft) aircraft).getFlightController();
-                                flightController.startLanding(djiError -> writeToast("Landing!: " + (djiError == null  ?  "Success"  :  djiError.getDescription())));
+                                flightController.startLanding(djiError -> writeToast("Landing! " + (djiError == null  ?  "Success"  :  djiError.getDescription())));
                             }
 
-//                            flightController.startLanding(new CommonCallbacks.CompletionCallback() {
-//                                @Override
-//                                public void onResult(DJIError djiError) {
-//                                    setResultToToast("Landing!: " + (djiError == null
-//                                            ? "Success"
-//                                            : djiError.getDescription()));
-//                                }
-//                            });
+/*
+                            flightController.startLanding(new CommonCallbacks.CompletionCallback()
+                            {
+                                @Override
+                                public void onResult(DJIError djiError)
+                                {
+                                    setResultToToast("Landing!: " + (djiError == null  ?  "Success"  :  djiError.getDescription()));
+                                }
+                            });
+*/
+
                         }
                     }
 
@@ -1380,8 +1355,11 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
     public void SetForceDisconnect(View view)
     {
-        forceDisconnect = true;
-        clientStatusUI("Closing client socket...", "CLOSING SOCKET", 0xFF00FFFF);
+        if ( clientSocket.isConnected() )
+        {
+            forceDisconnect = true;
+            clientStatusUI("Closing client socket...", "CLOSING SOCKET", 0xFF00FFFF);
+        }
     }
 }
 
