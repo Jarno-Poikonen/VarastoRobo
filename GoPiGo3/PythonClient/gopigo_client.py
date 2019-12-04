@@ -3,16 +3,17 @@ import socket
 import time
 import threading
 import Clientohjattu
+import kuvantunnistus
 
 masterIp = None 
 deviceID = None
-no_packet = 128
+no_packet = 255
 
 def udp_broadcast():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
     sock.bind(("", 1732))
-    waitMessage = False
+    waitMessage = True
     while waitMessage == True:
         message, masterAddress = sock.recvfrom(512)
         message = bytearray(message)
@@ -30,18 +31,18 @@ def udp_broadcast():
 def form_NCM(devType,devID,cordX,cordY,direction,devState):
     content_length = 6
     message = bytearray([2])
-    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray((content_length).to_bytes(4, 'little')))
     message.extend(bytearray([devType,devID,cordX,cordY,direction,devState]))
-    
+        
     return message
 
 def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum):
     content_length = 7
     if packetNum != no_packet:
-        content_length = +1
+        content_length += 1
         
     message = bytearray([4])
-    message.extend(bytearray(content_length).to_bytes(4, 'little'))
+    message.extend(bytearray((content_length).to_bytes(4, 'little')))
     message.extend(bytearray([commandNum,errorCode,atom,cordX,cordY,direction,devState]))
     if packetNum != no_packet:
         message.append(packetNum)
@@ -52,7 +53,9 @@ def main():
     systemStop = 0
     deviceState = 0
     latestDir = 0
+    errorCode = 0
     carriedPacket = no_packet
+    
     broadcast_thread = threading.Thread(target=udp_broadcast,args=())
     broadcast_thread.start()
 
@@ -102,9 +105,10 @@ def main():
         #MCM
         elif fromMaster[0] == 13 and deviceState == 1:
             direction = fromMaster[5]
-            Clientohjattu.Liiku(direction)
+            errorCode = Clientohjattu.Liiku(direction) 
             pos, orientation = Clientohjattu.PosOri()
-            reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
+            carriedPacket = kuvantunnistus.kuvantunnistus()
+            reply = form_WFM(fromMaster[0],errorCode,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
             masterSocket.send(reply)
             
         else:
