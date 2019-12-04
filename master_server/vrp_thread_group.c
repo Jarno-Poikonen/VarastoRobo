@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
+	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
 */
 
 #include "vrp_thread_group.h"

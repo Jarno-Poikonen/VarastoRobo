@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
+	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
 */
 
 #ifndef VRP_MASTER_SERVER_BASE_H
@@ -125,8 +125,11 @@ typedef struct vrp_idle_location_t
 typedef struct vrp_pickup_location_t
 {
 	uint8_t id;
-	uint8_t x;
-	uint8_t y;
+	uint8_t load_x;
+	uint8_t load_y;
+	uint8_t direction;
+	uint8_t entry_x;
+	uint8_t entry_y;
 } vrp_pickup_location_t;
 
 typedef struct vrp_product_order_t

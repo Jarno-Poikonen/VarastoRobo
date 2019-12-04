@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
+	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
 */
 
 #include <Winsock2.h>
@@ -271,7 +271,7 @@ static size_t read_pickup_location_list_from_json(const jsonpl_value_t* configur
 			if (component && component->type == JSONPL_TYPE_NUMBER)
 				++n;
 		}
-	uint8_t* table = (uint8_t*)malloc(n ? (n * 3) : 1);
+	uint8_t* table = (uint8_t*)malloc(n ? (n * 4) : 1);
 	if (!table)
 		return 0;
 	for (size_t c = 0, i = 0; c != n; ++i)
@@ -280,17 +280,22 @@ static size_t read_pickup_location_list_from_json(const jsonpl_value_t* configur
 			jsonpl_value_t* component = find_child_by_name(list->array.table[i], "id");
 			if (component && component->type == JSONPL_TYPE_NUMBER)
 			{
-				table[c * 3 + 0] = (uint8_t)component->number_value;
+				table[c * 4 + 0] = (uint8_t)component->number_value;
 				component = find_child_by_name(list->array.table[i], "x");
 				if (component && component->type == JSONPL_TYPE_NUMBER)
-					table[c * 3 + 1] = (uint8_t)component->number_value;
+					table[c * 4 + 1] = (uint8_t)component->number_value;
 				else
-					table[c * 3 + 1] = 0xFF;
+					table[c * 4 + 1] = 0xFF;
 				component = find_child_by_name(list->array.table[i], "y");
 				if (component && component->type == JSONPL_TYPE_NUMBER)
-					table[c * 3 + 2] = (uint8_t)component->number_value;
+					table[c * 4 + 2] = (uint8_t)component->number_value;
 				else
-					table[c * 3 + 2] = 0xFF;
+					table[c * 4 + 2] = 0xFF;
+				component = find_child_by_name(list->array.table[i], "direction");
+				if (component && component->type == JSONPL_TYPE_NUMBER)
+					table[c * 4 + 3] = (uint8_t)component->number_value;
+				else
+					table[c * 4 + 3] = 0xFF;
 				++c;
 			}
 		}

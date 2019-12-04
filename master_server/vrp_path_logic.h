@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
+	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
 */
 
 #ifndef VRP_PATH_LOGIC_H
@@ -29,19 +29,21 @@ int vrp_is_coordinate_idle_location(const vrp_server_t* server, int x, int y);
 
 int vrp_get_idle_location_for_device(const vrp_server_t* server, size_t device_index, uint8_t* x, uint8_t* y);
 
-int vrp_get_device_distance_to_pickup_location(vrp_server_t* server, size_t device_index, size_t* pickup_location_index);
+int vrp_get_device_distance_to_pickup_location_entry(vrp_server_t* server, size_t device_index, size_t* pickup_location_index);
 
 size_t vrp_get_device_index_for_free_transport(vrp_server_t* server);
 
 size_t vrp_get_nearest_pickup_location_index_for_device(vrp_server_t* server, size_t device_index);
 
-size_t vrp_is_device_on_pickup_location(vrp_server_t* server, size_t device_index);
+size_t vrp_is_device_on_pickup_load_location(vrp_server_t* server, size_t device_index);
 
-size_t vrp_get_pickup_location_index_by_coordinate(const vrp_server_t* server, int x, int y);
+size_t vrp_get_pickup_location_index_by_load_coordinate(const vrp_server_t* server, int x, int y);
+
+size_t vrp_get_pickup_location_index_by_entry_coordinate(const vrp_server_t* server, int x, int y);
 
 size_t vrp_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y);
 
-int vrp_get_any_transport_device_from_pickup_location(vrp_server_t* server, size_t* device_index, size_t* pickup_location_index);
+int vrp_get_any_transport_device_from_pickup_load_location(vrp_server_t* server, size_t* device_index, size_t* pickup_location_index);
 
 int vrp_is_device_likely_to_colide(const vrp_server_t* server, size_t device_this_index, size_t device_other_index, size_t time_step_count, int do_not_care_if_this_device_has_higher_priority, uint8_t* x, uint8_t* y);
 

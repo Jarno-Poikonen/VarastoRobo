@@ -1,8 +1,8 @@
 /*
-	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
+	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
 */
 
-#define VRP_MASTER_SERVER_VERSION "0.8.0 2019-12-03"
+#define VRP_MASTER_SERVER_VERSION "0.9.0 2019-12-04"
 
 //#define VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 //#define VRP_DEBUG_AUTO_FINISH_TRANSPORT
@@ -44,7 +44,8 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 	uint8_t colision_x = VRP_COORDINATE_UNDEFINED;
 	uint8_t colision_y = VRP_COORDINATE_UNDEFINED;
 
-	if (vrp_is_coordinate_idle_location(server, server->device_table[i].destination_x, server->device_table[i].destination_y) && !vrp_is_cell_open(server, server->device_table[i].destination_x, server->device_table[i].destination_y))
+	if (vrp_is_coordinate_idle_location(server, server->device_table[i].destination_x, server->device_table[i].destination_y) &&
+		!vrp_is_cell_open(server, server->device_table[i].destination_x, server->device_table[i].destination_y))
 	{
 		server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
 		server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
@@ -64,7 +65,7 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 	{
 
 
-		if ((((server->product_order_table[product_order_index].order_status == VRP_ORDER_IN_STORAGE) || (server->product_order_table[product_order_index].order_status == VRP_ORDER_PICKUP)) && (vrp_is_device_on_pickup_location(server, i) != (size_t)~0)) ||
+		if ((((server->product_order_table[product_order_index].order_status == VRP_ORDER_IN_STORAGE) || (server->product_order_table[product_order_index].order_status == VRP_ORDER_PICKUP)) && (vrp_is_device_on_pickup_load_location(server, i) != (size_t)~0)) ||
 			((server->product_order_table[product_order_index].order_status == VRP_ORDER_ON_MOVE) && ((server->device_table[i].x == server->product_order_table[product_order_index].destination_x) && (server->device_table[i].y == server->product_order_table[product_order_index].destination_y))) ||
 			(server->product_order_table[product_order_index].order_status == VRP_ORDER_FINAL_WAITING))
 		{
@@ -108,8 +109,17 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 				pickup_location_index = vrp_get_nearest_pickup_location_index_for_device(server, i);
 				if (pickup_location_index != (size_t)~0)
 				{
-					server->device_table[i].destination_x = server->pickup_location_table[pickup_location_index].x;
-					server->device_table[i].destination_y = server->pickup_location_table[pickup_location_index].y;
+					if ((server->device_table[i].x == server->pickup_location_table[pickup_location_index].entry_x) &&
+						(server->device_table[i].y == server->pickup_location_table[pickup_location_index].entry_y))
+					{
+						server->device_table[i].destination_x = server->pickup_location_table[pickup_location_index].load_x;
+						server->device_table[i].destination_y = server->pickup_location_table[pickup_location_index].load_y;
+					}
+					else
+					{
+						server->device_table[i].destination_x = server->pickup_location_table[pickup_location_index].entry_x;
+						server->device_table[i].destination_y = server->pickup_location_table[pickup_location_index].entry_y;
+					}
 				}
 				else
 				{
@@ -149,7 +159,6 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 
 			if (!vrp_is_cell_open(server, server->device_table[i].immediate_path[0].x, server->device_table[i].immediate_path[0].y))
 			{
-
 				if (vrp_is_coordinate_idle_location(server, server->device_table[i].x, server->device_table[i].y))
 				{
 					if (product_order_index != (size_t)~0)
@@ -157,8 +166,17 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 						pickup_location_index = vrp_get_nearest_pickup_location_index_for_device(server, i);
 						if (pickup_location_index != (size_t)~0)
 						{
-							server->device_table[i].destination_x = server->pickup_location_table[pickup_location_index].x;
-							server->device_table[i].destination_y = server->pickup_location_table[pickup_location_index].y;
+							if ((server->device_table[i].x == server->pickup_location_table[pickup_location_index].entry_x) &&
+								(server->device_table[i].y == server->pickup_location_table[pickup_location_index].entry_y))
+							{
+								server->device_table[i].destination_x = server->pickup_location_table[pickup_location_index].load_x;
+								server->device_table[i].destination_y = server->pickup_location_table[pickup_location_index].load_y;
+							}
+							else
+							{
+								server->device_table[i].destination_x = server->pickup_location_table[pickup_location_index].entry_x;
+								server->device_table[i].destination_y = server->pickup_location_table[pickup_location_index].entry_y;
+							}
 						}
 						else
 						{
@@ -188,8 +206,6 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 
 				if (!vrp_write(server, i, 0, 6))
 					return 0;
-
-
 
 				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 			}
@@ -229,7 +245,7 @@ int vrp_process_ur5_idle(vrp_server_t* server, size_t i)
 				transport_device_index = vrp_get_device_index_by_id(server, server->product_order_table[j].transport_device_id);
 				if (transport_device_index != (size_t)~0)
 				{
-					pickup_location_index = vrp_is_device_on_pickup_location(server, transport_device_index);
+					pickup_location_index = vrp_is_device_on_pickup_load_location(server, transport_device_index);
 					if (pickup_location_index != (size_t)~0)
 						product_order_index = j;
 				}
@@ -293,8 +309,8 @@ int vrp_process_ur5_idle(vrp_server_t* server, size_t i)
 			return 0;
 		server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 
-		server->device_table[i].move_to_x = server->pickup_location_table[pickup_location_index].x;
-		server->device_table[i].move_to_y = server->pickup_location_table[pickup_location_index].y;
+		server->device_table[i].move_to_x = server->pickup_location_table[pickup_location_index].load_x;
+		server->device_table[i].move_to_y = server->pickup_location_table[pickup_location_index].load_y;
 
 		server->product_order_table[product_order_index].order_status = VRP_ORDER_PICKUP;
 	}
@@ -1125,6 +1141,7 @@ DWORD vrp_run_setup(vrp_server_t** server)
 	
 	if (error)
 	{
+
 		printf("Failed to create server instance. Error code %lu error info \"%s\"\n", error, server_setup_error_info);
 		return error;
 	}

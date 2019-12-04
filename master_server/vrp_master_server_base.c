@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.8.0 2019-12-03 by Santtu Nyman.
+	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
@@ -408,6 +408,9 @@ int vrp_process_possible_emergency(vrp_server_t* server)
 	{
 		if ((io_transfered >= 8) && (server->emergency_io_memory[0] == 0x01) && (server->emergency_io_memory[1] == 0x07) && !server->emergency_io_memory[2] && (server->emergency_io_memory[3] != server->id))
 		{
+
+
+
 			server->status = 0;
 			server->broadcast_immediately = 1;
 			emergency_stop = 1;
@@ -939,9 +942,44 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	server->pickup_location_count = configuration->pickup_location_count;
 	for (size_t i = 0; i != configuration->pickup_location_count; ++i)
 	{
-		server->pickup_location_table[i].id = configuration->pickup_location_table[i * 3 + 0];
-		server->pickup_location_table[i].x = configuration->pickup_location_table[i * 3 + 1];
-		server->pickup_location_table[i].y = configuration->pickup_location_table[i * 3 + 2];
+		server->pickup_location_table[i].id = configuration->pickup_location_table[i * 4 + 0];
+		server->pickup_location_table[i].load_x = configuration->pickup_location_table[i * 4 + 1];
+		server->pickup_location_table[i].load_y = configuration->pickup_location_table[i * 4 + 2];
+		server->pickup_location_table[i].direction = configuration->pickup_location_table[i * 4 + 3];
+		if (server->pickup_location_table[i].load_x < server->map_width &&
+			server->pickup_location_table[i].load_y < server->map_height &&
+			server->pickup_location_table[i].direction < 4)
+		{
+			switch (server->pickup_location_table[i].direction)
+			{
+				case VRP_DIRECTION_RIGHT:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x - 1;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y;
+					break;
+				case VRP_DIRECTION_UP:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y - 1;
+					break;
+				case VRP_DIRECTION_LEFT:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x + 1;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y;
+					break;
+				case VRP_DIRECTION_DOWN:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y + 1;
+					break;
+				default:
+					break;
+			}
+		}
+		else
+		{
+			server->pickup_location_table[i].load_x = VRP_COORDINATE_UNDEFINED;
+			server->pickup_location_table[i].load_y = VRP_COORDINATE_UNDEFINED;
+			server->pickup_location_table[i].direction = VRP_DIRECTION_UNDEFINED;
+			server->pickup_location_table[i].entry_x = VRP_COORDINATE_UNDEFINED;
+			server->pickup_location_table[i].entry_y = VRP_COORDINATE_UNDEFINED;
+		}
 	}
 
 	vrp_free_master_configuration(configuration);
