@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>images/white_background.png</file>
+    <file>images/graphicsview_grid.png</file>
+    <file>images/tables.png</file>
+    <file>images/gopigo_grid.png</file>
+    <file>images/ur5.png</file>
+    <file>images/gopigo.png</file>
+</qresource>
+</RCC>

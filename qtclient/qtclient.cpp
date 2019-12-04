@@ -19,8 +19,8 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     ui->spinBox_product_id->setMaximum(255);
 
     // mcm (rcm)
-    ui->spinBox_control_device_id->setMinimum(1);
-    ui->spinBox_control_device_id->setMaximum(9);
+    ui->spinBox_control_device_id->setMinimum(0); // lopullisessa versiossa 1
+    ui->spinBox_control_device_id->setMaximum(254); // lopullisessa versiossa 9
     ui->spinBox_control_flag->setMinimum(0);
     ui->spinBox_control_flag->setMaximum(1);
     ui->spinBox_direction->setMinimum(0);
@@ -32,9 +32,95 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     connect(&tcp_socket,    SIGNAL(disconnected()),                this, SLOT(slot_disconnected()));
     connect(&tcp_socket,    SIGNAL(readyRead()),                   this, SLOT(slot_readyRead_tcp()));
 
-    ui->textEdit->append(QString("Qt Client port bindings:"));
-    ui->textEdit->append(QString("TCP port to master: ") + QString::number(tcp_port_to_master));
-    ui->textEdit->append(QString("UDP port from master: ") + QString::number(udp_port_from_master));
+    ui->terminal->append(QString("Qt Client port bindings:"));
+    ui->terminal->append(QString("TCP port to master: ") + QString::number(tcp_port_to_master));
+    ui->terminal->append(QString("UDP port from master: ") + QString::number(udp_port_from_master));
+
+
+    // LOAD IMAGES FROM RESOURCES:
+
+
+    // white background :)
+    if(white_background.load(":/images/white_background", "png"))
+    {
+        qDebug() << "image load successful (:/images/white_background.png)";
+        graphics_item_pixmap_pointer_array[0] = scene.addPixmap(white_background);
+    }
+    else
+    {
+        qDebug() << "image load failure (:/images/white_background.png)";
+    }
+
+    // graphics view grid
+    if(graphicsview_grid.load(":/images/graphicsview_grid", "png"))
+    {
+        qDebug() << "image load successful (:/images/graphicsview_grid.png)";
+        graphics_item_pixmap_pointer_array[1] = scene.addPixmap(graphicsview_grid);
+    }
+    else
+    {
+        qDebug() << "image load failure (:/images/graphicsview_grid.png)";
+    }
+
+    // tables
+    if(tables.load(":/images/tables", "png"))
+    {
+        qDebug() << "image load successful (:/images/tables.png)";
+        graphics_item_pixmap_pointer_array[2] = scene.addPixmap(tables);
+    }
+    else
+    {
+        qDebug() << "image load failure (:/images/tables.png)";
+    }
+
+    // gopigo_grid
+    if(gopigo_grid.load(":/images/gopigo_grid", "png"))
+    {
+        qDebug() << "image load successful (:/images/gopigo_grid.png)";
+        graphics_item_pixmap_pointer_array[3] = scene.addPixmap(gopigo_grid);
+    }
+    else
+    {
+        qDebug() << "image load failure (:/images/gopigo_grid.png)";
+    }
+
+    // ur5
+    if(ur5.load(":/images/ur5", "png"))
+    {
+        qDebug() << "image load successful (:/images/ur5.png)";
+        graphics_item_pixmap_pointer_array[4] = scene.addPixmap(ur5);
+    }
+    else
+    {
+        qDebug() << "image load failure (:/images/ur5.png)";
+    }
+
+    // 4 instances of gopigo images
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        if(gopigo_array[i].load(":/images/gopigo", "png"))
+        {
+            qDebug() << "image load successful (:/images/gopigo.png)";
+            graphics_item_pixmap_pointer_array[5+i] = scene.addPixmap(gopigo_array[i]);
+        }
+        else
+        {
+            qDebug() << "image load failure (:/images/gopigo.png)";
+        }
+    }
+
+    scene.setSceneRect(0, 0, 1120, 630);
+    graphics_item_pixmap_pointer_array[0]->setPos(0, 0);           // white background
+    graphics_item_pixmap_pointer_array[1]->setPos(0, 0);           // graphicsview grid
+    graphics_item_pixmap_pointer_array[2]->setPos(245-1, 105-1);   // tables       (-1 offset due to added border in the image)
+    graphics_item_pixmap_pointer_array[3]->setPos(280-1, 140-1);   // gopigo grid  (-1 offset due to added border in the image)
+    graphics_item_pixmap_pointer_array[4]->setPos(525-1, 350-1);   // ur5          (-1 offset due to added border in the image)
+    graphics_item_pixmap_pointer_array[5]->setPos(280-18, 490-18); // gopigo at (0, 0) (-18 offset to center on a grid node)
+    graphics_item_pixmap_pointer_array[6]->setPos(280-18, 420-18); // gopigo at (0, 1) (-18 offset to center on a grid node)
+    graphics_item_pixmap_pointer_array[7]->setPos(280-18, 350-18); // gopigo at (0, 2) (-18 offset to center on a grid node)
+    graphics_item_pixmap_pointer_array[8]->setPos(280-18, 280-18); // gopigo at (0, 3) (-18 offset to center on a grid node)
+    ui->graphicsView->setScene(&scene);
+    ui->graphicsView->show();
 }
 
 QtClient::~QtClient()
@@ -44,11 +130,11 @@ QtClient::~QtClient()
 
 void QtClient::bind()
 {
-    bool udp_binding_result = udp_socket.bind(udp_port_from_master);
-    ui->textEdit->append(QString("UDP binding result: ") + QString::number(udp_binding_result) + QString("\n"));
+    bool udp_binding_result = udp_socket.bind(udp_port_from_master, QAbstractSocket::ReuseAddressHint);
+    ui->terminal->append(QString("UDP binding result: ") + QString::number(udp_binding_result) + QString("\n"));
 }
 
-void QtClient::slot_readyRead_udp()
+void QtClient::slot_readyRead_udp() // 1
 {
     datagram_size = udp_socket.pendingDatagramSize();
     if(datagram_size != -1)
@@ -61,119 +147,119 @@ void QtClient::slot_readyRead_udp()
     }
 }
 
-void QtClient::on_pbSMBread_clicked()
+void QtClient::on_read_sbm_triggered() // 1
 {
-    ui->textEdit->append(smb.str);
-    ui->textEdit->append(QString("Master advertized at: ") + master_ip + QString(":") + QString::number(master_udp_port));
+    ui->terminal->append(smb.str);
+    ui->terminal->append(QString("Master advertized at: ") + master_ip + QString(":") + QString::number(master_udp_port));
 }
 
-void QtClient::on_pbSMBfreeze_clicked()
+void QtClient::on_pbSMBfreeze_clicked() // 1
 {
     sent_bytes = udp_socket.writeDatagram(sbm_freeze_message, 8,  QHostAddress::Broadcast, 1732);
-    ui->textEdit->append(QString("SENT (")                        + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("SBM(FREEZE): {"));
-    ui->textEdit->append(QString("  constant(lsb): ")             + QString::number(static_cast<quint8>(sbm_freeze_message[0])));
-    ui->textEdit->append(QString("  constant(msb): ")             + QString::number(static_cast<quint8>(sbm_freeze_message[1])));
-    ui->textEdit->append(QString("  state: ")                     + QString::number(static_cast<quint8>(sbm_freeze_message[2])));
-    ui->textEdit->append(QString("  master id: ")                 + QString::number(static_cast<quint8>(sbm_freeze_message[3])));
-    ui->textEdit->append(QString("  map height: ")                + QString::number(static_cast<quint8>(sbm_freeze_message[4])));
-    ui->textEdit->append(QString("  map width: ")                 + QString::number(static_cast<quint8>(sbm_freeze_message[5])));
-    ui->textEdit->append(QString("  obstacle count: ")            + QString::number(static_cast<quint8>(sbm_freeze_message[6])));
-    ui->textEdit->append(QString("  device count: ")              + QString::number(static_cast<quint8>(sbm_freeze_message[7])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (")                        + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("SBM(FREEZE): {"));
+    ui->terminal->append(QString("  constant(lsb): ")             + QString::number(static_cast<quint8>(sbm_freeze_message[0])));
+    ui->terminal->append(QString("  constant(msb): ")             + QString::number(static_cast<quint8>(sbm_freeze_message[1])));
+    ui->terminal->append(QString("  state: ")                     + QString::number(static_cast<quint8>(sbm_freeze_message[2])));
+    ui->terminal->append(QString("  master id: ")                 + QString::number(static_cast<quint8>(sbm_freeze_message[3])));
+    ui->terminal->append(QString("  map height: ")                + QString::number(static_cast<quint8>(sbm_freeze_message[4])));
+    ui->terminal->append(QString("  map width: ")                 + QString::number(static_cast<quint8>(sbm_freeze_message[5])));
+    ui->terminal->append(QString("  obstacle count: ")            + QString::number(static_cast<quint8>(sbm_freeze_message[6])));
+    ui->terminal->append(QString("  device count: ")              + QString::number(static_cast<quint8>(sbm_freeze_message[7])));
+    ui->terminal->append(QString("}\n"));
 }
 
-void QtClient::on_pbConnect_clicked()// WFM
+void QtClient::on_connect_to_host_triggered()
 {
-    ui->textEdit->append(QString("Performing host lookup on: ") + master_ip + QString(":") + QString::number(tcp_port_to_master));
+    ui->terminal->append(QString("Performing host lookup on: ") + master_ip + QString(":") + QString::number(tcp_port_to_master));
     tcp_socket.connectToHost(master_ip, tcp_port_to_master, QTcpSocket::ReadWrite, QAbstractSocket::NetworkLayerProtocol::IPv4Protocol);
 }
 
-void QtClient::on_pbNCM_clicked() // 2
+void QtClient::on_send_ncm_triggered() // 2
 {
     sent_bytes = tcp_socket.write(new_connection_message, 11);
 
-    ui->textEdit->append(QString("SENT (")                        + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("NCM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(new_connection_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(new_connection_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(new_connection_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(new_connection_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(new_connection_message[4])));
-    ui->textEdit->append(QString("  device_type: ")               + QString::number(static_cast<quint8>(new_connection_message[5])));
-    ui->textEdit->append(QString("  device_id: ")                 + QString::number(static_cast<quint8>(new_connection_message[6])));
-    ui->textEdit->append(QString("  device_x_coordinate: ")       + QString::number(static_cast<quint8>(new_connection_message[7])));
-    ui->textEdit->append(QString("  device_y_coordinate: ")       + QString::number(static_cast<quint8>(new_connection_message[8])));
-    ui->textEdit->append(QString("  device_orientation: ")        + QString::number(static_cast<quint8>(new_connection_message[9])));
-    ui->textEdit->append(QString("  device_state: ")              + QString::number(static_cast<quint8>(new_connection_message[10])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (")                        + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("NCM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(new_connection_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(new_connection_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(new_connection_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(new_connection_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(new_connection_message[4])));
+    ui->terminal->append(QString("  device_type: ")               + QString::number(static_cast<quint8>(new_connection_message[5])));
+    ui->terminal->append(QString("  device_id: ")                 + QString::number(static_cast<quint8>(new_connection_message[6])));
+    ui->terminal->append(QString("  device_x_coordinate: ")       + QString::number(static_cast<quint8>(new_connection_message[7])));
+    ui->terminal->append(QString("  device_y_coordinate: ")       + QString::number(static_cast<quint8>(new_connection_message[8])));
+    ui->terminal->append(QString("  device_orientation: ")        + QString::number(static_cast<quint8>(new_connection_message[9])));
+    ui->terminal->append(QString("  device_state: ")              + QString::number(static_cast<quint8>(new_connection_message[10])));
+    ui->terminal->append(QString("}\n"));
 }
 
-void QtClient::on_pbCCM_clicked() // 5
+void QtClient::on_send_ccm_triggered()  // 5
 {
     sent_bytes = tcp_socket.write(disconnection_message, 5);
 
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("CCM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(disconnection_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(disconnection_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(disconnection_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(disconnection_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(disconnection_message[4])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("CCM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(disconnection_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(disconnection_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(disconnection_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(disconnection_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(disconnection_message[4])));
+    ui->terminal->append(QString("}\n"));
 }
 
-void QtClient::on_pbSQM_clicked() // 6
+void QtClient::on_send_sqm_triggered() // 6
 {
     sent_bytes = tcp_socket.write(status_query_message, 5);
 
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("SQM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(status_query_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(status_query_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(status_query_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(status_query_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(status_query_message[4])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("SQM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(status_query_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(status_query_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(status_query_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(status_query_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(status_query_message[4])));
+    ui->terminal->append(QString("}\n"));
 }
 
 void QtClient::on_pbSSM_clicked() // 7
 {
     sent_bytes = tcp_socket.write(system_startup_message, 5);
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("SSM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(system_startup_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(system_startup_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(system_startup_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(system_startup_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(system_startup_message[4])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("SSM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(system_startup_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(system_startup_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(system_startup_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(system_startup_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(system_startup_message[4])));
+    ui->terminal->append(QString("}\n"));
 }
 
 void QtClient::on_pbSHM_clicked() // 8
 {
     sent_bytes = tcp_socket.write(system_shutdown_message, 5);
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("SHM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(system_shutdown_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(system_shutdown_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(system_shutdown_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(system_shutdown_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(system_shutdown_message[4])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("SHM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(system_shutdown_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(system_shutdown_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(system_shutdown_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(system_shutdown_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(system_shutdown_message[4])));
+    ui->terminal->append(QString("}\n"));
 }
 
 void QtClient::on_pbUFM_clicked() // 9
 {
     sent_bytes = tcp_socket.write(unfreeze_message, 5);
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("SHM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(unfreeze_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(unfreeze_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(unfreeze_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(unfreeze_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(unfreeze_message[4])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("SHM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(unfreeze_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(unfreeze_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(unfreeze_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(unfreeze_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(unfreeze_message[4])));
+    ui->terminal->append(QString("}\n"));
 }
 
 void QtClient::on_pbRLM_clicked() // 10
@@ -186,27 +272,27 @@ void QtClient::on_pbRLM_clicked() // 10
     read_log_message[9] = static_cast<char>(beginning_row_number >> 16);
     read_log_message[10] = static_cast<char>(beginning_row_number >> 24);
     sent_bytes = tcp_socket.write(read_log_message, 11);
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("RLM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(read_log_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(read_log_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(read_log_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(read_log_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(read_log_message[4])));
-    ui->textEdit->append(QString("  mode: ")                      + QString::number(static_cast<quint8>(read_log_message[5])));
-    ui->textEdit->append(QString("  row_count: ")                 + QString::number(static_cast<quint8>(read_log_message[6])));
-    ui->textEdit->append(QString("  beginning_row_number(lsb): ") + QString::number(static_cast<quint8>(read_log_message[7])));
-    ui->textEdit->append(QString("  beginning_row_number: ")      + QString::number(static_cast<quint8>(read_log_message[8])));
-    ui->textEdit->append(QString("  beginning_row_number: ")      + QString::number(static_cast<quint8>(read_log_message[9])));
-    ui->textEdit->append(QString("  beginning_row_number(msb): ") + QString::number(static_cast<quint8>(read_log_message[10])));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("RLM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(read_log_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(read_log_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(read_log_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(read_log_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(read_log_message[4])));
+    ui->terminal->append(QString("  mode: ")                      + QString::number(static_cast<quint8>(read_log_message[5])));
+    ui->terminal->append(QString("  row_count: ")                 + QString::number(static_cast<quint8>(read_log_message[6])));
+    ui->terminal->append(QString("  beginning_row_number(lsb): ") + QString::number(static_cast<quint8>(read_log_message[7])));
+    ui->terminal->append(QString("  beginning_row_number: ")      + QString::number(static_cast<quint8>(read_log_message[8])));
+    ui->terminal->append(QString("  beginning_row_number: ")      + QString::number(static_cast<quint8>(read_log_message[9])));
+    ui->terminal->append(QString("  beginning_row_number(msb): ") + QString::number(static_cast<quint8>(read_log_message[10])));
+    ui->terminal->append(QString("}\n"));
 }
 
 void QtClient::on_pbPOM_clicked() // 11
 {
     quint8 i = 6;
     bool send = false;
-    //
+
     product_order_message[5] = static_cast<char>(ui->spinBox_product_id->value());
     if(ui->checkBox_order_destination_8_0->isChecked()){
         product_order_message[i++] = static_cast<char>(8);
@@ -232,22 +318,22 @@ void QtClient::on_pbPOM_clicked() // 11
     {
         product_order_message[1] = static_cast<char>(i - 5);
         sent_bytes = tcp_socket.write(product_order_message, i);
-        ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-        ui->textEdit->append(QString("POM: {"));
-        ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(product_order_message[0])));
-        ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(product_order_message[1])));
-        ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(product_order_message[2])));
-        ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(product_order_message[3])));
-        ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(product_order_message[4])));
-        ui->textEdit->append(QString("  product_id: ")                + QString::number(static_cast<quint8>(product_order_message[5])));
-        ui->textEdit->append(QString("  destination_coords: {"));
+        ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+        ui->terminal->append(QString("POM: {"));
+        ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(product_order_message[0])));
+        ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(product_order_message[1])));
+        ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(product_order_message[2])));
+        ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(product_order_message[3])));
+        ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(product_order_message[4])));
+        ui->terminal->append(QString("  product_id: ")                + QString::number(static_cast<quint8>(product_order_message[5])));
+        ui->terminal->append(QString("  destination_coords: {"));
         for(quint8 j = 6; j < i; j += 2)
         {
-            ui->textEdit->append(QString("    x: ")                   + QString::number(static_cast<quint8>(product_order_message[j])));
-            ui->textEdit->append(QString("    y: ")                   + QString::number(static_cast<quint8>(product_order_message[j+1])));
+            ui->terminal->append(QString("    x: ")                   + QString::number(static_cast<quint8>(product_order_message[j])));
+            ui->terminal->append(QString("    y: ")                   + QString::number(static_cast<quint8>(product_order_message[j+1])));
         }
-        ui->textEdit->append(QString("  }"));
-        ui->textEdit->append(QString("}\n"));
+        ui->terminal->append(QString("  }"));
+        ui->terminal->append(QString("}\n"));
     }
 }
 
@@ -257,40 +343,40 @@ void QtClient::on_pbMCM_clicked() // 13, 14
     remote_control_message[6] = static_cast<char>(ui->spinBox_control_flag->value());
     remote_control_message[12] = static_cast<char>(ui->spinBox_direction->value());
     sent_bytes = tcp_socket.write(remote_control_message, 13);
-    ui->textEdit->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
-    ui->textEdit->append(QString("RCM: {"));
-    ui->textEdit->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(remote_control_message[0])));
-    ui->textEdit->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(remote_control_message[1])));
-    ui->textEdit->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(remote_control_message[2])));
-    ui->textEdit->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(remote_control_message[3])));
-    ui->textEdit->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(remote_control_message[4])));
-    ui->textEdit->append(QString("  control_device_id: ")         + QString::number(static_cast<quint8>(remote_control_message[5])));
-    ui->textEdit->append(QString("  control_flag: ")              + QString::number(static_cast<quint8>(remote_control_message[6])));
-    ui->textEdit->append(QString("  MCM: {"));
-    ui->textEdit->append(QString("   message_type: ")               + QString::number(static_cast<quint8>(remote_control_message[7])));
-    ui->textEdit->append(QString("   message_length_byte1(lsb): ")  + QString::number(static_cast<quint8>(remote_control_message[8])));
-    ui->textEdit->append(QString("   message_length_byte2: ")       + QString::number(static_cast<quint8>(remote_control_message[9])));
-    ui->textEdit->append(QString("   message_length_byte3: ")       + QString::number(static_cast<quint8>(remote_control_message[10])));
-    ui->textEdit->append(QString("   message_length_byte4(msb): ")  + QString::number(static_cast<quint8>(remote_control_message[11])));
-    ui->textEdit->append(QString("   direction: ")                  + QString::number(static_cast<quint8>(remote_control_message[12])));
-    ui->textEdit->append(QString("  }"));
-    ui->textEdit->append(QString("}\n"));
+    ui->terminal->append(QString("SENT (") + QString::number(sent_bytes) + QString(" bytes)"));
+    ui->terminal->append(QString("RCM: {"));
+    ui->terminal->append(QString("  message_type: ")              + QString::number(static_cast<quint8>(remote_control_message[0])));
+    ui->terminal->append(QString("  message_length_byte1(lsb): ") + QString::number(static_cast<quint8>(remote_control_message[1])));
+    ui->terminal->append(QString("  message_length_byte2: ")      + QString::number(static_cast<quint8>(remote_control_message[2])));
+    ui->terminal->append(QString("  message_length_byte3: ")      + QString::number(static_cast<quint8>(remote_control_message[3])));
+    ui->terminal->append(QString("  message_length_byte4(msb): ") + QString::number(static_cast<quint8>(remote_control_message[4])));
+    ui->terminal->append(QString("  control_device_id: ")         + QString::number(static_cast<quint8>(remote_control_message[5])));
+    ui->terminal->append(QString("  control_flag: ")              + QString::number(static_cast<quint8>(remote_control_message[6])));
+    ui->terminal->append(QString("  MCM: {"));
+    ui->terminal->append(QString("   message_type: ")               + QString::number(static_cast<quint8>(remote_control_message[7])));
+    ui->terminal->append(QString("   message_length_byte1(lsb): ")  + QString::number(static_cast<quint8>(remote_control_message[8])));
+    ui->terminal->append(QString("   message_length_byte2: ")       + QString::number(static_cast<quint8>(remote_control_message[9])));
+    ui->terminal->append(QString("   message_length_byte3: ")       + QString::number(static_cast<quint8>(remote_control_message[10])));
+    ui->terminal->append(QString("   message_length_byte4(msb): ")  + QString::number(static_cast<quint8>(remote_control_message[11])));
+    ui->terminal->append(QString("   direction: ")                  + QString::number(static_cast<quint8>(remote_control_message[12])));
+    ui->terminal->append(QString("  }"));
+    ui->terminal->append(QString("}\n"));
 }
 
 
 void QtClient::slot_hostFound()
 {
-    ui->textEdit->append(QString("Host lookup successful."));
+    ui->terminal->append(QString("Host lookup successful."));
 }
 
 void QtClient::slot_connected()
 {
-    ui->textEdit->append(QString("Connected.\n"));
+    ui->terminal->append(QString("Connected.\n"));
 }
 
 void QtClient::slot_disconnected()
 {
-    ui->textEdit->append(QString("Disconnected.\n"));
+    ui->terminal->append(QString("Disconnected.\n"));
 }
 
 void QtClient::slot_readyRead_tcp()
@@ -326,11 +412,11 @@ void QtClient::slot_readyRead_tcp()
 
                 is_common_header_read   = false; // done with a message
 
-                ui->textEdit->append(QString("RECEIVED (")         + QString::number(bytes_received) + QString(" bytes)"));
-                ui->textEdit->append(QString("SCM: {"));
-                ui->textEdit->append(QString("  system_control: ") + QString::number(system_control) + QString(","));
-                ui->textEdit->append(QString("  device_id: ")      + QString::number(device_id));
-                ui->textEdit->append(QString("}\n"));
+                ui->terminal->append(QString("RECEIVED (")         + QString::number(bytes_received) + QString(" bytes)"));
+                ui->terminal->append(QString("SCM: {"));
+                ui->terminal->append(QString("  system_control: ") + QString::number(system_control) + QString(","));
+                ui->terminal->append(QString("  device_id: ")      + QString::number(device_id));
+                ui->terminal->append(QString("}\n"));
             }
             else if(message_type == 4) // WFM
             {
@@ -343,29 +429,34 @@ void QtClient::slot_readyRead_tcp()
                 device_state            = static_cast<quint8>(tcp_read_buffer[6]);
 
                 QString extra_data_str;
+                QString server_log_text;
                 if(command_number == 10) // RLM
                 {
                     extra_data_str += "    log: ";
-                    for(quint16 i = 7; i < message_length; ++i){
+                    ui->server_logs->setText("");
+                    for(quint16 i = 7; i < message_length; ++i)
+                    {
                         extra_data[i-7] = static_cast<quint8>(tcp_read_buffer[i]);
                         extra_data_str += QString(tcp_read_buffer[i]);
+                        server_log_text += QString(tcp_read_buffer[i]);
                     }
+                    ui->server_logs->setText(server_log_text);
                 }
                 else if(command_number == 11) // POM
                 {
-                    temp = 0;
+                    quint32 product_order_number = 0;
                     extra_data[0] = static_cast<quint8>(tcp_read_buffer[10]);
                     extra_data[1] = static_cast<quint8>(tcp_read_buffer[9]);
                     extra_data[2] = static_cast<quint8>(tcp_read_buffer[8]);
                     extra_data[3] = static_cast<quint8>(tcp_read_buffer[7]);
-                    temp = extra_data[0];
-                    temp <<= 8;
-                    temp |= extra_data[1];
-                    temp <<= 8;
-                    temp |= extra_data[2];
-                    temp <<= 8;
-                    temp |= extra_data[3];
-                    extra_data_str += "    product_order_number: " + QString::number(temp, 16);
+                    product_order_number = extra_data[0];
+                    product_order_number <<= 8;
+                    product_order_number |= extra_data[1];
+                    product_order_number <<= 8;
+                    product_order_number |= extra_data[2];
+                    product_order_number <<= 8;
+                    product_order_number |= extra_data[3];
+                    extra_data_str += "    product_order_number: " + QString::number(product_order_number, 16);
                 }
                 else if(command_number == 14) // extra_data == gopigo wfm
                 {
@@ -412,17 +503,17 @@ void QtClient::slot_readyRead_tcp()
 
                 is_common_header_read   = false; // done with a message
 
-                ui->textEdit->append(QString("RECEIVED (") + QString::number(bytes_received) + QString(" bytes)"));
-                ui->textEdit->append(QString("WFM: {"));
-                ui->textEdit->append(QString("  command_number: ")      + QString::number(command_number)      + QString(","));
-                ui->textEdit->append(QString("  error_code: ")          + QString::number(error_code)          + QString(","));
-                ui->textEdit->append(QString("  atomic_execution: ")    + QString::number(atomic_execution)    + QString(","));
-                ui->textEdit->append(QString("  device_x_coord: ")      + QString::number(device_x_coord)      + QString(","));
-                ui->textEdit->append(QString("  device_y_coord: ")      + QString::number(device_y_coord)      + QString(","));
-                ui->textEdit->append(QString("  device_orientation: ")  + QString::number(device_orientation)  + QString(","));
-                ui->textEdit->append(QString("  device_state: ")        + QString::number(device_state)        + QString(","));
-                ui->textEdit->append(QString("  extra_data: {\n")       + extra_data_str);
-                ui->textEdit->append(QString("}\n"));
+                ui->terminal->append(QString("RECEIVED (") + QString::number(bytes_received) + QString(" bytes)"));
+                ui->terminal->append(QString("WFM: {"));
+                ui->terminal->append(QString("  command_number: ")      + QString::number(command_number)      + QString(","));
+                ui->terminal->append(QString("  error_code: ")          + QString::number(error_code)          + QString(","));
+                ui->terminal->append(QString("  atomic_execution: ")    + QString::number(atomic_execution)    + QString(","));
+                ui->terminal->append(QString("  device_x_coord: ")      + QString::number(device_x_coord)      + QString(","));
+                ui->terminal->append(QString("  device_y_coord: ")      + QString::number(device_y_coord)      + QString(","));
+                ui->terminal->append(QString("  device_orientation: ")  + QString::number(device_orientation)  + QString(","));
+                ui->terminal->append(QString("  device_state: ")        + QString::number(device_state)        + QString(","));
+                ui->terminal->append(QString("  extra_data: {\n")       + extra_data_str);
+                ui->terminal->append(QString("}\n"));
             }
         }
     }
@@ -432,14 +523,3 @@ void QtClient::emit_finished()
 {
     emit finished();
 }
-
-
-
-
-
-
-
-
-
-
-

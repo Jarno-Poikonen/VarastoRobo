@@ -10,362 +10,155 @@
     <height>900</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>1600</width>
+    <height>900</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1600</width>
+    <height>900</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>QtClient</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget {
-	background-color: orange;
-}
-
-QPushButton, QLabel, QTextEdit, QSpinBox, QCheckBox {
-	background-color: orange;
+	background-color: black;
 	color: white;
-	font-weight: bold;
+	font-size: 16px;
 	border: 1px solid white;
-	border-width: 2px;
 }
 
-QCheckBox {
-	border: 0px solid white;
-	font-size: 20px;
-}
-
-QLabel {
-	font-size: 40px;
-	background-color: orange;
-	color: white;
-}
-
-QPushButton {
-	border-radius: 2px;
-	font-size: 36px;
-}
-
-QPushButton:hover, QCheckBox:hover, QSpinBox:hover {
-	background-color: white;
-	color: orange;
-}
-
-QTextEdit {
-	background-color: white;
-	color: orange
-}
-
-QSpinBox {
-	font-size: 20px;
+QMenu, QAction {
+	background-color: Orange;
+	color: black;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTextEdit" name="textEdit">
+   <property name="minimumSize">
+    <size>
+     <width>1600</width>
+     <height>900</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>1600</width>
+     <height>900</height>
+    </size>
+   </property>
+   <widget class="QTextEdit" name="terminal">
     <property name="geometry">
      <rect>
-      <x>899</x>
-      <y>120</y>
-      <width>671</width>
-      <height>720</height>
+      <x>1360</x>
+      <y>0</y>
+      <width>240</width>
+      <height>510</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: black;
-color: white;
-font-size: 16px;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>899</x>
-      <y>30</y>
-      <width>671</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Terminal</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbConnect">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>130</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Connect
-To
-Host</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbSQM">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>430</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send
- Status Query Message
- (SQM)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbSMBread">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>30</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Read
-System Broadcast Mssage
-(SMB)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbNCM">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>230</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send
-New Connection Message
- (NCM)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbSSM">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>530</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">::hover {
-	background-color: white;
-	color: green;
-}
-QPushButton {
-	background-color: green;
-	color: white;
-	font-size: 20px;
-}
-
-</string>
-    </property>
-    <property name="text">
-     <string>Send
-System Startup Message
-(SSM)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbSHM">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>630</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">
-::hover {
-	background-color: white;
-	color: blue;
-}
-QPushButton {
-	background-color: blue;
-	color: white;
-	font-size: 20px;
-}</string>
-    </property>
-    <property name="text">
-     <string>Send
-System Shutdown Message
-(SHM)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbUFM">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>730</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">::hover {
-	background-color: white;
-	color: lightred;
-}
-QPushButton {
-	background-color: lightred;
-	color: white;
-	font-size: 20px;
-}
-
-</string>
-    </property>
-    <property name="text">
-     <string>Send
-UnFreeze Message
-(UFM)</string>
+     <string notr="true">background-color: black;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbRLM">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>30</y>
-      <width>251</width>
-      <height>121</height>
+      <x>0</x>
+      <y>810</y>
+      <width>240</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton:hover {
+     <string notr="true">QPushButton::hover {
 	background-color: white;
-	color: pink;
+	color: brown;
 }
-
 QPushButton {
-	background-color: pink;
-	color: white;
-	font-weight: bold;
-	border: 1px solid white;
-	border-width: 2px;
-	font-size: 20px;
+	background-color: brown;
 }
-
 </string>
     </property>
     <property name="text">
-     <string>Send
-Read Log Message
-(RLM)</string>
+     <string>Send (RLM)
+Read Log Message</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_mode">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>160</y>
-      <width>91</width>
-      <height>51</height>
+      <x>160</x>
+      <y>630</y>
+      <width>80</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QSpinBox:hover {
+     <string notr="true">QSpinBox::hover {
 	background-color: white;
-	color: pink;
+	color: brown;
 }
 
 QSpinBox {
-	background-color: pink;
-	color: white;
-	font-weight: bold;
-	border: 1px solid white;
-	border-width: 2px;
-	font-size: 20px;
-}
-
-</string>
+	background-color: brown;
+}</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_row_count">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>210</y>
-      <width>91</width>
-      <height>51</height>
+      <x>160</x>
+      <y>690</y>
+      <width>80</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QSpinBox:hover {
+     <string notr="true">QSpinBox::hover {
 	background-color: white;
-	color: pink;
+	color: brown;
 }
 
 QSpinBox {
-	background-color: pink;
-	color: white;
-	font-weight: bold;
-	border: 1px solid white;
-	border-width: 2px;
-	font-size: 20px;
-}
-
-</string>
+	background-color: brown;
+}</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_beginning_row">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>259</y>
-      <width>91</width>
-      <height>51</height>
+      <x>160</x>
+      <y>750</y>
+      <width>80</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QSpinBox:hover {
+     <string notr="true">QSpinBox::hover {
 	background-color: white;
-	color: pink;
+	color: brown;
 }
 
 QSpinBox {
-	background-color: pink;
-	color: white;
-	font-weight: bold;
-	border: 1px solid white;
-	border-width: 2px;
-	font-size: 20px;
-}
-
-</string>
+	background-color: brown;
+}</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_mode">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>160</y>
-      <width>161</width>
-      <height>51</height>
+      <x>0</x>
+      <y>630</y>
+      <width>160</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: pink;
-color: white;
-font-size: 20px;</string>
+     <string notr="true">background-color:  brown;</string>
     </property>
     <property name="text">
      <string>mode</string>
@@ -374,16 +167,14 @@ font-size: 20px;</string>
    <widget class="QLabel" name="label_row_count">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>210</y>
-      <width>161</width>
-      <height>51</height>
+      <x>0</x>
+      <y>690</y>
+      <width>160</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: pink;
-color: white;
-font-size: 20px;</string>
+     <string notr="true">background-color:  brown;</string>
     </property>
     <property name="text">
      <string>row count</string>
@@ -392,113 +183,191 @@ font-size: 20px;</string>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>260</y>
-      <width>161</width>
-      <height>51</height>
+      <x>0</x>
+      <y>750</y>
+      <width>160</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: pink;
-color: white;
-font-size: 20px;</string>
+     <string notr="true">background-color:  brown;</string>
     </property>
     <property name="text">
      <string>beginning row</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbCCM">
+   <widget class="QPushButton" name="pbSMBfreeze">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>330</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send
-Close Connection Message
-(CCM)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbPOM">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>320</y>
-      <width>261</width>
-      <height>101</height>
+      <x>1360</x>
+      <y>690</y>
+      <width>240</width>
+      <height>180</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">::hover {
 	background-color: white;
-	color: lightblue;
+	color: darkred;
 }
 QPushButton {
-	background-color: lightblue;
-	color: white;
-	font-size: 20px;
+	background-color: darkred;
+}</string>
+    </property>
+    <property name="text">
+     <string>EMERGENCY
+STOP</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="server_logs">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>630</y>
+      <width>1120</width>
+      <height>240</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>1120</width>
+      <height>240</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>1120</width>
+      <height>240</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: black;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbSSM">
+    <property name="geometry">
+     <rect>
+      <x>1360</x>
+      <y>570</y>
+      <width>240</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">::hover {
+	background-color: white;
+	color: darkgreen;
 }
+QPushButton {
+	background-color: darkgreen;
+}
+
 </string>
     </property>
     <property name="text">
-     <string>Send
-Product Order Message
-(POM)</string>
+     <string>Send (SSM)
+System Startup Message</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbSHM">
+    <property name="geometry">
+     <rect>
+      <x>1360</x>
+      <y>630</y>
+      <width>240</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">::hover {
+	background-color: white;
+	color: darkblue;
+}
+QPushButton {
+	background-color: darkblue;
+}</string>
+    </property>
+    <property name="text">
+     <string>Send (SHM)
+System Shutdown Message</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbUFM">
+    <property name="geometry">
+     <rect>
+      <x>1360</x>
+      <y>510</y>
+      <width>240</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton::hover {
+	background-color: white;
+	color: darkorange;
+}
+QPushButton {
+	background-color: darkorange;
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>Send (UFM)
+UnFreeze Message</string>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>0</y>
+      <width>1120</width>
+      <height>630</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>1120</width>
+      <height>630</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>1120</width>
+      <height>630</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QGraphicsView {
+	background-color: darkgrey;
+border-width:0;
+}</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_product_id">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>430</y>
-      <width>161</width>
-      <height>51</height>
+      <x>0</x>
+      <y>270</y>
+      <width>160</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: lightblue;
-color: white;
-font-size: 20px;</string>
+     <string notr="true">background-color: teal;</string>
     </property>
     <property name="text">
      <string>product_id</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox_product_id">
+   <widget class="QPushButton" name="pbMCM">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>430</y>
-      <width>91</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">::hover {
-	background-color: white;
-	color: lightblue;
-}
-QSpinBox {
-	background-color: lightblue;
-	color: white;
-	font-size: 20px;
-}
-</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_order_destination_8_3">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>670</y>
-      <width>90</width>
-      <height>50</height>
+      <x>0</x>
+      <y>210</y>
+      <width>240</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="minimumSize">
@@ -508,16 +377,145 @@ QSpinBox {
      </size>
     </property>
     <property name="styleSheet">
-     <string notr="true">::hover {
+     <string notr="true">QPushButton:hover {
 	background-color: white;
-	color: lightblue;
+	color: purple;
 }
+
+QPushButton {
+	background-color: purple;
+}</string>
+    </property>
+    <property name="text">
+     <string>Send (MCM)
+Move Cell Message</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_send_order_to_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>450</y>
+      <width>160</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: teal;</string>
+    </property>
+    <property name="text">
+     <string>Send Order To</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_send_order_to_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>510</y>
+      <width>160</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: teal;</string>
+    </property>
+    <property name="text">
+     <string>Send Order To</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_order_destination_8_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>450</y>
+      <width>80</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QCheckBox::hover {
+	background-color: white;
+	color: teal;
+}
+
 QCheckBox {
-	background-color: lightblue;
-	color: white;
-	font-size: 20px;
-	border: 2px solid white;
-	padding: 4px;
+	background-color: teal;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>(8, 2)</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox_direction">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>140</y>
+      <width>80</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QSpinBox:hover {
+	background-color: white;
+	color:  purple;
+}
+
+QSpinBox {
+	background-color:  purple;
+}
+
+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbPOM">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>570</y>
+      <width>240</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton::hover {
+	background-color: white;
+	color: teal;
+}
+QPushButton {
+	background-color: teal;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Send (POM)
+Product Order Message</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_order_destination_8_3">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>510</y>
+      <width>80</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QCheckBox::hover {
+	background-color: white;
+	color: teal;
+}
+
+QCheckBox {
+	background-color: teal;
 }
 </string>
     </property>
@@ -531,53 +529,87 @@ QCheckBox {
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_order_destination_8_2">
+   <widget class="QLabel" name="label_direction">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>610</y>
-      <width>90</width>
-      <height>50</height>
+      <x>0</x>
+      <y>140</y>
+      <width>160</width>
+      <height>70</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">::hover {
-	background-color: white;
-	color: lightblue;
-}
-QCheckBox {
-	background-color: lightblue;
-	color: white;
-	font-size: 20px;
-	border: 2px solid white;
-	padding: 4px;
-}
-</string>
+     <string notr="true">background-color:  purple;</string>
     </property>
     <property name="text">
-     <string>(8, 2)</string>
+     <string>direction</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_control_flag">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>70</y>
+      <width>160</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:  purple;</string>
+    </property>
+    <property name="text">
+     <string>control flag</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_send_order_to_1">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>390</y>
+      <width>160</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: teal;</string>
+    </property>
+    <property name="text">
+     <string>Send Order To</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_send_order_to_0">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>330</y>
+      <width>160</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: teal;</string>
+    </property>
+    <property name="text">
+     <string>Send Order To</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_order_destination_8_1">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>550</y>
-      <width>90</width>
-      <height>50</height>
+      <x>160</x>
+      <y>390</y>
+      <width>80</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">::hover {
+     <string notr="true">QCheckBox::hover {
 	background-color: white;
-	color: lightblue;
+	color: teal;
 }
+
 QCheckBox {
-	background-color: lightblue;
-	color: white;
-	font-size: 20px;
-	border: 2px solid white;
-	padding: 4px;
+	background-color: teal;
 }
 </string>
     </property>
@@ -585,26 +617,104 @@ QCheckBox {
      <string>(8, 1)</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_order_destination_8_0">
+   <widget class="QLabel" name="label_control_device_id">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>490</y>
-      <width>90</width>
-      <height>50</height>
+      <x>0</x>
+      <y>0</y>
+      <width>160</width>
+      <height>70</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">::hover {
+     <string notr="true">background-color:  purple;</string>
+    </property>
+    <property name="text">
+     <string>device id</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox_control_device_id">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>0</y>
+      <width>80</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QSpinBox:hover {
 	background-color: white;
-	color: lightblue;
+	color:  purple;
 }
+
+QSpinBox {
+	background-color:  purple;
+}
+
+
+</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox_product_id">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>270</y>
+      <width>80</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QSpinBox::hover {
+	background-color: white;
+	color: teal;
+}
+QSpinBox {
+	background-color: teal;
+}
+</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox_control_flag">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>70</y>
+      <width>80</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QSpinBox:hover {
+	background-color: white;
+	color:  purple;
+}
+
+QSpinBox {
+	background-color:  purple;
+}
+
+</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_order_destination_8_0">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>330</y>
+      <width>80</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QCheckBox::hover {
+	background-color: white;
+	color: teal;
+}
+
 QCheckBox {
-	background-color: lightblue;
-	color: white;
-	font-size: 20px;
-	border: 2px solid white;
-	padding: 4px;
+	background-color: teal;
 }
 </string>
     </property>
@@ -612,218 +722,8 @@ QCheckBox {
      <string>(8, 0)</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_send_order_to_0">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>490</y>
-      <width>160</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: lightblue;
-color: white;
-font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send Order To</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_send_order_to_1">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>550</y>
-      <width>160</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: lightblue;
-color: white;
-font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send Order To</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_send_order_to_2">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>610</y>
-      <width>160</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: lightblue;
-color: white;
-font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send Order To</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_send_order_to_3">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>670</y>
-      <width>160</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: lightblue;
-color: white;
-font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send Order To</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbMCM">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>30</y>
-      <width>280</width>
-      <height>121</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Send
-Move Cell Message
-(MCM)
-(RCM)</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_direction">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>280</y>
-      <width>90</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_direction">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>280</y>
-      <width>180</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>direction</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_control_device_id">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>160</y>
-      <width>180</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>control device id</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_control_device_id">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>160</y>
-      <width>90</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_control_flag">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>220</y>
-      <width>180</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-    <property name="text">
-     <string>control flag</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_control_flag">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>220</y>
-      <width>90</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font-size: 20px;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbSMBfreeze">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>730</y>
-      <width>290</width>
-      <height>90</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">::hover {
-	background-color: white;
-	color: red;
-}
-QPushButton {
-	background-color: red;
-	color: white;
-	font-size: 20px;
-}</string>
-    </property>
-    <property name="text">
-     <string>EMERGENCY
-STOP</string>
-    </property>
-   </widget>
-   <zorder>textEdit</zorder>
-   <zorder>label</zorder>
-   <zorder>pbConnect</zorder>
-   <zorder>pbSQM</zorder>
-   <zorder>pbSMBread</zorder>
-   <zorder>pbNCM</zorder>
-   <zorder>pbSSM</zorder>
-   <zorder>pbSHM</zorder>
-   <zorder>pbUFM</zorder>
+   <zorder>graphicsView</zorder>
+   <zorder>terminal</zorder>
    <zorder>pbRLM</zorder>
    <zorder>spinBox_mode</zorder>
    <zorder>spinBox_row_count</zorder>
@@ -831,39 +731,106 @@ STOP</string>
    <zorder>label_mode</zorder>
    <zorder>label_row_count</zorder>
    <zorder>label_4</zorder>
-   <zorder>pbCCM</zorder>
-   <zorder>pbPOM</zorder>
-   <zorder>label_product_id</zorder>
-   <zorder>spinBox_product_id</zorder>
-   <zorder>checkBox_order_destination_8_3</zorder>
-   <zorder>checkBox_order_destination_8_2</zorder>
-   <zorder>checkBox_order_destination_8_1</zorder>
-   <zorder>checkBox_order_destination_8_0</zorder>
-   <zorder>label_send_order_to_1</zorder>
-   <zorder>label_send_order_to_3</zorder>
-   <zorder>pbMCM</zorder>
-   <zorder>spinBox_direction</zorder>
-   <zorder>label_direction</zorder>
-   <zorder>label_control_device_id</zorder>
-   <zorder>spinBox_control_device_id</zorder>
-   <zorder>label_control_flag</zorder>
-   <zorder>spinBox_control_flag</zorder>
    <zorder>pbSMBfreeze</zorder>
-   <zorder>label_send_order_to_0</zorder>
+   <zorder>pbSSM</zorder>
+   <zorder>pbSHM</zorder>
+   <zorder>label_product_id</zorder>
    <zorder>label_send_order_to_2</zorder>
+   <zorder>label_send_order_to_3</zorder>
+   <zorder>checkBox_order_destination_8_2</zorder>
+   <zorder>spinBox_direction</zorder>
+   <zorder>checkBox_order_destination_8_3</zorder>
+   <zorder>label_direction</zorder>
+   <zorder>label_send_order_to_1</zorder>
+   <zorder>label_send_order_to_0</zorder>
+   <zorder>checkBox_order_destination_8_1</zorder>
+   <zorder>spinBox_product_id</zorder>
+   <zorder>spinBox_control_flag</zorder>
+   <zorder>checkBox_order_destination_8_0</zorder>
+   <zorder>pbPOM</zorder>
+   <zorder>label_control_flag</zorder>
+   <zorder>label_control_device_id</zorder>
+   <zorder>pbMCM</zorder>
+   <zorder>spinBox_control_device_id</zorder>
+   <zorder>server_logs</zorder>
+   <zorder>pbUFM</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>26</height>
+     <height>30</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>1600</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>1600</width>
+     <height>30</height>
+    </size>
+   </property>
+   <widget class="QMenu" name="Broadcast">
+    <property name="title">
+     <string>Broadcast</string>
+    </property>
+    <addaction name="read_sbm"/>
+   </widget>
+   <widget class="QMenu" name="menuConnection">
+    <property name="title">
+     <string>Connection</string>
+    </property>
+    <addaction name="connect_to_host"/>
+    <addaction name="send_ncm"/>
+    <addaction name="send_ccm"/>
+    <addaction name="send_sqm"/>
+   </widget>
+   <addaction name="Broadcast"/>
+   <addaction name="menuConnection"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <action name="read_sbm">
+   <property name="text">
+    <string>Read SBM</string>
+   </property>
+  </action>
+  <action name="connect_to_host">
+   <property name="text">
+    <string>Connect To Host</string>
+   </property>
+  </action>
+  <action name="send_ncm">
+   <property name="text">
+    <string>Send NCM</string>
+   </property>
+  </action>
+  <action name="send_ccm">
+   <property name="text">
+    <string>Send CCM</string>
+   </property>
+  </action>
+  <action name="send_sqm">
+   <property name="text">
+    <string>Send SQM</string>
+   </property>
+  </action>
  </widget>
+ <tabstops>
+  <tabstop>pbRLM</tabstop>
+  <tabstop>spinBox_mode</tabstop>
+  <tabstop>spinBox_row_count</tabstop>
+  <tabstop>spinBox_beginning_row</tabstop>
+  <tabstop>pbSMBfreeze</tabstop>
+  <tabstop>terminal</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

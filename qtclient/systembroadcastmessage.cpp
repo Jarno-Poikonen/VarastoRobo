@@ -5,9 +5,9 @@ SystemBroadcastMessage::SystemBroadcastMessage()
 
 }
 
-SystemBroadcastMessage::SystemBroadcastMessage(char* datagram, qint64 datagram_size)
+SystemBroadcastMessage::SystemBroadcastMessage(char* datagram, qint64 datagram_size) : datagram(datagram), datagram_size(datagram_size)
 {
-    this->datagram = QByteArray(datagram, static_cast<int>(datagram_size));
+    
 }
 
 SystemBroadcastMessage::~SystemBroadcastMessage()
@@ -76,9 +76,9 @@ void SystemBroadcastMessage::parse_datagram()
     devices_str += "  }\n";
 
     // save parsed datagram as a string for gui use
-    str += "RECEIVED: (" + QString::number(datagram.size()) + QString(" bytes)\n");
+    str += "RECEIVED: (" + QString::number(datagram_size) + QString(" bytes)\n");
     str += "SMB: {\n";
-    str += "  datagram_size: "     + QString::number(datagram.size())  + "\n";
+    str += "  datagram_size: "     + QString::number(datagram_size)  + "\n";
     str += "  constant: "          + QString::number(constant)       + "\n";
     str += "  state: "             + QString::number(state)          + "\n";
     str += "  master_id: "         + QString::number(master_id)      + "\n";

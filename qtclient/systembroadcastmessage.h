@@ -20,7 +20,8 @@ public:
     QString str;
 
 private:
-    QByteArray datagram;
+    char* datagram;
+    qint64 datagram_size;
     quint16 map_length;
 
     // smb
