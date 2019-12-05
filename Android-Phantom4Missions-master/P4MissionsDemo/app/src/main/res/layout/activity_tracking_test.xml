@@ -95,24 +95,6 @@
                 android:text="AutoLand"
                 android:textSize="14sp" />
 
-            <Switch
-                android:id="@+id/switchRetreat"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:gravity="end|center_vertical"
-                android:text="Retreat"
-                android:textSize="14sp" />
-
-            <Switch
-                android:id="@+id/switchQuickShot"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:gravity="end|center_vertical"
-                android:text="QuickShot"
-                android:textSize="14sp" />
-
         </LinearLayout>
 
         <LinearLayout
