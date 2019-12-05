@@ -533,7 +533,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                     Utils.addLineToSB(sb, "Target Type", subjectSensingState.getTargetType().name());
                     Utils.addLineToSB(sb, "Target State", subjectSensingState.getState().name());
                     isAutoSensingSupported = true;
-                    if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
+                    if(trackingState.getType() == ActiveTrackTargetType.HUMAN) {
                         //flag = false;
                         trackingIndex = INVALID_INDEX;
                         writeToast("Tracking success");
@@ -563,7 +563,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
 
                 // runOnUiThread(()-> textScreen.setText("Type:"));
 
-                if(trackingState.getType() == ActiveTrackTargetType.HUMAN||trackingState.getType() == ActiveTrackTargetType.BIKE) {
+                if(trackingState.getType() == ActiveTrackTargetType.HUMAN) {
                     //flag = false;
                     trackingIndex = INVALID_INDEX;
                     writeToast("Tracking success");
