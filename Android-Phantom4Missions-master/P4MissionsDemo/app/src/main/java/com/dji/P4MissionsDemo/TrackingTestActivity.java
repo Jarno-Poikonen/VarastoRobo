@@ -60,6 +60,7 @@ import dji.common.mission.activetrack.ActiveTrackTargetType;
 import dji.common.mission.activetrack.ActiveTrackTrackingState;
 import dji.common.mission.activetrack.QuickShotMode;
 import dji.common.mission.activetrack.SubjectSensingState;
+import dji.common.util.CommonCallbacks;
 import dji.common.util.CommonCallbacks.CompletionCallbackWith;
 import dji.keysdk.CameraKey;
 import dji.keysdk.DJIKey;
@@ -226,12 +227,18 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 checkStorageStates();
             }
 
-            mActiveTrackOperator.startTracking(mActiveTrackMission, error ->
-            {
-                //stopTimer();
-                writeToast("Start Tracking: " + (error == null  ?  "Success"  :  error.getDescription()));
-            });
+            mActiveTrackOperator.startTracking(mActiveTrackMission, new CommonCallbacks.CompletionCallback() {
+                @Override
+                public void onResult(DJIError error) {
+                    if (error == null) {
 
+                    }
+                    //stopTimer();
+                    writeToast("Start Tracking: " + (error == null
+                            ? "Success"
+                            : error.getDescription()));
+                }
+            });
             clearCurrentView();
         }
     }
@@ -313,7 +320,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
         switch (v.getId())
         {
             case R.id.confirm_btn:
-                flag = false;
+                //flag = false;
 
                 boolean isAutoTracking =
                         isAutoSensingSupported &&
@@ -345,7 +352,7 @@ public class TrackingTestActivity extends DemoBaseActivity implements SurfaceTex
                 break;
 
             case R.id.tracking_stop_btn:
-                stopTimer();
+              //  stopTimer();
                 trackingIndex = INVALID_INDEX;
                 flag = true;
                 mActiveTrackOperator.stopTracking(error -> writeToast(error == null ? "Stop track Success!" : error.getDescription()));
