@@ -2,6 +2,7 @@
 #define VARASTOROBODEVICE_H
 
 #include <QObject>
+#include <QDebug>
 #include "point.h"
 #include "ipv4address.h"
 
