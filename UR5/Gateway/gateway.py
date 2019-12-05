@@ -59,12 +59,15 @@ def Broadcast_communication():
 	# Luetaan broadcast viestejä ja reagoidaan hätäseis käskyyn.
 	while True:
 		message, master_address = bSocket.recvfrom(512)
-		
+		if seis:
+			GPIO.cleanup()
+			break
 		if len(message) >= 8 and message[0] == 1 and message[1] == 7 :
 			system_status = int(message[2])
 			if system_status != 1:
 				global seis
 				seis = True
+				Lokiin("Broad", "SEIS")
 				GPIO.output(26, GPIO.HIGH)
 				sleep(5)
 				GPIO.output(26, GPIO.LOW)
@@ -204,7 +207,8 @@ if __name__ == "__main__":
 					elif "Fail" in utf:
 						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Kohdetta ei löytynyt"], 0, tila))
 						valmis = True
-					
+					elif not utf:
+						raise IndexError
 				
 			elif MasterData[0] == 9 or MasterData[0] == 10 or MasterData[0] == 11 or MasterData[0] == 13 or MasterData[0] == 14:
 				Lokiin("Main", "Ei tuettu komento")
