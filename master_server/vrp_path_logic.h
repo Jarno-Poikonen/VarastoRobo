@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
 #ifndef VRP_PATH_LOGIC_H
@@ -27,6 +27,8 @@ int vrp_calculate_immediate_path_to_target(vrp_server_t* server, size_t device_i
 
 int vrp_is_coordinate_idle_location(const vrp_server_t* server, int x, int y);
 
+int vrp_deprecated_get_idle_location_for_device(const vrp_server_t* server, size_t device_index, uint8_t* x, uint8_t* y);
+
 int vrp_get_idle_location_for_device(const vrp_server_t* server, size_t device_index, uint8_t* x, uint8_t* y);
 
 int vrp_get_device_distance_to_pickup_location_entry(vrp_server_t* server, size_t device_index, size_t* pickup_location_index);
@@ -41,7 +43,7 @@ size_t vrp_get_pickup_location_index_by_load_coordinate(const vrp_server_t* serv
 
 size_t vrp_get_pickup_location_index_by_entry_coordinate(const vrp_server_t* server, int x, int y);
 
-size_t vrp_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y);
+size_t vrp_extended_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y, size_t* product_order_index);
 
 int vrp_get_any_transport_device_from_pickup_load_location(vrp_server_t* server, size_t* device_index, size_t* pickup_location_index);
 
@@ -51,7 +53,13 @@ size_t vrp_get_likely_to_colide_device_index(const vrp_server_t* server, size_t 
 
 int vrp_is_coordinate_in_any_immediate_path(const vrp_server_t* server, size_t excluded_device_index, size_t in_time_steps, uint8_t x, uint8_t y);
 
+int vrp_pick_most_prefarable_direction_to_move(const vrp_server_t* server, size_t device_index, int right_open, int up_open, int left_open, int down_open);
+
 int vrp_calculate_direction_to_make_way_for_other_devices(vrp_server_t* server, size_t device_index);
+
+int vrp_is_pickup_location_blocked(const vrp_server_t* server, size_t pickup_location_index);
+
+int vrp_calculate_immediate_path_any_open_direction(vrp_server_t* server, size_t device_index);
 
 #ifdef __cplusplus
 }

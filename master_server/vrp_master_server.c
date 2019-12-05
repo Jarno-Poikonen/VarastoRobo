@@ -1,8 +1,8 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
-#define VRP_MASTER_SERVER_VERSION "0.9.0 2019-12-04"
+#define VRP_MASTER_SERVER_VERSION "0.9.2 2019-12-05"
 
 //#define VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 //#define VRP_DEBUG_AUTO_FINISH_TRANSPORT
@@ -63,8 +63,6 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 
 	if (product_order_index != (size_t)~0)
 	{
-
-
 		if ((((server->product_order_table[product_order_index].order_status == VRP_ORDER_IN_STORAGE) || (server->product_order_table[product_order_index].order_status == VRP_ORDER_PICKUP)) && (vrp_is_device_on_pickup_load_location(server, i) != (size_t)~0)) ||
 			((server->product_order_table[product_order_index].order_status == VRP_ORDER_ON_MOVE) && ((server->device_table[i].x == server->product_order_table[product_order_index].destination_x) && (server->device_table[i].y == server->product_order_table[product_order_index].destination_y))) ||
 			(server->product_order_table[product_order_index].order_status == VRP_ORDER_FINAL_WAITING))
@@ -89,6 +87,15 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 				server->device_table[i].command = VRP_MESSAGE_UNDEFINED;
 			}
 			return 1;
+		}
+
+		if ((server->product_order_table[product_order_index].order_status == VRP_ORDER_IN_STORAGE) &&
+			(server->device_table[i].destination_x == server->device_table[i].home_x) &&
+			(server->device_table[i].destination_y == server->device_table[i].home_y))
+		{
+			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].immediate_path_length = 0;
 		}
 	}
 
@@ -208,6 +215,28 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 					return 0;
 
 				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+			}
+			else if ((server->time - server->device_table[i].last_moved) > 10000)
+			{
+				next_direction = (uint8_t)vrp_calculate_immediate_path_any_open_direction(server, i);
+				if (next_direction != VRP_DIRECTION_UNDEFINED && vrp_is_cell_open(server, server->device_table[i].immediate_path[0].x, server->device_table[i].immediate_path[0].y))
+				{
+					server->device_table[i].move_to_x = server->device_table[i].immediate_path[0].x;
+					server->device_table[i].move_to_y = server->device_table[i].immediate_path[0].y;
+
+					server->device_table[i].command = VRP_MESSAGE_MCM;
+					server->device_table[i].io_memory[0] = server->device_table[i].command;
+					server->device_table[i].io_memory[1] = 1;
+					server->device_table[i].io_memory[2] = 0;
+					server->device_table[i].io_memory[3] = 0;
+					server->device_table[i].io_memory[4] = 0;
+					server->device_table[i].io_memory[5] = next_direction;
+
+					if (!vrp_write(server, i, 0, 6))
+						return 0;
+
+					server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+				}
 			}
 		}
 	}
@@ -347,6 +376,8 @@ int vrp_process_gopigo_wfm(vrp_server_t* server, size_t i, size_t total_message_
 
 		if (!error && (server->device_table[i].x == server->device_table[i].immediate_path[0].x) && (server->device_table[i].y == server->device_table[i].immediate_path[0].y))
 		{
+			server->device_table[i].last_moved = server->time;
+
 			memmove(server->device_table[i].immediate_path, server->device_table[i].immediate_path + 1, (server->device_table[i].immediate_path_length - 1) * sizeof(*server->device_table[i].immediate_path));
 			server->device_table[i].immediate_path_length--;
 		}
@@ -437,7 +468,7 @@ int vrp_process_gopigo_wfm(vrp_server_t* server, size_t i, size_t total_message_
 		else if ((server->product_order_table[product_order_index].order_status == VRP_ORDER_ON_MOVE) && !server->device_table[i].carried_product_confidence)
 		{
 			// bad. the order was lost
-			assert(0);
+			//assert(0);
 			server->product_order_table[product_order_index].transport_device_id = VRP_ID_UNDEFINED;
 			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
@@ -460,6 +491,9 @@ int vrp_process_ur5_wfm(vrp_server_t* server, size_t i, size_t total_message_siz
 {
 	if (server->device_table[i].command == VRP_MESSAGE_MPM)
 	{
+		if (!error)
+			server->device_table[i].last_moved = server->time;
+
 		size_t transport_device_index = (size_t)~0;
 		size_t product_order_index = (size_t)~0;
 		//size_t pickup_location_index = (size_t)~0;
@@ -467,6 +501,7 @@ int vrp_process_ur5_wfm(vrp_server_t* server, size_t i, size_t total_message_siz
 		if ((server->device_table[i].command == VRP_MESSAGE_MPM) && !atomic_flag)
 		{
 			server->status = VRP_STATE_FROZEN;
+			server->broadcast_immediately = 1;
 
 			sprintf(server->log_entry_buffer, "Device %lu nonatomic failure on move product message. System can not recover. Emergency stop activated.", server->device_table[i].id);
 			vrp_write_log_entry(&server->log, server->log_entry_buffer);
@@ -477,19 +512,26 @@ int vrp_process_ur5_wfm(vrp_server_t* server, size_t i, size_t total_message_siz
 			sprintf(server->log_entry_buffer, "UR5 %lu executed MPM. error %lu.", server->device_table[i].id, error_code);
 			vrp_write_log_entry(&server->log, server->log_entry_buffer);
 #else
-			transport_device_index = vrp_get_transport_device_index_by_coordinate(server, server->device_table[i].move_to_x, server->device_table[i].move_to_y);
+			transport_device_index = vrp_extended_get_transport_device_index_by_coordinate(server, server->device_table[i].move_to_x, server->device_table[i].move_to_y, &product_order_index);
 
 			if (transport_device_index != (size_t)~0)
-				product_order_index = vrp_get_order_index_of_transport_device(server, transport_device_index);
-
-			if (error)
 			{
-				sprintf(server->log_entry_buffer, "UR5 %lu failed to execute MPM. error %lu.", server->device_table[i].id, error);
-				vrp_write_log_entry(&server->log, server->log_entry_buffer);
+				assert(product_order_index != (size_t)~0);
 
-				if (error == VRP_ERROR_ITEM_NOT_FOUND)
+				if (!error)
 				{
-					if (product_order_index != (size_t)~0)
+					server->product_order_table[product_order_index].ur5_pickup_complete = 1;
+
+					sprintf(server->log_entry_buffer, "UR5 %lu moved product %lu to device %lu for order %08X.",
+						server->device_table[i].id, server->product_order_table[product_order_index].product_id, server->device_table[transport_device_index].id, server->product_order_table[product_order_index].order_number);
+					vrp_write_log_entry(&server->log, server->log_entry_buffer);
+				}
+				else
+				{
+					sprintf(server->log_entry_buffer, "UR5 %lu failed to execute MPM. error %lu.", server->device_table[i].id, error);
+					vrp_write_log_entry(&server->log, server->log_entry_buffer);
+
+					if (error == VRP_ERROR_ITEM_NOT_FOUND)
 					{
 						server->product_order_table[product_order_index].order_status = VRP_ORDER_NOT_AVAILABLE;
 						server->product_order_table[product_order_index].transport_device_id = VRP_ID_UNDEFINED;
@@ -498,19 +540,11 @@ int vrp_process_ur5_wfm(vrp_server_t* server, size_t i, size_t total_message_siz
 							server->device_table[i].id, server->product_order_table[product_order_index].product_id, server->product_order_table[product_order_index].order_number);
 						vrp_write_log_entry(&server->log, server->log_entry_buffer);
 					}
-					else
-					{
-						sprintf(server->log_entry_buffer, "Warning UR5 %lu moved a product for unknown order.", server->device_table[i].id);
-						vrp_write_log_entry(&server->log, server->log_entry_buffer);
-					}
 				}
 			}
 			else
 			{
-				server->product_order_table[product_order_index].ur5_pickup_complete = 1;
-
-				sprintf(server->log_entry_buffer, "UR5 %lu moved product %lu to device %lu for order %08X.",
-					server->device_table[i].id, server->product_order_table[product_order_index].product_id, server->device_table[transport_device_index].id, server->product_order_table[product_order_index].order_number);
+				sprintf(server->log_entry_buffer, "Warning UR5 %lu moved a product for unknown order.", server->device_table[i].id);
 				vrp_write_log_entry(&server->log, server->log_entry_buffer);
 			}
 #endif
@@ -844,12 +878,16 @@ int vrp_process_ncm(vrp_server_t* server, size_t i, size_t total_message_size)
 		server->device_table[i].x = server->device_table[i].io_memory[7];
 		server->device_table[i].y = server->device_table[i].io_memory[8];
 		server->device_table[i].direction = server->device_table[i].io_memory[9];
+		server->device_table[i].home_x = server->device_table[i].x;
+		server->device_table[i].home_y = server->device_table[i].y;
 	}
 	else
 	{
 		server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
 		server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
 		server->device_table[i].direction = VRP_DIRECTION_UNDEFINED;
+		server->device_table[i].home_x = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].home_y = VRP_COORDINATE_UNDEFINED;
 	}
 	server->device_table[i].state = server->device_table[i].io_memory[10];
 
@@ -1116,8 +1154,6 @@ void vrp_process_order(vrp_server_t* server, size_t i)
 			if (transport_device_index != (size_t)~0)
 			{
 				server->product_order_table[i].transport_device_id = server->device_table[transport_device_index].id;
-				server->device_table[transport_device_index].destination_x = server->product_order_table[i].destination_x;
-				server->device_table[transport_device_index].destination_y = server->product_order_table[i].destination_y;
 			}
 		}
 	}
@@ -1163,6 +1199,10 @@ DWORD vrp_run_setup(vrp_server_t** server)
 
 int main(int argc, char* argv)
 {
+#ifndef _NDEBUG
+	srand((int)(GetCurrentThreadId() ^ NtGetTickCount()));
+#endif
+
 	vrp_server_t* server;
 	if (vrp_run_setup(&server))
 		return EXIT_FAILURE;
@@ -1200,6 +1240,8 @@ int main(int argc, char* argv)
 		}
 		if (server->status == VRP_STATE_NORMAL)
 		{
+			if (vrp_remove_all_expired_blocks(server))
+				server->broadcast_immediately = 1;
 			for (size_t j = 0; j != server->product_order_count;)
 			{
 				if (!((vrp_get_device_index_by_id(server, server->product_order_table[j].transport_device_id) == (size_t)~0) &&
@@ -1230,7 +1272,7 @@ int main(int argc, char* argv)
 				if (!vrp_process_device(server, j))
 					vrp_remove_device(server, j);
 			}
-		if (!server->debug_no_broadcast && (server->broadcast_io_state == VRP_IO_IDLE) && (server->broadcast_immediately || ((NtGetTickCount() - server->last_broadcast_time) > server->broadcast_delay)))
+		if (!server->debug_no_broadcast && (server->broadcast_io_state == VRP_IO_IDLE) && (server->broadcast_immediately || ((server->time - server->last_broadcast_time) > server->broadcast_delay)))
 			vrp_send_system_broadcast_message(server);
 	}
 

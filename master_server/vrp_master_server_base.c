@@ -1,10 +1,10 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
 
-uint64_t vrp_get_valid_device_entries(vrp_server_t* server)
+uint64_t vrp_get_valid_device_entries(const vrp_server_t* server)
 {
 	__assume(VRP_MAX_DEVICE_COUNT <= 64);
 	uint64_t valid_device_entry_mask = 0;
@@ -45,6 +45,43 @@ int vrp_calculate_device_movement_priority(const vrp_server_t* server, uint8_t d
 	return device_priority;
 }
 
+int vrp_get_next_block_expiration_time(const vrp_server_t* server, uint32_t* expiration_time)
+{
+	int shortest_time_is_set = 0;
+	uint32_t shortest_time = 0xFFFFFFFF;
+
+	for (size_t i = 0; i != server->block_count; ++i)
+	{
+		uint32_t time = ((server->time - server->block_table[i].last_uppdate_time) > server->block_expiration_time) ? 0 : (server->block_expiration_time - (server->time - server->block_table[i].last_uppdate_time));
+		if (!shortest_time_is_set || (time < shortest_time))
+		{
+			shortest_time = time;
+			shortest_time_is_set = 1;
+		}
+	}
+
+	*expiration_time = shortest_time;
+	return shortest_time_is_set;
+}
+
+int vrp_remove_all_expired_blocks(vrp_server_t* server)
+{
+	int something_removed = 0;
+
+	for (size_t i = 0; i != server->block_count;)
+		if ((server->time - server->block_table[i].last_uppdate_time) > server->block_expiration_time)
+		{
+			if (i != (server->block_count - 1))
+				memcpy(server->block_table + i, server->block_table + (server->block_count - 1), sizeof(*server->block_table));
+			server->block_count--;
+			something_removed = 1;
+		}
+		else
+			++i;
+
+	return something_removed;
+}
+
 int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y)
 {
 	if (server->block_count == VRP_MAX_BLOCK_COUNT)
@@ -53,8 +90,9 @@ int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y)
 	if (!((server->map_bitmap[((size_t)y * (size_t)server->map_width + (size_t)x) / 8] >> (int)(((size_t)y * (size_t)server->map_width + (size_t)x) % 8)) & 1))
 		return 0;
 
-	for (size_t i = 0; i != server->device_count; ++i)
-		if ((server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) &&
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if ((server->device_table[i].sock != INVALID_SOCKET) &&
+			(server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) &&
 			(server->device_table[i].x == x) &&
 			(server->device_table[i].y == y))
 			return 0;
@@ -64,6 +102,7 @@ int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y)
 			(server->block_table[i].y == y))
 			return 0;
 
+	server->block_table[server->block_count].last_uppdate_time = server->time;
 	server->block_table[server->block_count].x = x;
 	server->block_table[server->block_count].y = y;
 	server->block_count++;
@@ -85,12 +124,12 @@ int vrp_remove_block(vrp_server_t* server, uint8_t x, uint8_t y)
 	return 0;
 }
 
-uint32_t vrp_create_product_order_number(vrp_server_t* server, uint8_t optional_client_id)
+uint32_t vrp_create_product_order_number(const vrp_server_t* server, uint8_t optional_client_id)
 {
 	return ((uint32_t)optional_client_id << 24) | ((uint32_t)server->product_order_count << 16) | ((uint32_t)server->time & 0x0000FFFF);
 }
 
-size_t vrp_get_order_index_by_number(vrp_server_t* server, uint32_t order_number)
+size_t vrp_get_order_index_by_number(const vrp_server_t* server, uint32_t order_number)
 {
 	if (!order_number)
 		return (size_t)~0;
@@ -140,8 +179,30 @@ size_t vrp_create_product_order(vrp_server_t* server, uint8_t product_id, uint8_
 	return i;
 }
 
-int vrp_choose_product_order_destination(vrp_server_t* server, size_t coordinate_count, const uint8_t* coordinate_table, uint8_t* destination_x, uint8_t* destination_y)
+int vrp_choose_product_order_destination(const vrp_server_t* server, size_t coordinate_count, const uint8_t* coordinate_table, uint8_t* destination_x, uint8_t* destination_y)
 {
+	for (size_t i = 0; i != coordinate_count; ++i)
+	{
+		uint8_t x = coordinate_table[i * 2 + 0];
+		uint8_t y = coordinate_table[i * 2 + 1];
+		int destination_is_free = 1;
+
+		for (size_t j = 0; destination_is_free && j != server->block_count; ++j)
+			if (server->block_table[i].x == x && server->block_table[i].y == y)
+				destination_is_free = 0;
+
+		for (size_t j = 0; destination_is_free && j != server->product_order_count; ++j)
+			if (server->product_order_table[i].destination_x == x && server->product_order_table[i].destination_y == y)
+				destination_is_free = 0;
+
+		if (destination_is_free)
+		{
+			*destination_x = x;
+			*destination_y = y;
+			return 1;
+		}
+	}
+
 	for (size_t i = 0; i != coordinate_count; ++i)
 	{
 		uint8_t x = coordinate_table[i * 2 + 0];
@@ -157,16 +218,18 @@ int vrp_choose_product_order_destination(vrp_server_t* server, size_t coordinate
 			return 1;
 		}
 	}
+
 	if (coordinate_count)
 	{
 		*destination_x = coordinate_table[0];
 		*destination_y = coordinate_table[1];
 		return 1;
 	}
+
 	return 0;
 }
 
-size_t vrp_get_nonstarted_product_order_index(vrp_server_t* server)
+size_t vrp_get_nonstarted_product_order_index(const vrp_server_t* server)
 {
 	if (!server->product_order_count)
 		return (size_t)~0;
@@ -177,7 +240,7 @@ size_t vrp_get_nonstarted_product_order_index(vrp_server_t* server)
 	return (size_t)~0;
 }
 
-size_t vrp_get_order_index_of_transport_device(vrp_server_t* server, size_t device_index)
+size_t vrp_get_order_index_of_transport_device(const vrp_server_t* server, size_t device_index)
 {
 	for (size_t i = 0; i != server->product_order_count; ++i)
 	{
@@ -200,7 +263,7 @@ int vrp_is_valid_product_id(const vrp_server_t* server, uint8_t product_id, int 
 	return ((uint8_t)server->acceptable_product_mask & (uint8_t)(1 << product_id)) ? 1 : 0;
 }
 
-uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
+uint8_t vrp_get_temporal_device_id(const vrp_server_t* server)
 {
 	if (server->min_temporal_id == VRP_ID_UNDEFINED || server->max_temporal_id == VRP_ID_UNDEFINED || server->min_temporal_id > server->max_temporal_id)
 		return VRP_ID_UNDEFINED;
@@ -209,8 +272,8 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 	for (uint8_t relative_id = 0; relative_id != id_count; ++relative_id)
 	{
 		int id_is_free = 1;
-		for (size_t i = 0; id_is_free && i != server->device_count; ++i)
-			if (server->device_table[i].id == id_offset + relative_id)
+		for (size_t i = 0; id_is_free && i != VRP_MAX_DEVICE_COUNT; ++i)
+			if ((server->device_table[i].sock != INVALID_SOCKET) && (server->device_table[i].id == id_offset + relative_id))
 				id_is_free = 0;
 		if (id_is_free)
 			return id_offset + relative_id;
@@ -218,7 +281,7 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 	return VRP_ID_UNDEFINED;
 }
 
-size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id)
+size_t vrp_get_device_index_by_id(const vrp_server_t* server, uint8_t id)
 {
 	if (id == VRP_ID_UNDEFINED)
 		return (size_t)~0;
@@ -228,7 +291,7 @@ size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id)
 	return (size_t)~0;
 }
 
-size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_device_id)
+size_t vrp_get_controlling_device_index(const vrp_server_t* server, uint8_t controled_device_id)
 {
 	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
 		if (server->device_table[i].sock != INVALID_SOCKET && server->device_table[i].control_target_id == controled_device_id)
@@ -236,7 +299,7 @@ size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_
 	return (size_t)~0;
 }
 
-size_t vrp_get_pickup_location_index_by_id(vrp_server_t* server, uint8_t pickup_location_id)
+size_t vrp_get_pickup_location_index_by_id(const vrp_server_t* server, uint8_t pickup_location_id)
 {
 	for (size_t i = 0; i != server->pickup_location_count; ++i)
 		if (server->pickup_location_table[i].id == pickup_location_id)
@@ -263,7 +326,7 @@ size_t vrp_get_message_size(const void* message)
 		((uint32_t) * (const uint8_t*)((uintptr_t)message + 4) << 24));
 }
 
-int vrp_is_device_timeout_reached(vrp_server_t* server, size_t device_index)
+int vrp_is_device_timeout_reached(const vrp_server_t* server, size_t device_index)
 {
 	assert(server->device_table[device_index].sock != INVALID_SOCKET);
 
@@ -361,7 +424,7 @@ size_t vrp_finish_io(vrp_server_t* server, size_t device_index, int* io_type)
 	return io_successful ? (size_t)((uintptr_t)server->device_table[device_index].io_buffer.buf - (uintptr_t)server->device_table[device_index].io_memory) : 0;
 }
 
-size_t vrp_message_transfer_incomplete(vrp_server_t* server, size_t device_index, int io_type)
+size_t vrp_message_transfer_incomplete(const vrp_server_t* server, size_t device_index, int io_type)
 {
 	size_t transfer_size = (size_t)((uintptr_t)server->device_table[device_index].io_buffer.buf - (uintptr_t)server->device_table[device_index].io_memory);
 	size_t message_size = vrp_get_message_size(server->device_table[device_index].io_memory);
@@ -408,9 +471,6 @@ int vrp_process_possible_emergency(vrp_server_t* server)
 	{
 		if ((io_transfered >= 8) && (server->emergency_io_memory[0] == 0x01) && (server->emergency_io_memory[1] == 0x07) && !server->emergency_io_memory[2] && (server->emergency_io_memory[3] != server->id))
 		{
-
-
-
 			server->status = 0;
 			server->broadcast_immediately = 1;
 			emergency_stop = 1;
@@ -421,20 +481,37 @@ int vrp_process_possible_emergency(vrp_server_t* server)
 	return emergency_stop;
 }
 
-size_t vrp_get_free_device_slot(vrp_server_t* server)
+size_t vrp_get_free_device_slot(const vrp_server_t* server)
 {
 	// assume slot exists
+	assert(server->device_count != VRP_MAX_DEVICE_COUNT);
+#ifndef _NDEBUG
+	for (size_t offset = ((size_t)rand() % VRP_MAX_DEVICE_COUNT), increment = 0;; ++increment)
+	{
+		assert(increment < VRP_MAX_DEVICE_COUNT);
+		size_t index = (offset + increment) % VRP_MAX_DEVICE_COUNT;
+		if (server->device_table[index].sock == INVALID_SOCKET)
+			return index;
+	}
+#else
 	for (size_t i = 0;; ++i)
+	{
+		assert(i < VRP_MAX_DEVICE_COUNT);
 		if (server->device_table[i].sock == INVALID_SOCKET)
 			return i;
+	}
+#endif
 }
 
-size_t vrp_get_device_index_by_io_event(vrp_server_t* server, HANDLE io_event)
+size_t vrp_get_device_index_by_io_event(const vrp_server_t* server, HANDLE io_event)
 {
 	// assume device exists
 	for (size_t i = 0;; ++i)
+	{
+		assert(i < VRP_MAX_DEVICE_COUNT);
 		if (server->device_table[i].io_result.hEvent == io_event)
 			return i;
+	}
 }
 
 size_t vrp_wait_for_io(vrp_server_t* server)
@@ -491,6 +568,11 @@ size_t vrp_wait_for_io(vrp_server_t* server)
 		}
 
 	DWORD max_wait_time = !server->debug_no_broadcast ? (((server->time - server->last_broadcast_time) < server->broadcast_delay) ? (server->time - server->last_broadcast_time) : (server->broadcast_io_state == VRP_IO_WRITE ? server->broadcast_delay : 0)) : server->broadcast_delay;
+	DWORD next_block_expiration_time;
+	if (vrp_get_next_block_expiration_time(server, &next_block_expiration_time))
+		if (next_block_expiration_time < max_wait_time)
+			max_wait_time = next_block_expiration_time;
+
 	DWORD event_index = WaitForMultipleObjects(io_event_count, server->io_event_table, FALSE, max_wait_time);
 	
 	server->time = NtGetTickCount();
@@ -928,6 +1010,7 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	server->idle_status_query_delay = configuration->idle_status_query_delay;
 	server->product_pickup_status_query_delay = configuration->product_pickup_status_query_delay;
 	server->acceptable_product_mask = configuration->acceptable_product_mask;
+	server->block_expiration_time = configuration->block_expiration_time;
 	server->carried_product_confidence_max = configuration->carried_product_confidence_max;
 	server->carried_product_confidence_pickup_limit = configuration->carried_product_confidence_pickup_limit;
 	server->status = configuration->system_status;
@@ -998,6 +1081,10 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 
 void vrp_remove_device(vrp_server_t* server, size_t i)
 {
+	assert(server->device_table[i].sock != INVALID_SOCKET);
+	if (server->device_table[i].sock == INVALID_SOCKET)
+		return;
+	assert(server->device_count);
 	if (server->device_table[i].connection_state != VRP_CONNECTION_DISCONNECT)
 	{
 		char log_entry_buffer[128];
@@ -1106,6 +1193,7 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].io_begin_time = 0;
 			server->device_table[i].last_uppdate_time = 0;
 			server->device_table[i].connection_begin_time = server->time;
+			server->device_table[i].last_moved = server->time;
 			server->device_table[i].command = VRP_MESSAGE_UNDEFINED;
 			server->device_table[i].type = VRP_DEVICE_TYPE_UNDEFINED;
 			server->device_table[i].id = VRP_ID_UNDEFINED;
@@ -1116,6 +1204,8 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].ip_address = ntohl(client_address.sin_addr.s_addr);
 			server->device_table[i].move_to_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].move_to_y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].home_x = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].home_y = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].carried_product_confidence = 0;
 			server->device_table[i].carried_product_id = 0;
 			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;

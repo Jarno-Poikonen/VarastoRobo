@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
 #ifndef VRP_CONFIGURATION_H
@@ -28,6 +28,7 @@ typedef struct vrp_configuration_t
 	uint32_t acceptable_product_mask;
 	uint32_t carried_product_confidence_max;
 	uint32_t carried_product_confidence_pickup_limit;
+	uint32_t block_expiration_time;
 	uint8_t master_id;
 	uint8_t system_status;
 	uint8_t min_temporal_id;

@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
 #include "vrp_path_logic.h"
@@ -59,13 +59,14 @@ int vrp_is_cell_open(const vrp_server_t* server, int x, int y)
 			(server->block_table[block_index].x == x))
 				return 0;
 
-	for (size_t device_count = server->device_count, device_index = 0; device_index != device_count; ++device_index)
-		if ((server->device_table[device_index].type == VRP_DEVICE_TYPE_GOPIGO) &&
+	for (size_t device_index = 0; device_index != VRP_MAX_DEVICE_COUNT; ++device_index)
+		if ((server->device_table[device_index].sock != INVALID_SOCKET) &&
+			(server->device_table[device_index].type == VRP_DEVICE_TYPE_GOPIGO) &&
 			(server->device_table[device_index].y <= VRP_MAX_MAP_HEIGHT) &&
 			(server->device_table[device_index].x <= VRP_MAX_MAP_WIDTH) &&
 			(((server->device_table[device_index].y == y) && (server->device_table[device_index].x == x)) ||
 			((server->device_table[device_index].move_to_y == y) && (server->device_table[device_index].move_to_x == x))))
-				return 0;
+			return 0;
 
 	return 1;
 }
@@ -97,8 +98,9 @@ void vrp_initialize_path_finder(vrp_server_t* server, int exclude_x, int exclude
 		if ((server->block_table[block_index].y <= VRP_MAX_MAP_HEIGHT) && (server->block_table[block_index].x <= VRP_MAX_MAP_WIDTH))
 			server->map_state[(int)server->block_table[block_index].y * w + (int)server->block_table[block_index].x].path_finder_state = VRP_PATH_BLOCK;
 
-	for (size_t device_count = server->device_count, device_index = 0; device_index != device_count; ++device_index)
-		if ((server->device_table[device_index].type == VRP_DEVICE_TYPE_GOPIGO) &&
+	for (size_t device_index = 0; device_index != VRP_MAX_DEVICE_COUNT; ++device_index)
+		if ((server->device_table[device_index].sock != INVALID_SOCKET) &&
+			(server->device_table[device_index].type == VRP_DEVICE_TYPE_GOPIGO) &&
 			(server->device_table[device_index].y <= VRP_MAX_MAP_HEIGHT) &&
 			(server->device_table[device_index].x <= VRP_MAX_MAP_WIDTH) &&
 			((((exclude_x - server->device_table[device_index].x) * (exclude_x - server->device_table[device_index].x)) + ((exclude_y - server->device_table[device_index].y) * (exclude_y - server->device_table[device_index].y))) < device_ignore_distance) &&
@@ -304,7 +306,7 @@ int vrp_is_coordinate_idle_location(const vrp_server_t* server, int x, int y)
 	return 0;
 }
 
-int vrp_get_idle_location_for_device(const vrp_server_t* server, size_t device_index, uint8_t* x, uint8_t* y)
+int vrp_deprecated_get_idle_location_for_device(const vrp_server_t* server, size_t device_index, uint8_t* x, uint8_t* y)
 {
 	assert(device_index < VRP_MAX_DEVICE_COUNT);
 
@@ -329,6 +331,27 @@ int vrp_get_idle_location_for_device(const vrp_server_t* server, size_t device_i
 	return 0;
 }
 
+int vrp_get_idle_location_for_device(const vrp_server_t* server, size_t device_index, uint8_t* x, uint8_t* y)
+{
+	assert(device_index < VRP_MAX_DEVICE_COUNT);
+
+	if ((server->device_table[device_index].x == VRP_COORDINATE_UNDEFINED) ||
+		(server->device_table[device_index].y == VRP_COORDINATE_UNDEFINED) ||
+		(server->device_table[device_index].home_x == VRP_COORDINATE_UNDEFINED) ||
+		(server->device_table[device_index].home_y == VRP_COORDINATE_UNDEFINED) ||
+		((server->device_table[device_index].x == server->device_table[device_index].home_x) && (server->device_table[device_index].y == server->device_table[device_index].home_y)))
+		return 0;
+
+	if (vrp_is_cell_open(server, server->device_table[device_index].home_x, server->device_table[device_index].home_y))
+	{
+		*x = server->device_table[device_index].home_x;
+		*y = server->device_table[device_index].home_y;
+		return 1;
+	}
+
+	return 0;
+}
+
 int vrp_get_device_distance_to_pickup_location_entry(vrp_server_t* server, size_t device_index, size_t* pickup_location_index)
 {
 	assert(device_index < VRP_MAX_DEVICE_COUNT);
@@ -342,17 +365,18 @@ int vrp_get_device_distance_to_pickup_location_entry(vrp_server_t* server, size_
 	int distance_to_nearest_pickup_location = INT_MAX;
 
 	for (size_t i = 0; i != server->pickup_location_count; ++i)
-	{
-		vrp_initialize_path_finder(server, server->device_table[device_index].x, server->device_table[device_index].y, VRP_DEFAULT_DEVICE_ON_PAHT_IGNORE_DISTANCE, vrp_calculate_device_movement_priority(server, server->device_table[device_index].id));
-		if (vrp_create_path_map(server, server->pickup_location_table[i].entry_x, server->pickup_location_table[i].entry_y, 0) &&
-			(server->map_state[(int)server->device_table[device_index].y * (int)server->map_width + (int)server->device_table[device_index].x].path_finder_state > -1) &&
-			(server->map_state[(int)server->device_table[device_index].y * (int)server->map_width + (int)server->device_table[device_index].x].path_finder_state < distance_to_nearest_pickup_location))
+		if (!vrp_is_pickup_location_blocked(server, i))
 		{
-			nearest_pickup_location = i;
-			distance_to_nearest_pickup_location = server->map_state[(int)server->device_table[device_index].y * (int)server->map_width + (int)server->device_table[device_index].x].path_finder_state;
-			assert(distance_to_nearest_pickup_location > -1 && distance_to_nearest_pickup_location != INT_MAX);
+			vrp_initialize_path_finder(server, server->device_table[device_index].x, server->device_table[device_index].y, VRP_DEFAULT_DEVICE_ON_PAHT_IGNORE_DISTANCE, vrp_calculate_device_movement_priority(server, server->device_table[device_index].id));
+			if (vrp_create_path_map(server, server->pickup_location_table[i].entry_x, server->pickup_location_table[i].entry_y, 0) &&
+				(server->map_state[(int)server->device_table[device_index].y * (int)server->map_width + (int)server->device_table[device_index].x].path_finder_state > -1) &&
+				(server->map_state[(int)server->device_table[device_index].y * (int)server->map_width + (int)server->device_table[device_index].x].path_finder_state < distance_to_nearest_pickup_location))
+			{
+				nearest_pickup_location = i;
+				distance_to_nearest_pickup_location = server->map_state[(int)server->device_table[device_index].y * (int)server->map_width + (int)server->device_table[device_index].x].path_finder_state;
+				assert(distance_to_nearest_pickup_location > -1 && distance_to_nearest_pickup_location != INT_MAX);
+			}
 		}
-	}
 
 	if (pickup_location_index)
 		*pickup_location_index = nearest_pickup_location;
@@ -364,18 +388,19 @@ size_t vrp_get_device_index_for_free_transport(vrp_server_t* server)
 	size_t nearest_device_index = (size_t)~0;
 	int nearest_device_distance = INT_MAX;
 
-	for (size_t i = 0; i != server->device_count; ++i)
-	{
-		if (vrp_get_order_index_of_transport_device(server, i) == (size_t)~0)
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
 		{
-			int distance = vrp_get_device_distance_to_pickup_location_entry(server, i, 0);
-			if (distance < nearest_device_distance)
+			if (vrp_get_order_index_of_transport_device(server, i) == (size_t)~0)
 			{
-				nearest_device_distance = distance;
-				nearest_device_index = i;
+				int distance = vrp_get_device_distance_to_pickup_location_entry(server, i, 0);
+				if (distance < nearest_device_distance)
+				{
+					nearest_device_distance = distance;
+					nearest_device_index = i;
+				}
 			}
 		}
-	}
 
 	return nearest_device_index;
 }
@@ -387,13 +412,20 @@ size_t vrp_get_nearest_pickup_location_index_for_device(vrp_server_t* server, si
 		(server->device_table[device_index].y == VRP_COORDINATE_UNDEFINED))
 		return (size_t)~0;
 
-	size_t pickup_location_index;
-	size_t nearest_pickup_location_index = (size_t)~0;
-	int nearest_pickup_location_distance = INT_MAX;
+	size_t nearest_pickup_location_index = vrp_get_pickup_location_index_by_load_coordinate(server, server->device_table[device_index].x, server->device_table[device_index].y);
+	if ((nearest_pickup_location_index != (size_t)~0) &&
+		(server->pickup_location_table[nearest_pickup_location_index].direction == server->device_table[device_index].direction) &&
+		(!vrp_is_pickup_location_blocked(server, nearest_pickup_location_index)))
+		return nearest_pickup_location_index;
 
-	for (size_t i = 0; i != server->pickup_location_count; ++i)
-		if (vrp_get_device_distance_to_pickup_location_entry(server, device_index, &pickup_location_index) < nearest_pickup_location_distance)
-			nearest_pickup_location_index = pickup_location_index;
+	nearest_pickup_location_index = vrp_get_pickup_location_index_by_entry_coordinate(server, server->device_table[device_index].x, server->device_table[device_index].y);
+	if ((nearest_pickup_location_index != (size_t)~0) &&
+		(!vrp_is_pickup_location_blocked(server, nearest_pickup_location_index)))
+		return nearest_pickup_location_index;
+
+	size_t pickup_location_index;
+	if (vrp_get_device_distance_to_pickup_location_entry(server, device_index, &pickup_location_index) != INT_MAX)
+		nearest_pickup_location_index = pickup_location_index;
 
 	return nearest_pickup_location_index;
 }
@@ -436,28 +468,49 @@ size_t vrp_get_pickup_location_index_by_entry_coordinate(const vrp_server_t* ser
 	return (size_t)~0;
 }
 
-size_t vrp_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y)
+size_t vrp_extended_get_transport_device_index_by_coordinate(const vrp_server_t* server, int x, int y, size_t* product_order_index)
 {
 	__assume((x < VRP_MAX_MAP_WIDTH || x == VRP_COORDINATE_UNDEFINED) && (y < VRP_MAX_MAP_WIDTH || y == VRP_COORDINATE_UNDEFINED));
 
-	for (size_t i = 0; i != server->device_count; ++i)
-		if ((server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) && (server->device_table[i].x == (uint8_t)x) && (server->device_table[i].y == (uint8_t)y))
+	for (size_t i = 0; i != server->product_order_count; ++i)
+		if (server->product_order_table[i].transport_device_id != VRP_ID_UNDEFINED)
+		{
+			size_t device_index = vrp_get_device_index_by_id(server, server->product_order_table[i].transport_device_id);
+			if ((device_index != (size_t)~0) &&
+				((uint8_t)x == server->device_table[device_index].x) &&
+				((uint8_t)y == server->device_table[device_index].y))
+			{
+				*product_order_index = i;
+				return device_index;
+			}
+		}
+
+	/*
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if ((server->device_table[i].sock != INVALID_SOCKET) &&
+			(server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) &&
+			(server->device_table[i].x == (uint8_t)x) &&
+			(server->device_table[i].y == (uint8_t)y))
 			return i;
+	*/
 
 	return (size_t)~0;
 }
 
 int vrp_get_any_transport_device_from_pickup_load_location(vrp_server_t* server, size_t* device_index, size_t* pickup_location_index)
 {
-	for (size_t i = 0; i != server->device_count; ++i)
-		if (server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO)
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
 		{
-			size_t pickup_location = vrp_is_device_on_pickup_load_location(server, i);
-			if ((pickup_location != (size_t)~0))
+			if (server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO)
 			{
-				*device_index = i;
-				*pickup_location_index = pickup_location;
-				return 1;
+				size_t pickup_location = vrp_is_device_on_pickup_load_location(server, i);
+				if ((pickup_location != (size_t)~0))
+				{
+					*device_index = i;
+					*pickup_location_index = pickup_location;
+					return 1;
+				}
 			}
 		}
 	return 0;
@@ -496,30 +549,58 @@ int vrp_is_device_likely_to_colide(const vrp_server_t* server, size_t device_thi
 
 size_t vrp_get_likely_to_colide_device_index(const vrp_server_t* server, size_t device_this_index, int do_not_care_if_this_device_has_higher_priority, uint8_t* x, uint8_t* y)
 {
-	for (size_t i = 0; i != server->device_count; ++i)
-		if ((i != device_this_index) && vrp_is_device_likely_to_colide(server, device_this_index, i, VRP_DEFAULT_DEVICE_ON_PAHT_IGNORE_DISTANCE, do_not_care_if_this_device_has_higher_priority, x, y))
-			return i;
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
+		{
+			if ((i != device_this_index) && vrp_is_device_likely_to_colide(server, device_this_index, i, VRP_DEFAULT_DEVICE_ON_PAHT_IGNORE_DISTANCE, do_not_care_if_this_device_has_higher_priority, x, y))
+				return i;
+		}
 
 	return (size_t)~0;
 }
 
 int vrp_is_coordinate_in_any_immediate_path(const vrp_server_t* server, size_t excluded_device_index, size_t time_steps, uint8_t x, uint8_t y)
 {
-	for (size_t i = 0; i != server->device_count; ++i)
-		if (i != excluded_device_index)
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
 		{
-			if ((server->device_table[i].x == x) && (server->device_table[i].y == y))
-				return 1;
-			for (size_t n = (time_steps < server->device_table[i].immediate_path_length) ? time_steps : server->device_table[i].immediate_path_length, j = 0; j != n; ++j)
-				if ((server->device_table[i].immediate_path[j].x == x) && (server->device_table[i].immediate_path[j].y == y))
+			if (i != excluded_device_index)
+			{
+				if ((server->device_table[i].x == x) && (server->device_table[i].y == y))
 					return 1;
+				for (size_t n = (time_steps < server->device_table[i].immediate_path_length) ? time_steps : server->device_table[i].immediate_path_length, j = 0; j != n; ++j)
+					if ((server->device_table[i].immediate_path[j].x == x) && (server->device_table[i].immediate_path[j].y == y))
+						return 1;
+			}
 		}
 	return 0;
 }
 
+int vrp_pick_most_prefarable_direction_to_move(const vrp_server_t* server, size_t device_index, int right_open, int up_open, int left_open, int down_open)
+{
+	int direction_table[4] = { right_open, up_open, left_open, down_open };
+
+	if (server->device_table[device_index].direction > 3)
+		return VRP_DIRECTION_UNDEFINED;
+
+	if (direction_table[server->device_table[device_index].direction])
+		return server->device_table[device_index].direction;
+
+	if (direction_table[(server->device_table[device_index].direction - (uint8_t)1) % (uint8_t)4])
+		return (server->device_table[device_index].direction - (uint8_t)1) % (uint8_t)4;
+
+	if (direction_table[(server->device_table[device_index].direction + (uint8_t)1) % (uint8_t)4])
+		return (server->device_table[device_index].direction + (uint8_t)1) % (uint8_t)4;
+
+	if (direction_table[(server->device_table[device_index].direction + (uint8_t)2) % (uint8_t)4])
+		return (server->device_table[device_index].direction + (uint8_t)2) % (uint8_t)4;
+
+	return VRP_DIRECTION_UNDEFINED;
+}
+
 int vrp_calculate_direction_to_make_way_for_other_devices(vrp_server_t* server, size_t device_index)
 {
-	__assume((server->map_width < VRP_MAX_MAP_WIDTH || server->map_height <= VRP_MAX_MAP_HEIGHT));
+	__assume((server->map_width < VRP_MAX_MAP_WIDTH) && (server->map_height < VRP_MAX_MAP_HEIGHT) && (device_index < VRP_MAX_DEVICE_COUNT));
 
 	int w = server->map_width;
 	int h = server->map_height;
@@ -563,101 +644,191 @@ int vrp_calculate_direction_to_make_way_for_other_devices(vrp_server_t* server, 
 	size_t nearest_device_index = (size_t)~0;
 	int nearest_device_distance2 = INT_MAX;
 	int this_device_priority = vrp_calculate_device_movement_priority(server, server->device_table[device_index].id);
-	for (size_t i = 0; i != server->device_count; ++i)
-		if ((i != device_index) && (this_device_priority < vrp_calculate_device_movement_priority(server, server->device_table[i].id)))
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if (server->device_table[i].sock != INVALID_SOCKET)
 		{
-			int i_device_distance2 =
-				((server->device_table[i].x - server->device_table[device_index].x) * (server->device_table[i].x - server->device_table[device_index].x)) +
-				((server->device_table[i].y - server->device_table[device_index].y) * (server->device_table[i].y - server->device_table[device_index].y));
-			if (i_device_distance2 < nearest_device_distance2)
+			if ((i != device_index) && (this_device_priority < vrp_calculate_device_movement_priority(server, server->device_table[i].id)))
 			{
-				nearest_device_distance2 = i_device_distance2;
-				nearest_device_index = i;
+				int i_device_distance2 =
+					((server->device_table[i].x - server->device_table[device_index].x) * (server->device_table[i].x - server->device_table[device_index].x)) +
+					((server->device_table[i].y - server->device_table[device_index].y) * (server->device_table[i].y - server->device_table[device_index].y));
+				if (i_device_distance2 < nearest_device_distance2)
+				{
+					nearest_device_distance2 = i_device_distance2;
+					nearest_device_index = i;
+				}
 			}
 		}
 	if ((nearest_device_index != (size_t)~0))
 	{
-		int left_open = (int)(server->device_table[device_index].x && (server->map_state[y * w + (x - 1)].path_finder_state == VRP_PATH_OPEN));
 		int right_open = (int)((server->device_table[device_index].x + 1 < w) && (server->map_state[y * w + (x + 1)].path_finder_state == VRP_PATH_OPEN));
-		int down_open = (int)(server->device_table[device_index].y && (server->map_state[(y - 1) * w + x].path_finder_state == VRP_PATH_OPEN));
 		int up_open = (int)((server->device_table[device_index].y + 1 < h) && (server->map_state[(y + 1) * w + x].path_finder_state == VRP_PATH_OPEN));
+		int left_open = (int)(server->device_table[device_index].x && (server->map_state[y * w + (x - 1)].path_finder_state == VRP_PATH_OPEN));
+		int down_open = (int)(server->device_table[device_index].y && (server->map_state[(y - 1) * w + x].path_finder_state == VRP_PATH_OPEN));
 		
 		if (vrp_create_path_map(server, server->device_table[nearest_device_index].x, server->device_table[nearest_device_index].y, 1) &&
 			(server->map_state[(int)server->device_table[device_index].y * w + (int)server->device_table[device_index].x].path_finder_state < VRP_DEFAULT_DEVICE_ON_PAHT_IGNORE_DISTANCE))
 		{
-			if (server->device_table[device_index].x < server->device_table[nearest_device_index].x)
+			int right_away_from_device = 0;
+			int up_away_from_device = 0;
+			int left_away_from_device = 0;
+			int down_away_from_device = 0;
+
+			if (left_open && (server->device_table[device_index].x < server->device_table[nearest_device_index].x))
+				left_away_from_device = 1;
+			if (right_open && (server->device_table[device_index].x > server->device_table[nearest_device_index].x))
+				right_away_from_device = 1;
+			if (down_open && (server->device_table[device_index].y < server->device_table[nearest_device_index].y))
+				down_away_from_device = 1;
+			if (up_open && (server->device_table[device_index].y < server->device_table[nearest_device_index].y))
+				up_away_from_device = 1;
+
+			switch (vrp_pick_most_prefarable_direction_to_move(server, device_index, right_away_from_device, up_away_from_device, left_away_from_device, down_away_from_device))
 			{
-				if (left_open)
-				{
-					server->device_table[device_index].immediate_path[0].x = x - 1;
-					server->device_table[device_index].immediate_path[0].y = y;
-					server->device_table[device_index].immediate_path_length = 1;
-					return VRP_DIRECTION_LEFT;
-				}
-			}
-			else if (server->device_table[device_index].x > server->device_table[nearest_device_index].x)
-			{
-				if (right_open)
-				{
+				case VRP_DIRECTION_RIGHT:
 					server->device_table[device_index].immediate_path[0].x = x + 1;
 					server->device_table[device_index].immediate_path[0].y = y;
 					server->device_table[device_index].immediate_path_length = 1;
 					return VRP_DIRECTION_RIGHT;
-				}
-			}
-			if (server->device_table[device_index].y < server->device_table[nearest_device_index].y)
-			{
-				if (down_open)
-				{
-					server->device_table[device_index].immediate_path[0].x = x;
-					server->device_table[device_index].immediate_path[0].y = y - 1;
-					server->device_table[device_index].immediate_path_length = 1;
-					return VRP_DIRECTION_DOWN;
-				}
-			}
-			else if (server->device_table[device_index].y < server->device_table[nearest_device_index].y)
-			{
-				if (up_open)
-				{
+				case VRP_DIRECTION_UP:
 					server->device_table[device_index].immediate_path[0].x = x;
 					server->device_table[device_index].immediate_path[0].y = y + 1;
 					server->device_table[device_index].immediate_path_length = 1;
 					return VRP_DIRECTION_UP;
-				}
+				case VRP_DIRECTION_LEFT:
+					server->device_table[device_index].immediate_path[0].x = x - 1;
+					server->device_table[device_index].immediate_path[0].y = y;
+					server->device_table[device_index].immediate_path_length = 1;
+					return VRP_DIRECTION_LEFT;
+				case VRP_DIRECTION_DOWN:
+					server->device_table[device_index].immediate_path[0].x = x;
+					server->device_table[device_index].immediate_path[0].y = y - 1;
+					server->device_table[device_index].immediate_path_length = 1;
+					return VRP_DIRECTION_DOWN;
+				default:
+					break;
 			}
 		}
 
 		int center_x = w / 2;
 		int center_y = h / 2;
-		if (server->device_table[device_index].x <= center_x && left_open)
+
+		int right_away_from_center = 0;
+		int up_away_from_center = 0;
+		int left_away_from_center = 0;
+		int down_away_from_center = 0;
+
+		if (left_open && (server->device_table[device_index].x <= center_x))
+			left_away_from_center = 1;
+		if (right_open && (server->device_table[device_index].x > center_x))
+			right_away_from_center = 1;
+		if (down_open && (server->device_table[device_index].y <= center_y))
+			down_away_from_center = 1;
+		if (up_open && (server->device_table[device_index].y > center_y))
+			up_away_from_center = 1;
+
+		switch (vrp_pick_most_prefarable_direction_to_move(server, device_index, right_away_from_center, up_away_from_center, left_away_from_center, down_away_from_center))
 		{
-			server->device_table[device_index].immediate_path[0].x = x - 1;
-			server->device_table[device_index].immediate_path[0].y = y;
-			server->device_table[device_index].immediate_path_length = 1;
-			return VRP_DIRECTION_LEFT;
+			case VRP_DIRECTION_RIGHT:
+				server->device_table[device_index].immediate_path[0].x = x + 1;
+				server->device_table[device_index].immediate_path[0].y = y;
+				server->device_table[device_index].immediate_path_length = 1;
+				return VRP_DIRECTION_RIGHT;
+			case VRP_DIRECTION_UP:
+				server->device_table[device_index].immediate_path[0].x = x;
+				server->device_table[device_index].immediate_path[0].y = y + 1;
+				server->device_table[device_index].immediate_path_length = 1;
+				return VRP_DIRECTION_UP;
+			case VRP_DIRECTION_LEFT:
+				server->device_table[device_index].immediate_path[0].x = x - 1;
+				server->device_table[device_index].immediate_path[0].y = y;
+				server->device_table[device_index].immediate_path_length = 1;
+				return VRP_DIRECTION_LEFT;
+			case VRP_DIRECTION_DOWN:
+				server->device_table[device_index].immediate_path[0].x = x;
+				server->device_table[device_index].immediate_path[0].y = y - 1;
+				server->device_table[device_index].immediate_path_length = 1;
+				return VRP_DIRECTION_DOWN;
+			default:
+				break;
 		}
-		else if (server->device_table[device_index].x > center_x && right_open)
+
+		if (right_open)
 		{
-			server->device_table[device_index].immediate_path[0].x = x + 1;
 			server->device_table[device_index].immediate_path[0].y = y;
 			server->device_table[device_index].immediate_path_length = 1;
 			return VRP_DIRECTION_RIGHT;
 		}
-		else if (server->device_table[device_index].y <= center_y && down_open)
-		{
-			server->device_table[device_index].immediate_path[0].x = x;
-			server->device_table[device_index].immediate_path[0].y = y - 1;
-			server->device_table[device_index].immediate_path_length = 1;
-			return VRP_DIRECTION_DOWN;
-		}
-		else if (server->device_table[device_index].y > center_y && up_open)
+		if (up_open)
 		{
 			server->device_table[device_index].immediate_path[0].x = x;
 			server->device_table[device_index].immediate_path[0].y = y + 1;
 			server->device_table[device_index].immediate_path_length = 1;
 			return VRP_DIRECTION_UP;
 		}
+		if (left_open)
+		{
+			server->device_table[device_index].immediate_path[0].x = x - 1;
+			server->device_table[device_index].immediate_path[0].y = y;
+			server->device_table[device_index].immediate_path_length = 1;
+			return VRP_DIRECTION_LEFT;
+		}
+		if (down_open)
+		{
+			server->device_table[device_index].immediate_path[0].x = x;
+			server->device_table[device_index].immediate_path[0].y = y - 1;
+			server->device_table[device_index].immediate_path_length = 1;
+			return VRP_DIRECTION_DOWN;
+		}
 	}
 	
 	return VRP_DIRECTION_UNDEFINED;
+}
+
+int vrp_is_pickup_location_blocked(const vrp_server_t* server, size_t pickup_location_index)
+{
+	for (size_t i = 0; i != server->block_count; ++i)
+		if (((server->block_table[i].x == server->pickup_location_table[pickup_location_index].entry_x) && ((server->block_table[i].y == server->pickup_location_table[pickup_location_index].entry_y))) ||
+			((server->block_table[i].x == server->pickup_location_table[pickup_location_index].load_x) && ((server->block_table[i].y == server->pickup_location_table[pickup_location_index].load_y))))
+			return 1;
+	return 0;
+}
+
+int vrp_calculate_immediate_path_any_open_direction(vrp_server_t* server, size_t device_index)
+{
+	int w = server->map_width;
+	int h = server->map_height;
+	int x = server->device_table[device_index].x;
+	int y = server->device_table[device_index].y;
+	vrp_initialize_path_finder(server, server->device_table[device_index].x, server->device_table[device_index].y, VRP_DEFAULT_DEVICE_ON_PAHT_IGNORE_DISTANCE, INT_MAX);
+	int right_open = (int)((int)(server->device_table[device_index].x + 1 < w) && (server->map_state[y * w + (x + 1)].path_finder_state == VRP_PATH_OPEN));
+	int up_open = (int)((server->device_table[device_index].y + 1 < h) && (server->map_state[(y + 1) * w + x].path_finder_state == VRP_PATH_OPEN));
+	int left_open = (int)(server->device_table[device_index].x && (server->map_state[y * w + (x - 1)].path_finder_state == VRP_PATH_OPEN));
+	int down_open = (int)(server->device_table[device_index].y && (server->map_state[(y - 1) * w + x].path_finder_state == VRP_PATH_OPEN));
+
+	switch (vrp_pick_most_prefarable_direction_to_move(server, device_index, right_open, up_open, left_open, down_open))
+	{
+		case VRP_DIRECTION_RIGHT:
+			server->device_table[device_index].immediate_path[0].x = x + 1;
+			server->device_table[device_index].immediate_path[0].y = y;
+			server->device_table[device_index].immediate_path_length = 1;
+			return VRP_DIRECTION_RIGHT;
+		case VRP_DIRECTION_UP:
+			server->device_table[device_index].immediate_path[0].x = x;
+			server->device_table[device_index].immediate_path[0].y = y + 1;
+			server->device_table[device_index].immediate_path_length = 1;
+			return VRP_DIRECTION_UP;
+		case VRP_DIRECTION_LEFT:
+			server->device_table[device_index].immediate_path[0].x = x - 1;
+			server->device_table[device_index].immediate_path[0].y = y;
+			server->device_table[device_index].immediate_path_length = 1;
+			return VRP_DIRECTION_LEFT;
+		case VRP_DIRECTION_DOWN:
+			server->device_table[device_index].immediate_path[0].x = x;
+			server->device_table[device_index].immediate_path[0].y = y - 1;
+			server->device_table[device_index].immediate_path_length = 1;
+			return VRP_DIRECTION_DOWN;
+		default:
+			return VRP_DIRECTION_UNDEFINED;
+	}
 }

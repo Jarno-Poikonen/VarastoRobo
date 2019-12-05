@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
 #ifndef VRP_MASTER_SERVER_BASE_H
@@ -68,6 +68,7 @@ typedef struct vrp_device_t
 	DWORD io_begin_time;
 	DWORD last_uppdate_time;
 	DWORD connection_begin_time;
+	DWORD last_moved;
 	uint8_t control_target_id;
 	uint8_t executing_remote_command;
 	uint8_t remote_command_finished;
@@ -83,6 +84,8 @@ typedef struct vrp_device_t
 	uint8_t move_to_y;
 	uint8_t destination_x;
 	uint8_t destination_y;
+	uint8_t home_x;
+	uint8_t home_y;
 	uint8_t carried_product_confidence;
 	uint8_t carried_product_id;
 	uint8_t* io_memory;
@@ -112,6 +115,7 @@ typedef struct vrp_map_state_t
 
 typedef struct vrp_block_t
 {
+	DWORD last_uppdate_time;
 	uint8_t x;
 	uint8_t y;
 } vrp_block_t;
@@ -158,6 +162,7 @@ typedef struct vrp_server_t
 	DWORD idle_status_query_delay;
 	DWORD product_pickup_status_query_delay;
 	DWORD acceptable_product_mask;
+	DWORD block_expiration_time;
 	uint32_t carried_product_confidence_max;
 	uint32_t carried_product_confidence_pickup_limit;
 	uint8_t status;
@@ -220,43 +225,47 @@ typedef struct vrp_server_t
 #endif
 } vrp_server_t;
 
-uint64_t vrp_get_valid_device_entries(vrp_server_t* server);
+uint64_t vrp_get_valid_device_entries(const vrp_server_t* server);
 
 int vrp_calculate_device_movement_priority(const vrp_server_t* server, uint8_t device_id);
+
+int vrp_get_next_block_expiration_time(const vrp_server_t* server, uint32_t* expiration_time);
+
+int vrp_remove_all_expired_blocks(vrp_server_t* server);
 
 int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y);
 
 int vrp_remove_block(vrp_server_t* server, uint8_t x, uint8_t y);
 
-uint32_t vrp_create_product_order_number(vrp_server_t* server, uint8_t optional_client_id);
+uint32_t vrp_create_product_order_number(const vrp_server_t* server, uint8_t optional_client_id);
 
-size_t vrp_get_order_index_by_number(vrp_server_t* server, uint32_t order_number);
+size_t vrp_get_order_index_by_number(const vrp_server_t* server, uint32_t order_number);
 
 int vrp_remove_product_order(vrp_server_t* server, uint32_t order_number);
 
 size_t vrp_create_product_order(vrp_server_t* server, uint8_t product_id, uint8_t x, uint8_t y, uint8_t optional_client_id);
 
-int vrp_choose_product_order_destination(vrp_server_t* server, size_t coordinate_count, const uint8_t* coordinate_table, uint8_t* destination_x, uint8_t* destination_y);
+int vrp_choose_product_order_destination(const vrp_server_t* server, size_t coordinate_count, const uint8_t* coordinate_table, uint8_t* destination_x, uint8_t* destination_y);
 
-size_t vrp_get_nonstarted_product_order_index(vrp_server_t* server);
+size_t vrp_get_nonstarted_product_order_index(const vrp_server_t* server);
 
-size_t vrp_get_order_index_of_transport_device(vrp_server_t* server, size_t device_index);
+size_t vrp_get_order_index_of_transport_device(const vrp_server_t* server, size_t device_index);
 
 int vrp_is_valid_product_id(const vrp_server_t* server, uint8_t product_id, int is_not_undefined);
 
-uint8_t vrp_get_temporal_device_id(vrp_server_t* server);
+uint8_t vrp_get_temporal_device_id(const vrp_server_t* server);
 
-size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id);
+size_t vrp_get_device_index_by_id(const vrp_server_t* server, uint8_t id);
 
-size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_device_id);
+size_t vrp_get_controlling_device_index(const vrp_server_t* server, uint8_t controled_device_id);
 
-size_t vrp_get_pickup_location_index_by_id(vrp_server_t* server, uint8_t pickup_location_id);
+size_t vrp_get_pickup_location_index_by_id(const vrp_server_t* server, uint8_t pickup_location_id);
 
 DWORD vrp_get_system_tick_resolution();
 
 size_t vrp_get_message_size(const void* message);
 
-int vrp_is_device_timeout_reached(vrp_server_t* server, size_t device_index);
+int vrp_is_device_timeout_reached(const vrp_server_t* server, size_t device_index);
 
 void vrp_shutdown_device_connection(vrp_server_t* server, size_t i);
 
@@ -266,13 +275,13 @@ int vrp_write(vrp_server_t* server, size_t device_index, size_t offset, size_t s
 
 size_t vrp_finish_io(vrp_server_t* server, size_t device_index, int* io_type);
 
-size_t vrp_message_transfer_incomplete(vrp_server_t* server, size_t device_index, int io_type);
+size_t vrp_message_transfer_incomplete(const vrp_server_t* server, size_t device_index, int io_type);
 
 int vrp_process_possible_emergency(vrp_server_t* server);
 
-size_t vrp_get_free_device_slot(vrp_server_t* server);
+size_t vrp_get_free_device_slot(const vrp_server_t* server);
 
-size_t vrp_get_device_index_by_io_event(vrp_server_t* server, HANDLE io_event);
+size_t vrp_get_device_index_by_io_event(const vrp_server_t* server, HANDLE io_event);
 
 size_t vrp_wait_for_io(vrp_server_t* server);
 

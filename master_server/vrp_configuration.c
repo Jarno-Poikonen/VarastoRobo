@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.0 2019-12-04 by Santtu Nyman.
+	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
 */
 
 #include <Winsock2.h>
@@ -140,6 +140,15 @@ static uint32_t read_carried_product_confidence_pickup_limit_from_json(const jso
 	if (json_limit && json_limit->type == JSONPL_TYPE_NUMBER)
 		limit = (uint32_t)json_limit->number_value;
 	return limit;
+}
+
+static uint32_t read_block_expiration_time_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t time = 300000;
+	jsonpl_value_t* json_time = find_child_by_name(configuration, "block_expiration_ms_time");
+	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
+		time = (uint32_t)json_time->number_value;
+	return time;
 }
 
 static uint8_t read_master_id_from_json(const jsonpl_value_t* configuration)
@@ -321,6 +330,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint32_t acceptable_product_mask = read_acceptable_product_mask_from_json(json);
 	uint32_t carried_product_confidence_max = read_carried_product_confidence_max_from_json(json);
 	uint32_t carried_product_confidence_pickup_limit = read_carried_product_confidence_pickup_limit_from_json(json);
+	uint32_t block_expiration_time = read_block_expiration_time_from_json(json);
 	uint8_t system_status = read_system_status_from_json(json);
 	uint8_t master_id = read_master_id_from_json(json);
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
@@ -374,6 +384,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->acceptable_product_mask = acceptable_product_mask;
 	configuration->carried_product_confidence_max = carried_product_confidence_max;
 	configuration->carried_product_confidence_pickup_limit = carried_product_confidence_pickup_limit;
+	configuration->block_expiration_time = block_expiration_time;
 	configuration->master_id = master_id;
 	configuration->system_status = system_status;
 	configuration->min_temporal_id = min_temporal_id;
