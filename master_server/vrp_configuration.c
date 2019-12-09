@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
+	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
 */
 
 #include <Winsock2.h>
@@ -146,6 +146,24 @@ static uint32_t read_block_expiration_time_from_json(const jsonpl_value_t* confi
 {
 	uint32_t time = 300000;
 	jsonpl_value_t* json_time = find_child_by_name(configuration, "block_expiration_ms_time");
+	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
+		time = (uint32_t)json_time->number_value;
+	return time;
+}
+
+static uint32_t read_wait_for_path_ms_timeout_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t time = 60000;
+	jsonpl_value_t* json_time = find_child_by_name(configuration, "wait_for_path_ms_timeout");
+	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
+		time = (uint32_t)json_time->number_value;
+	return time;
+}
+
+static uint32_t read_product_not_available_ms_timeout_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t time = 60000;
+	jsonpl_value_t* json_time = find_child_by_name(configuration, "product_not_available_ms_timeout");
 	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
 		time = (uint32_t)json_time->number_value;
 	return time;
@@ -331,6 +349,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint32_t carried_product_confidence_max = read_carried_product_confidence_max_from_json(json);
 	uint32_t carried_product_confidence_pickup_limit = read_carried_product_confidence_pickup_limit_from_json(json);
 	uint32_t block_expiration_time = read_block_expiration_time_from_json(json);
+	uint32_t wait_for_path_ms_timeout = read_wait_for_path_ms_timeout_from_json(json);
+	uint32_t product_not_available_ms_timeout = read_product_not_available_ms_timeout_from_json(json);
 	uint8_t system_status = read_system_status_from_json(json);
 	uint8_t master_id = read_master_id_from_json(json);
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
@@ -385,6 +405,8 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->carried_product_confidence_max = carried_product_confidence_max;
 	configuration->carried_product_confidence_pickup_limit = carried_product_confidence_pickup_limit;
 	configuration->block_expiration_time = block_expiration_time;
+	configuration->wait_for_path_ms_timeout = wait_for_path_ms_timeout;
+	configuration->product_not_available_ms_timeout = product_not_available_ms_timeout;
 	configuration->master_id = master_id;
 	configuration->system_status = system_status;
 	configuration->min_temporal_id = min_temporal_id;

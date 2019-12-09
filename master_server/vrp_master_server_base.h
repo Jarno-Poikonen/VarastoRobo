@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
+	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
 */
 
 #ifndef VRP_MASTER_SERVER_BASE_H
@@ -141,6 +141,7 @@ typedef struct vrp_product_order_t
 	int order_status;
 	uint32_t order_number;
 	DWORD placement_time;
+	DWORD pickup_time;
 	uint8_t product_id;
 	uint8_t transport_device_id;
 	uint8_t destination_x;
@@ -163,6 +164,8 @@ typedef struct vrp_server_t
 	DWORD product_pickup_status_query_delay;
 	DWORD acceptable_product_mask;
 	DWORD block_expiration_time;
+	DWORD wait_for_path_timeout;
+	DWORD product_not_available_timeout;
 	uint32_t carried_product_confidence_max;
 	uint32_t carried_product_confidence_pickup_limit;
 	uint8_t status;

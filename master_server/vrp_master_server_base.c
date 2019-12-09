@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
+	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
 */
 
 #include "vrp_master_server_base.h"
@@ -168,6 +168,7 @@ size_t vrp_create_product_order(vrp_server_t* server, uint8_t product_id, uint8_
 	server->product_order_table[i].order_status = VRP_ORDER_IN_STORAGE;
 	server->product_order_table[i].order_number = vrp_create_product_order_number(server, optional_client_id);
 	server->product_order_table[i].placement_time = server->time;
+	server->product_order_table[i].pickup_time = 0;
 	server->product_order_table[i].product_id = product_id;
 	server->product_order_table[i].transport_device_id = VRP_ID_UNDEFINED;
 	server->product_order_table[i].destination_x = x;
@@ -1011,6 +1012,8 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	server->product_pickup_status_query_delay = configuration->product_pickup_status_query_delay;
 	server->acceptable_product_mask = configuration->acceptable_product_mask;
 	server->block_expiration_time = configuration->block_expiration_time;
+	server->wait_for_path_timeout = configuration->wait_for_path_ms_timeout;
+	server->product_not_available_timeout = configuration->product_not_available_ms_timeout;
 	server->carried_product_confidence_max = configuration->carried_product_confidence_max;
 	server->carried_product_confidence_pickup_limit = configuration->carried_product_confidence_pickup_limit;
 	server->status = configuration->system_status;

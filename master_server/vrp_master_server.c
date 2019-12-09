@@ -1,8 +1,8 @@
 /*
-	VarastoRobo master server version 0.9.2 2019-12-05 by Santtu Nyman.
+	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
 */
 
-#define VRP_MASTER_SERVER_VERSION "0.9.2 2019-12-05"
+#define VRP_MASTER_SERVER_VERSION "0.9.3 2019-12-09"
 
 //#define VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 //#define VRP_DEBUG_AUTO_FINISH_TRANSPORT
@@ -43,6 +43,16 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 	uint8_t next_direction = VRP_DIRECTION_UNDEFINED;
 	uint8_t colision_x = VRP_COORDINATE_UNDEFINED;
 	uint8_t colision_y = VRP_COORDINATE_UNDEFINED;
+
+	if ((product_order_index == (size_t)~0) &&
+		!((server->device_table[i].destination_x == VRP_COORDINATE_UNDEFINED) && (server->device_table[i].destination_y == VRP_COORDINATE_UNDEFINED)) &&
+		!((server->device_table[i].destination_x == server->device_table[i].home_x) && (server->device_table[i].destination_y == server->device_table[i].home_y)))
+	{
+		server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].immediate_path_length = 0;
+		next_direction = VRP_DIRECTION_UNDEFINED;
+	}
 
 	if (vrp_is_coordinate_idle_location(server, server->device_table[i].destination_x, server->device_table[i].destination_y) &&
 		!vrp_is_cell_open(server, server->device_table[i].destination_x, server->device_table[i].destination_y))
@@ -216,7 +226,7 @@ int vrp_process_gopigo_idle(vrp_server_t* server, size_t i)
 
 				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 			}
-			else if ((server->time - server->device_table[i].last_moved) > 10000)
+			else if ((server->time - server->device_table[i].last_moved) > server->wait_for_path_timeout)
 			{
 				next_direction = (uint8_t)vrp_calculate_immediate_path_any_open_direction(server, i);
 				if (next_direction != VRP_DIRECTION_UNDEFINED && vrp_is_cell_open(server, server->device_table[i].immediate_path[0].x, server->device_table[i].immediate_path[0].y))
@@ -342,6 +352,7 @@ int vrp_process_ur5_idle(vrp_server_t* server, size_t i)
 		server->device_table[i].move_to_y = server->pickup_location_table[pickup_location_index].load_y;
 
 		server->product_order_table[product_order_index].order_status = VRP_ORDER_PICKUP;
+		server->product_order_table[product_order_index].pickup_time = server->time;
 	}
 
 	if ((server->device_table[i].connection_state == VRP_CONNECTION_IDLE) && (server->time - server->device_table[i].last_uppdate_time > server->idle_status_query_delay))
@@ -1138,6 +1149,13 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 
 void vrp_process_order(vrp_server_t* server, size_t i)
 {
+	if ((server->product_order_table[i].order_status == VRP_ORDER_NOT_AVAILABLE) &&
+		((server->time - server->product_order_table[i].pickup_time) > server->product_not_available_timeout))
+	{
+		server->product_order_table[i].pickup_time = 0;
+		server->product_order_table[i].order_status = VRP_ORDER_IN_STORAGE;
+	}
+
 	size_t transport_device_index = (size_t)~0;
 
 	if (server->product_order_table[i].transport_device_id != VRP_ID_UNDEFINED)

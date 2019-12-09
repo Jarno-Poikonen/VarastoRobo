@@ -7,6 +7,8 @@
 	"system_io_ms_timeout" : 16000,
 	"idle_status_query_ms_delay" : 8000,
 	"block_expiration_ms_time" : 45000,
+	"wait_for_path_ms_timeout" : 10000,
+	"product_not_available_ms_timeout" : 0,
 	"product_pickup_status_query_ms_delay" : 200,
 	"acceptable_product_mask" : 19,
 	"carried_product_confidence_max" : 4,
