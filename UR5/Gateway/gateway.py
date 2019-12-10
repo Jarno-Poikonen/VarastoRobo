@@ -60,14 +60,18 @@ def Broadcast_communication():
 	while True:
 		message, master_address = bSocket.recvfrom(512)
 		if seis:
+			GPIO.output(26, GPIO.HIGH)
+			sleep(5)
+			GPIO.output(26, GPIO.LOW)
 			GPIO.cleanup()
 			break
 		if len(message) >= 8 and message[0] == 1 and message[1] == 7 :
 			system_status = int(message[2])
-			if system_status != 1:
+			if system_status == 0 or system_status == 4:
 				global seis
 				seis = True
 				Lokiin("Broad", "SEIS")
+				Lokiin("Broad", system_status)
 				GPIO.output(26, GPIO.HIGH)
 				sleep(5)
 				GPIO.output(26, GPIO.LOW)
@@ -191,7 +195,7 @@ if __name__ == "__main__":
 				Lokiin("Main", "Move Product Message saatu")
 				
 				data = str.encode("(") + str.encode(str(MasterData[5])) + paikat[MasterData[6]]
-				Lokiin("Main", data)
+				Lokiin("Main", "UR5 -> " + data)
 				URYhteys.sendall(data)
 				valmis = False
 				while not valmis:
@@ -205,7 +209,7 @@ if __name__ == "__main__":
 						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
 						valmis = True
 					elif "Fail" in utf:
-						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Kohdetta ei löytynyt"], 0, tila))
+						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Kohdetta ei löytynyt"], 1, tila))
 						valmis = True
 					elif not utf:
 						raise IndexError
@@ -222,7 +226,7 @@ if __name__ == "__main__":
 		# Jos saadaaLokiinn IndexError niin oletetaan sen johtuvan siitä että mestarilta saatiin tyhjä tieto minkä oletetaan tarkoittavan yhteyden poikki olemista.
 		except IndexError:
 			sleep(1)
-			Lokiin("Main", "Yhteys poikki.")
+			Lokiin("Main", "Yhteys poikki. Sammutetaan laitteisto.")
 			seis = True
 			continue
 		# except socket.error as msg:
