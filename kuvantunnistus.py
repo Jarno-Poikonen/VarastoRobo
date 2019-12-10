@@ -25,7 +25,7 @@ def kuvantunnistus():
         
         gray = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY) #muutetaan varit harmaaksi
         blurred = cv2.GaussianBlur(gray, (5, 5), 0) #sumennetaan kuvaa
-        thresh = cv2.threshold(gray, 5, 255, cv2.THRESH_BINARY)[1] #luodaan mustavalko kuva raja-arvon ylittavista alueista
+        thresh = cv2.threshold(blurred, 5, 255, cv2.THRESH_BINARY)[1] #luodaan mustavalko kuva raja-arvon ylittavista alueista
         kernel = np.ones((5, 5), np.uint8) #luodaan ykkosilla taytetty array
         mask = cv2.erode(thresh, kernel) #kutistetaan kohdetta
                                                                                                                       
@@ -34,8 +34,6 @@ def kuvantunnistus():
         for cnt in contours:
             area = cv2.contourArea(cnt)
             approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
-            x = approx.ravel()[0]
-            y = approx.ravel()[1]
             
             if area > 2000: #maaritetaan muotojen minimikoko
                                
