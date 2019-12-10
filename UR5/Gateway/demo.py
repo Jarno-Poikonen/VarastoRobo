@@ -27,6 +27,8 @@ paikat3= [
 
 paketti = str(int(input("Anna pakettiID mitä siiretään: ")))
 
+i = 0
+
 print("Palvelin odottaa.")
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	s.bind((HOST, PORT))
@@ -42,6 +44,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			if data == str.encode("Kiinni"):
 				break
 			print(data)
+			if i > 2:
+				i = 0
 			viesti = str.encode("(" + paketti + ",") + paikat3[i]
 			print(viesti)
 			conn.sendall(viesti)
+			i = i + 1
