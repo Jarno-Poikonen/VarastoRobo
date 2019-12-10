@@ -46,7 +46,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			print(data)
 			if i > 2:
 				i = 0
-			viesti = str.encode("(" + paketti + ",") + paikat3[i]
+			viesti = str.encode("(" + paketti) + paikat3[i]
 			print(viesti)
 			conn.sendall(viesti)
 			i = i + 1

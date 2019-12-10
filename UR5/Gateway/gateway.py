@@ -33,18 +33,23 @@ def Broadcast_communication():
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(26, GPIO.OUT)
 	GPIO.output(26, GPIO.LOW)
+	global seis
 	
 	# Luodaan socket broadcastia varten.
 	Lokiin("Broadcast", "Aloitus")
 	bSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	bSocket.settimeout(10)
 	bSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
 	bSocket.bind(("", 1732))
 	
 	# Luetaan broadcast viestejä IP:n selvittämiseksi.
 	wait_for_message = True
 	while wait_for_message :
-
-		message, master_address = bSocket.recvfrom(512)
+		try:
+			message, master_address = bSocket.recvfrom(512)
+		except socket.timeout:
+			Lokiin("Broad", "Timeout")
+			continue
 		
 		if len(message) >= 8 and message[0] == 1 and message[1] == 7 :
 
@@ -58,7 +63,11 @@ def Broadcast_communication():
 	
 	# Luetaan broadcast viestejä ja reagoidaan hätäseis käskyyn.
 	while True:
-		message, master_address = bSocket.recvfrom(512)
+		try:
+			message, master_address = bSocket.recvfrom(512)
+		except timeout:
+			Lokiin("Broad", "Timeout")
+			message = str.encode("")
 		if seis:
 			GPIO.output(26, GPIO.HIGH)
 			sleep(5)
@@ -68,7 +77,6 @@ def Broadcast_communication():
 		if len(message) >= 8 and message[0] == 1 and message[1] == 7 :
 			system_status = int(message[2])
 			if system_status == 0 or system_status == 4:
-				global seis
 				seis = True
 				Lokiin("Broad", "SEIS")
 				Lokiin("Broad", system_status)
@@ -195,7 +203,7 @@ if __name__ == "__main__":
 				Lokiin("Main", "Move Product Message saatu")
 				
 				data = str.encode("(") + str.encode(str(MasterData[5])) + paikat[MasterData[6]]
-				Lokiin("Main", "UR5 -> " + data)
+				Lokiin("Main -> UR5", data)
 				URYhteys.sendall(data)
 				valmis = False
 				while not valmis:
@@ -203,7 +211,7 @@ if __name__ == "__main__":
 					URData = URYhteys.recv(512)
 					
 					utf = URData.decode("utf-8")
-					Lokiin("Main UR5", utf)
+					Lokiin("Main <- UR5", utf)
 					
 					if "Valmis" in utf:
 						MasterSocket.sendall(Luo_WFM(MasterData[0], virheet["Ei virheitä"], 1, tila))
