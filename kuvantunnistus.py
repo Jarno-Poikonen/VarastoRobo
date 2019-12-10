@@ -35,16 +35,14 @@ def kuvantunnistus():
             area = cv2.contourArea(cnt)
             approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
             
-            if area > 2000: #maaritetaan muotojen minimikoko
+            if area > 1500: #maaritetaan muotojen minimikoko
                                
                 #tunnisteaan muodot
                 if len(approx) == 3: #kolmio
                     TuoteID = 2 #annetaan muodolle haluttu nimi tai merkki
                 elif len(approx) == 4: #nelio
                     TuoteID = 0
-                elif len(approx) == 5: #viisikulmio
-                    TuoteID = 3
-                elif 7 < len(approx): #ympyra
+                elif 4 < len(approx): #ympyra
                     TuoteID = 1
 
         cap.release()
@@ -52,4 +50,3 @@ def kuvantunnistus():
     
     return TuoteID
 kuvantunnistus()
-
