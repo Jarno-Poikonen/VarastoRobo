@@ -5,7 +5,7 @@ import threading
 import ClientControlled
 #import kuvantunnistus
 
-#Määritä jokaiselle laitteelle oma ID välillä 1-9!socket.SO_BROADCAST,
+#Määritä jokaiselle laitteelle oma ID välillä 1-9!
 deviceID = 1
 
 masterIp = None
