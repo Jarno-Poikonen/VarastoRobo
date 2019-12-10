@@ -1,5 +1,6 @@
 /*
-	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
 #ifndef VRP_THREAD_GROUP_H

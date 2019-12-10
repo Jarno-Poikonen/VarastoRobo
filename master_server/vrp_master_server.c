@@ -1,8 +1,9 @@
 /*
-	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
-#define VRP_MASTER_SERVER_VERSION "0.9.3 2019-12-09"
+#define VRP_MASTER_SERVER_VERSION "1.0.0 2019-12-10"
 
 //#define VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 //#define VRP_DEBUG_AUTO_FINISH_TRANSPORT
@@ -279,7 +280,7 @@ int vrp_process_ur5_idle(vrp_server_t* server, size_t i)
 
 	if (server->device_table[i].connection_state == VRP_CONNECTION_IDLE)
 		for (size_t j = 0; pickup_location_index == (size_t)~0 && j != server->product_order_count; ++j)
-			if ((server->product_order_table[j].order_status == VRP_ORDER_IN_STORAGE) && (server->product_order_table[j].transport_device_id != VRP_ID_UNDEFINED))
+			if ((server->product_order_table[j].order_status == VRP_ORDER_IN_STORAGE) && (!server->product_order_table[j].ur5_pickup_complete) && (server->product_order_table[j].transport_device_id != VRP_ID_UNDEFINED))
 			{
 				transport_device_index = vrp_get_device_index_by_id(server, server->product_order_table[j].transport_device_id);
 				if (transport_device_index != (size_t)~0)
@@ -351,7 +352,7 @@ int vrp_process_ur5_idle(vrp_server_t* server, size_t i)
 		server->device_table[i].move_to_x = server->pickup_location_table[pickup_location_index].load_x;
 		server->device_table[i].move_to_y = server->pickup_location_table[pickup_location_index].load_y;
 
-		server->product_order_table[product_order_index].order_status = VRP_ORDER_PICKUP;
+		//server->product_order_table[product_order_index].order_status = VRP_ORDER_PICKUP;
 		server->product_order_table[product_order_index].pickup_time = server->time;
 	}
 
@@ -417,11 +418,16 @@ int vrp_process_gopigo_wfm(vrp_server_t* server, size_t i, size_t total_message_
 #ifndef VRP_DEBUG_AUTO_FINISH_TRANSPORT
 	if (extra_data_size)
 	{
-		if (server->device_table[i].io_memory[12] != 0xFF)
+		int product_id_is_valid = vrp_is_valid_product_id(server, server->device_table[i].io_memory[12], 1);
+		
+		if (product_id_is_valid)
 			server->device_table[i].carried_product_id = server->device_table[i].io_memory[12];
 
 		if (server->device_table[i].carried_product_confidence < server->carried_product_confidence_max)
-			server->device_table[i].carried_product_confidence++;
+		{
+			if (product_id_is_valid || server->device_table[i].carried_product_confidence)
+				server->device_table[i].carried_product_confidence++;
+		}
 	}
 	else
 	{
@@ -448,7 +454,7 @@ int vrp_process_gopigo_wfm(vrp_server_t* server, size_t i, size_t total_message_
 #ifdef VRP_DEBUG_AUTO_FINISH_TRANSPORT
 		if ((server->product_order_table[product_order_index].order_status == VRP_ORDER_PICKUP) && (server->device_table[i].command == VRP_MESSAGE_SQM))
 		{
-			server->device_table[i].carried_product_confidence = 1;
+			server->device_table[i].carried_product_confidence = server->carried_product_confidence_pickup_limit + 1;
 		}
 #endif
 
@@ -531,6 +537,7 @@ int vrp_process_ur5_wfm(vrp_server_t* server, size_t i, size_t total_message_siz
 
 				if (!error)
 				{
+					server->product_order_table[product_order_index].order_status = VRP_ORDER_PICKUP;
 					server->product_order_table[product_order_index].ur5_pickup_complete = 1;
 
 					sprintf(server->log_entry_buffer, "UR5 %lu moved product %lu to device %lu for order %08X.",
@@ -642,7 +649,9 @@ int vrp_process_wfm(vrp_server_t* server, size_t i, size_t total_message_size)
 
 	size_t controller_index = vrp_get_controlling_device_index(server, server->device_table[i].id);
 	if (controller_index != (size_t)~0 && server->device_table[i].executing_remote_command)
+	{
 		server->device_table[i].remote_command_finished = 1;
+	}
 
 	return 1;
 }
@@ -763,7 +772,7 @@ int vrp_process_client_command(vrp_server_t* server, size_t i, size_t total_mess
 			uint8_t product_destination_x = VRP_COORDINATE_UNDEFINED;
 			uint8_t product_destination_y = VRP_COORDINATE_UNDEFINED;
 
-			if (vrp_choose_product_order_destination(server, (total_message_size - 6) / 2, server->device_table[i].io_memory + 6, &product_destination_x, &product_destination_y))
+			if (vrp_is_valid_product_id(server, product_id, 1) && vrp_choose_product_order_destination(server, (total_message_size - 6) / 2, server->device_table[i].io_memory + 6, &product_destination_x, &product_destination_y))
 			{
 				size_t order_index = vrp_create_product_order(server, product_id, product_destination_x, product_destination_y, server->device_table[i].id);
 				if (order_index != (size_t)~0)
@@ -1085,10 +1094,18 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				server->device_table[i].executing_remote_command = 1;
 			}
 		}
-		else if (server->status == VRP_STATE_NORMAL)
+		else
 		{
-			switch (server->device_table[i].type)
+			if (server->device_table[i].executing_remote_command || server->device_table[i].remote_command_finished)
 			{
+				server->device_table[i].executing_remote_command = 0;
+				server->device_table[i].remote_command_finished = 0;
+			}
+
+			if (server->status == VRP_STATE_NORMAL)
+			{
+				switch (server->device_table[i].type)
+				{
 				case VRP_DEVICE_TYPE_GOPIGO:
 				{
 					if (!vrp_process_gopigo_idle(server, i))
@@ -1123,23 +1140,24 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 					server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
 					break;
 				}
+				}
 			}
-		}
-		else
-		{
-			if (server->time - server->device_table[i].last_uppdate_time > server->idle_status_query_delay)
+			else
 			{
-				server->device_table[i].command = VRP_MESSAGE_SQM;
-				server->device_table[i].io_memory[0] = server->device_table[i].command;
-				server->device_table[i].io_memory[1] = 0;
-				server->device_table[i].io_memory[2] = 0;
-				server->device_table[i].io_memory[3] = 0;
-				server->device_table[i].io_memory[4] = 0;
+				if (server->time - server->device_table[i].last_uppdate_time > server->idle_status_query_delay)
+				{
+					server->device_table[i].command = VRP_MESSAGE_SQM;
+					server->device_table[i].io_memory[0] = server->device_table[i].command;
+					server->device_table[i].io_memory[1] = 0;
+					server->device_table[i].io_memory[2] = 0;
+					server->device_table[i].io_memory[3] = 0;
+					server->device_table[i].io_memory[4] = 0;
 
-				if (!vrp_write(server, i, 0, 5))
-					return 0;
+					if (!vrp_write(server, i, 0, 5))
+						return 0;
 
-				server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+					server->device_table[i].connection_state = VRP_CONNECTION_SENDING_COMMAND;
+				}
 			}
 		}
 	}

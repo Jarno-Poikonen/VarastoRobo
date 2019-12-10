@@ -1,5 +1,8 @@
 /*
-	VarastoRobo master server version 0.9.3 2019-12-09 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
+
+	This file contains code only for testing the master server.
 */
 
 #ifdef __cplusplus
@@ -986,11 +989,11 @@ DWORD vrp_create_test_clients(vrp_server_t* server)
 	client3_order_configuration->on_wire_server_address = INADDR_ANY;
 	client3_order_configuration->random_delays = 1;
 
-	//vrp_create_thread_group(0, 3, gopigo_configuration, (void(*)(void*, size_t, size_t))vrp_test_gopigo, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 3, gopigo_configuration, (void(*)(void*, size_t, size_t))vrp_test_gopigo, vrp_free_test_client_configuraton);
 	vrp_create_thread_group(0, 1, ur5_configuration, (void(*)(void*, size_t, size_t))vrp_test_ur5, vrp_free_test_client_configuraton);
-	//vrp_create_thread_group(0, 1, client_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order, vrp_free_test_client_configuraton);
-	//vrp_create_thread_group(0, 1, client2_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order2, vrp_free_test_client_configuraton);
-	//vrp_create_thread_group(0, 1, client3_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order3, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, client_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, client2_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order2, vrp_free_test_client_configuraton);
+	vrp_create_thread_group(0, 1, client3_order_configuration, (void(*)(void*, size_t, size_t))vrp_test_client_order3, vrp_free_test_client_configuraton);
 	
 	printf("server: client threads created\n");
 	return 0;// also there were no errors, because no errors were checked
