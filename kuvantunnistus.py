@@ -15,15 +15,15 @@ def kuvantunnistus():
     while True:
         _, frame = cap.read()
         
-        crop_frame = frame[160:380, 200:640] #rajataan kuva-alue 140
+        crop_frame = frame[160:380, 200:640] #rajataan kuva-alue
         
         hsv_frame = cv2.cvtColor(crop_frame, cv2.COLOR_BGR2HSV) #muunnetaan BGR varit HSV vareiksi
-        low_red = np.array([161, 100, 0]) #aseteaan varin alaraja-arvo 
-        high_red = np.array([255, 255, 255]) #asetetaan varin ylaraja-arvo
-        red_mask = cv2.inRange(hsv_frame, low_red, high_red) #etsitaan maaritelty vari kuvasta
-        red = cv2.bitwise_and(crop_frame, crop_frame, mask = red_mask) #poistetaan muut paitsi haluttu vari kuvasta
+        low_green = np.array([24, 58, 0]) #aseteaan varin alaraja-arvo 
+        high_green = np.array([90, 255, 255]) #asetetaan varin ylaraja-arvo
+        green_mask = cv2.inRange(hsv_frame, low_green, high_green) #etsitaan maaritelty vari kuvasta
+        green = cv2.bitwise_and(crop_frame, crop_frame, mask = green_mask) #poistetaan muut paitsi haluttu vari kuvasta
         
-        gray = cv2.cvtColor(red, cv2.COLOR_BGR2GRAY) #muutetaan varit harmaaksi
+        gray = cv2.cvtColor(green, cv2.COLOR_BGR2GRAY) #muutetaan varit harmaaksi
         blurred = cv2.GaussianBlur(gray, (5, 5), 0) #sumennetaan kuvaa
         thresh = cv2.threshold(gray, 5, 255, cv2.THRESH_BINARY)[1] #luodaan mustavalko kuva raja-arvon ylittavista alueista
         kernel = np.ones((5, 5), np.uint8) #luodaan ykkosilla taytetty array
@@ -37,16 +37,16 @@ def kuvantunnistus():
             x = approx.ravel()[0]
             y = approx.ravel()[1]
             
-            if area > 400: #maaritetaan muotojen minimikoko
+            if area > 2000: #maaritetaan muotojen minimikoko
                                
                 #tunnisteaan muodot
-                if len(approx) == 3:
+                if len(approx) == 3: #kolmio
                     TuoteID = 2 #annetaan muodolle haluttu nimi tai merkki
-                elif len(approx) == 4:
+                elif len(approx) == 4: #nelio
                     TuoteID = 0
-                elif len(approx) == 5:
+                elif len(approx) == 5: #viisikulmio
                     TuoteID = 3
-                elif 7 < len(approx):
+                elif 7 < len(approx): #ympyra
                     TuoteID = 1
 
         cap.release()
