@@ -3,12 +3,13 @@ import socket
 import time
 import threading
 import ClientControlled
-import kuvantunnistus
+#import kuvantunnistus
 
-#Määritä jokaiselle laitteelle oma ID välillä 1-9!
+#Määritä jokaiselle laitteelle oma ID välillä 1-9!socket.SO_BROADCAST,
 deviceID = 1
 
 masterIp = None
+sock = None
 waitMessage = True
 emergencyStop = False
 no_packet = 255
@@ -17,9 +18,10 @@ no_packet = 255
 def udp_broadcast():
     global waitMessage
     global disconnect
+    global sock
     broadcast_thread = threading.currentThread()
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, True)
+    sock.setsockopt(socket.SOL_SOCKET,  socket.SO_REUSEADDR, True)
     sock.bind(("", 1732))
     
     while waitMessage == True:
@@ -69,6 +71,8 @@ def form_WFM(commandNum,errorCode,atom,cordX,cordY,direction,devState,packetNum)
 def main():
     global waitMessage
     global deviceID
+    global sock
+    global masterIp
     disconnect = 0
     deviceState = 0
     errorCode = 0
@@ -100,7 +104,7 @@ def main():
                 deviceID = fromMaster[6]
                 deviceState = 1
                 pos, orientation = ClientControlled.PosOri()
-                carriedPacket = kuvantunnistus.kuvantunnistus()
+                #carriedPacket = kuvantunnistus.kuvantunnistus()
                 reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
                 masterSocket.send(reply)
                 
@@ -108,7 +112,7 @@ def main():
             elif fromMaster[0] == 5:
                 print("Close Connection Message received: ",fromMaster)
                 pos, orientation = ClientControlled.PosOri()
-                carriedPacket = kuvantunnistus.kuvantunnistus()
+                #carriedPacket = kuvantunnistus.kuvantunnistus()
                 reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
                 masterSocket.send(reply)
                 disconnect = 1
@@ -117,7 +121,7 @@ def main():
             elif fromMaster[0] == 6:
                 print("Status Query Message received: ",fromMaster)
                 pos, orientation = ClientControlled.PosOri()
-                carriedPacket = kuvantunnistus.kuvantunnistus()
+                #carriedPacket = kuvantunnistus.kuvantunnistus()
                 reply = form_WFM(fromMaster[0],0,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
                 masterSocket.send(reply)
 
@@ -127,7 +131,7 @@ def main():
                 direction = fromMaster[5]
                 errorCode = ClientControlled.Move(direction)
                 pos, orientation = ClientControlled.PosOri()
-                carriedPacket = kuvantunnistus.kuvantunnistus()
+                #carriedPacket = kuvantunnistus.kuvantunnistus()
                 reply = form_WFM(fromMaster[0],errorCode,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
                 masterSocket.send(reply)
                 
@@ -135,18 +139,25 @@ def main():
             else:
                 print("Unknown command")
                 pos, orientation = ClientControlled.PosOri()
-                carriedPacket = kuvantunnistus.kuvantunnistus()
+                #carriedPacket = kuvantunnistus.kuvantunnistus()
                 reply = form_WFM(fromMaster[0],2,1,pos[0],pos[1],orientation,deviceState,carriedPacket)
                 masterSocket.send(reply)
         
         except IndexError:
-            print("Connection to master lost, please restart the script")
+            print("Connection to master lost")
             disconnect = 1
             waitMessage = True
+            masterIp = None
             continue
             
     masterSocket.close()
+    sock.close()
     print("Socket closed")
+    try:
+        print("Trying to re-establish a connection")
+        main()
+    except KeyboardInterrupt:
+        exit
 
 if __name__ == "__main__":    
     main()
