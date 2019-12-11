@@ -87,29 +87,21 @@ sock.send(ncm_data)
 #assume ncm sent
 
 scm_data = bytearray(sock.recv(4096))
-#assume valid scm received
+#assume valid scm
 
-rcm_data = bytearray(b'\x0E\x07\x00\x00\x00\x64\x01\x06\x00\x00\x00\x00')
-sock.send(rcm_data)
-#assume rcm sent
+pom_data = bytearray(b'\x0B\x03\x00\x00\x00\x00\x07\x01')
+sock.send(pom_data)
+#assume pom sent
+print("send order for product id 1 to coordinate 7,1")
 
-rcm_wfm_data = bytearray(sock.recv(4096))
-#assume valid wfm received
+rlm_wfm_data = bytearray(sock.recv(4096))
+#assume valid wfm
 
 ccm_data = bytearray(b'\x05\x00\x00\x00\x00')
 sock.send(ccm_data)
 #assume ccm sent
 
 ccm_wfm_data = bytearray(sock.recv(4096))
-#assume valid wfm received
-
-target_command = int(rcm_wfm_data[12 + 5])
-target_error = int(rcm_wfm_data[12 + 6])
-target_atomic = int(rcm_wfm_data[12 + 7])
-target_x = int(rcm_wfm_data[12 + 8])
-target_y = int(rcm_wfm_data[12 + 9])
-target_dir = int(rcm_wfm_data[12 + 10])
-target_status = int(rcm_wfm_data[12 + 11])
-print("WFM command=" + str(target_command) + " error=" + str(target_error) + " atomic=" + str(target_atomic) + " x=" + str(target_x) + " y=" + str(target_y) + " dir=" + str(target_dir) + " status=" + str(target_status))
+#assume valid wfm
 
 exit()

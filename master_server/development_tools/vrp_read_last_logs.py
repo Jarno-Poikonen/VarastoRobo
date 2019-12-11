@@ -84,7 +84,7 @@ ncm_data = bytearray(b'\x02\x06\x00\x00\x00\x01\xFF\xFF\xFF\xFF\x01')
 sock.send(ncm_data)
 scm_data = bytearray(sock.recv(4096))
 #assume valid scm
-rlm_data = bytearray(b'\x0A\x06\x00\x00\x00\x01\x05\x00\x00\x00\x00')
+rlm_data = bytearray(b'\x0A\x06\x00\x00\x00\x01\x0A\x09\x00\x00\x00')
 sock.send(rlm_data)
 rlm_wfm_data = bytearray(sock.recv(4096))
 #assume valid wfm

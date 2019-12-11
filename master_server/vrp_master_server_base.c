@@ -1,10 +1,11 @@
 /*
-	VarastoRobo master server version 0.4.3 2019-11-20 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
 #include "vrp_master_server_base.h"
 
-uint64_t vrp_get_valid_device_entries(vrp_server_t* server)
+uint64_t vrp_get_valid_device_entries(const vrp_server_t* server)
 {
 	__assume(VRP_MAX_DEVICE_COUNT <= 64);
 	uint64_t valid_device_entry_mask = 0;
@@ -24,7 +25,247 @@ uint64_t vrp_get_valid_device_entries(vrp_server_t* server)
 	return valid_device_entry_mask;
 }
 
-uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
+int vrp_calculate_device_movement_priority(const vrp_server_t* server, uint8_t device_id)
+{
+	int device_priority = 0;
+	size_t device_index = vrp_get_device_index_by_id(server, device_id);
+	if (device_index == (size_t)~0)
+	{
+		assert(device_priority == 0);
+		return device_priority;
+	}
+	size_t order_index = vrp_get_order_index_of_transport_device(server, vrp_get_device_index_by_id(server, device_id));
+	if (order_index == (size_t)~0)
+	{
+		device_priority = (int)(0xFF - device_id);
+		assert((device_priority > 0) && (device_priority < 0x4000));
+		return device_priority;
+	}
+	device_priority = 0x4000 | ((int)(0x3F - (order_index & 0x3F)) << 8) | (int)(0xFF - device_id);
+	assert(device_priority > 0x4000);
+	return device_priority;
+}
+
+int vrp_get_next_block_expiration_time(const vrp_server_t* server, uint32_t* expiration_time)
+{
+	int shortest_time_is_set = 0;
+	uint32_t shortest_time = 0xFFFFFFFF;
+
+	for (size_t i = 0; i != server->block_count; ++i)
+	{
+		uint32_t time = ((server->time - server->block_table[i].last_uppdate_time) > server->block_expiration_time) ? 0 : (server->block_expiration_time - (server->time - server->block_table[i].last_uppdate_time));
+		if (!shortest_time_is_set || (time < shortest_time))
+		{
+			shortest_time = time;
+			shortest_time_is_set = 1;
+		}
+	}
+
+	*expiration_time = shortest_time;
+	return shortest_time_is_set;
+}
+
+int vrp_remove_all_expired_blocks(vrp_server_t* server)
+{
+	int something_removed = 0;
+
+	for (size_t i = 0; i != server->block_count;)
+		if ((server->time - server->block_table[i].last_uppdate_time) > server->block_expiration_time)
+		{
+			if (i != (server->block_count - 1))
+				memcpy(server->block_table + i, server->block_table + (server->block_count - 1), sizeof(*server->block_table));
+			server->block_count--;
+			something_removed = 1;
+		}
+		else
+			++i;
+
+	return something_removed;
+}
+
+int vrp_add_block(vrp_server_t* server, uint8_t x, uint8_t y)
+{
+	if (server->block_count == VRP_MAX_BLOCK_COUNT)
+		return 0;
+
+	if (!((server->map_bitmap[((size_t)y * (size_t)server->map_width + (size_t)x) / 8] >> (int)(((size_t)y * (size_t)server->map_width + (size_t)x) % 8)) & 1))
+		return 0;
+
+	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+		if ((server->device_table[i].sock != INVALID_SOCKET) &&
+			(server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) &&
+			(server->device_table[i].x == x) &&
+			(server->device_table[i].y == y))
+			return 0;
+
+	for (size_t i = 0; i != server->block_count; ++i)
+		if ((server->block_table[i].x == x) &&
+			(server->block_table[i].y == y))
+			return 0;
+
+	server->block_table[server->block_count].last_uppdate_time = server->time;
+	server->block_table[server->block_count].x = x;
+	server->block_table[server->block_count].y = y;
+	server->block_count++;
+	return 1;
+}
+
+int vrp_remove_block(vrp_server_t* server, uint8_t x, uint8_t y)
+{
+	for (size_t i = 0; i != server->block_count; ++i)
+		if ((server->block_table[i].x == x) &&
+			(server->block_table[i].y == y))
+		{
+			if (i != (server->block_count - 1))
+				memcpy(server->block_table + i, server->block_table + (server->block_count - 1), sizeof(*server->block_table));
+			server->block_count--;
+			return 1;
+		}
+
+	return 0;
+}
+
+uint32_t vrp_create_product_order_number(const vrp_server_t* server, uint8_t optional_client_id)
+{
+	return ((uint32_t)optional_client_id << 24) | ((uint32_t)server->product_order_count << 16) | ((uint32_t)server->time & 0x0000FFFF);
+}
+
+size_t vrp_get_order_index_by_number(const vrp_server_t* server, uint32_t order_number)
+{
+	if (!order_number)
+		return (size_t)~0;
+
+	for (size_t i = 0; i != server->product_order_count; ++i)
+		if (server->product_order_table[i].order_number == order_number)
+			return i;
+
+	return (size_t)~0;
+}
+
+int vrp_remove_product_order(vrp_server_t* server, uint32_t order_number)
+{
+	if (!order_number)
+		return 0;
+
+	for (size_t i = 0; i != server->product_order_count; ++i)
+		if (server->product_order_table[i].order_number == order_number)
+		{
+			if (i != server->product_order_count - 1)
+				memcpy(server->product_order_table + i, server->product_order_table + (server->product_order_count - 1), sizeof(*server->product_order_table));
+
+			server->product_order_count--;
+			return 1;
+		}
+
+	return 0;
+}
+
+size_t vrp_create_product_order(vrp_server_t* server, uint8_t product_id, uint8_t x, uint8_t y, uint8_t optional_client_id)
+{
+	if (server->product_order_count == VRP_MAX_PRODUCT_ORDER_COUNT || x >= server->map_width || y >= server->map_height)
+		return (size_t)~0;
+
+	size_t i = server->product_order_count;
+	server->product_order_table[i].order_status = VRP_ORDER_IN_STORAGE;
+	server->product_order_table[i].order_number = vrp_create_product_order_number(server, optional_client_id);
+	server->product_order_table[i].placement_time = server->time;
+	server->product_order_table[i].pickup_time = 0;
+	server->product_order_table[i].product_id = product_id;
+	server->product_order_table[i].transport_device_id = VRP_ID_UNDEFINED;
+	server->product_order_table[i].destination_x = x;
+	server->product_order_table[i].destination_y = y;
+	server->product_order_table[i].ur5_pickup_complete = 0;
+	server->product_order_table[i].gopigo_pickup_complete = 0;
+
+	server->product_order_count++;
+	return i;
+}
+
+int vrp_choose_product_order_destination(const vrp_server_t* server, size_t coordinate_count, const uint8_t* coordinate_table, uint8_t* destination_x, uint8_t* destination_y)
+{
+	for (size_t i = 0; i != coordinate_count; ++i)
+	{
+		uint8_t x = coordinate_table[i * 2 + 0];
+		uint8_t y = coordinate_table[i * 2 + 1];
+		int destination_is_free = 1;
+
+		for (size_t j = 0; destination_is_free && j != server->block_count; ++j)
+			if (server->block_table[i].x == x && server->block_table[i].y == y)
+				destination_is_free = 0;
+
+		for (size_t j = 0; destination_is_free && j != server->product_order_count; ++j)
+			if (server->product_order_table[i].destination_x == x && server->product_order_table[i].destination_y == y)
+				destination_is_free = 0;
+
+		if (destination_is_free)
+		{
+			*destination_x = x;
+			*destination_y = y;
+			return 1;
+		}
+	}
+
+	for (size_t i = 0; i != coordinate_count; ++i)
+	{
+		uint8_t x = coordinate_table[i * 2 + 0];
+		uint8_t y = coordinate_table[i * 2 + 1];
+		int destination_is_free = 1;
+		for (size_t j = 0; destination_is_free && j != server->product_order_count; ++j)
+			if (server->product_order_table[i].destination_x == x && server->product_order_table[i].destination_y == y)
+				destination_is_free = 0;
+		if (destination_is_free)
+		{
+			*destination_x = x;
+			*destination_y = y;
+			return 1;
+		}
+	}
+
+	if (coordinate_count)
+	{
+		*destination_x = coordinate_table[0];
+		*destination_y = coordinate_table[1];
+		return 1;
+	}
+
+	return 0;
+}
+
+size_t vrp_get_nonstarted_product_order_index(const vrp_server_t* server)
+{
+	if (!server->product_order_count)
+		return (size_t)~0;
+
+	for (size_t i = 0; i != server->product_order_count; ++i)
+		if ((server->product_order_table[i].order_status == VRP_ORDER_IN_STORAGE) && (server->product_order_table[i].transport_device_id == VRP_ID_UNDEFINED))
+			return i;
+	return (size_t)~0;
+}
+
+size_t vrp_get_order_index_of_transport_device(const vrp_server_t* server, size_t device_index)
+{
+	for (size_t i = 0; i != server->product_order_count; ++i)
+	{
+		uint8_t device_id = server->device_table[device_index].id;
+		uint8_t transport_device_id = server->product_order_table[i].transport_device_id;
+		if (transport_device_id == device_id)
+			return i;
+	}
+	return (size_t)~0;
+}
+
+int vrp_is_valid_product_id(const vrp_server_t* server, uint8_t product_id, int is_not_undefined)
+{
+	if ((product_id > 3) && (product_id != VRP_PRODUCT_TYPE_UNDEFINED))
+		return 0;
+
+	if ((product_id == VRP_PRODUCT_TYPE_UNDEFINED) && is_not_undefined)
+		return 0;
+	
+	return ((uint8_t)server->acceptable_product_mask & (uint8_t)(1 << product_id)) ? 1 : 0;
+}
+
+uint8_t vrp_get_temporal_device_id(const vrp_server_t* server)
 {
 	if (server->min_temporal_id == VRP_ID_UNDEFINED || server->max_temporal_id == VRP_ID_UNDEFINED || server->min_temporal_id > server->max_temporal_id)
 		return VRP_ID_UNDEFINED;
@@ -33,8 +274,8 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 	for (uint8_t relative_id = 0; relative_id != id_count; ++relative_id)
 	{
 		int id_is_free = 1;
-		for (size_t i = 0; id_is_free && i != server->device_count; ++i)
-			if (server->device_table[i].id == id_offset + relative_id)
+		for (size_t i = 0; id_is_free && i != VRP_MAX_DEVICE_COUNT; ++i)
+			if ((server->device_table[i].sock != INVALID_SOCKET) && (server->device_table[i].id == id_offset + relative_id))
 				id_is_free = 0;
 		if (id_is_free)
 			return id_offset + relative_id;
@@ -42,7 +283,7 @@ uint8_t vrp_get_temporal_device_id(vrp_server_t* server)
 	return VRP_ID_UNDEFINED;
 }
 
-size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id)
+size_t vrp_get_device_index_by_id(const vrp_server_t* server, uint8_t id)
 {
 	if (id == VRP_ID_UNDEFINED)
 		return (size_t)~0;
@@ -52,7 +293,7 @@ size_t vrp_get_device_index_by_id(vrp_server_t* server, uint8_t id)
 	return (size_t)~0;
 }
 
-size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_device_id)
+size_t vrp_get_controlling_device_index(const vrp_server_t* server, uint8_t controled_device_id)
 {
 	for (size_t i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
 		if (server->device_table[i].sock != INVALID_SOCKET && server->device_table[i].control_target_id == controled_device_id)
@@ -60,7 +301,15 @@ size_t vrp_get_controlling_device_index(vrp_server_t* server, uint8_t controled_
 	return (size_t)~0;
 }
 
-DWORD vrp_get_system_tick()
+size_t vrp_get_pickup_location_index_by_id(const vrp_server_t* server, uint8_t pickup_location_id)
+{
+	for (size_t i = 0; i != server->pickup_location_count; ++i)
+		if (server->pickup_location_table[i].id == pickup_location_id)
+			return i;
+	return (size_t)~0;
+}
+
+DWORD vrp_get_system_tick_resolution()
 {
 	ULONG min_time_resulution_100ns;
 	ULONG max_time_resulution_100ns;
@@ -79,6 +328,43 @@ size_t vrp_get_message_size(const void* message)
 		((uint32_t) * (const uint8_t*)((uintptr_t)message + 4) << 24));
 }
 
+int vrp_is_device_timeout_reached(const vrp_server_t* server, size_t device_index)
+{
+	assert(server->device_table[device_index].sock != INVALID_SOCKET);
+
+	if (server->device_table[device_index].io_state == VRP_IO_READ)
+	{
+		if (server->device_table[device_index].connection_state == VRP_CONNECTION_WAITING_FOR_COMMAND)
+		{
+			assert(server->device_table[device_index].type == VRP_DEVICE_TYPE_CLIENT);
+			return 0;
+		}
+		else if (server->device_table[device_index].connection_state == VRP_CONNECTION_NEW)
+		{
+			if ((server->time - server->device_table[device_index].io_begin_time) > server->io_timeout)
+				return 1;
+		}
+		else if (server->device_table[device_index].io_state == VRP_IO_READ)
+		{
+			if ((server->time - server->device_table[device_index].io_begin_time) > server->command_timeout)
+				return 1;
+		}
+	}
+	else if (server->device_table[device_index].io_state == VRP_IO_WRITE)
+	{
+		if ((server->time - server->device_table[device_index].io_begin_time) > server->io_timeout)
+			return 1;
+	}
+
+	return 0;
+}
+
+void vrp_shutdown_device_connection(vrp_server_t* server, size_t i)
+{
+	shutdown(server->device_table[i].sock, SD_BOTH);
+	server->device_table[i].connection_state = VRP_CONNECTION_DISCONNECT;
+}
+
 int vrp_read(vrp_server_t* server, size_t device_index, size_t offset, size_t size)
 {
 	server->device_table[device_index].io_flags = 0;
@@ -94,7 +380,7 @@ int vrp_read(vrp_server_t* server, size_t device_index, size_t offset, size_t si
 		&server->device_table[device_index].io_result, 0) ||
 		WSAGetLastError() == WSA_IO_PENDING)
 	{
-		server->device_table[device_index].io_begin_time = NtGetTickCount();
+		server->device_table[device_index].io_begin_time = server->time;
 		server->device_table[device_index].io_state = VRP_IO_READ;
 		return 1;
 	}
@@ -117,7 +403,7 @@ int vrp_write(vrp_server_t* server, size_t device_index, size_t offset, size_t s
 		&server->device_table[device_index].io_result, 0) ||
 		WSAGetLastError() == WSA_IO_PENDING)
 	{
-		server->device_table[device_index].io_begin_time = NtGetTickCount();
+		server->device_table[device_index].io_begin_time = server->time;
 		server->device_table[device_index].io_state = VRP_IO_WRITE;
 		return 1;
 	}
@@ -140,7 +426,7 @@ size_t vrp_finish_io(vrp_server_t* server, size_t device_index, int* io_type)
 	return io_successful ? (size_t)((uintptr_t)server->device_table[device_index].io_buffer.buf - (uintptr_t)server->device_table[device_index].io_memory) : 0;
 }
 
-size_t vrp_message_transfer_incomplete(vrp_server_t* server, size_t device_index, int io_type)
+size_t vrp_message_transfer_incomplete(const vrp_server_t* server, size_t device_index, int io_type)
 {
 	size_t transfer_size = (size_t)((uintptr_t)server->device_table[device_index].io_buffer.buf - (uintptr_t)server->device_table[device_index].io_memory);
 	size_t message_size = vrp_get_message_size(server->device_table[device_index].io_memory);
@@ -183,12 +469,12 @@ int vrp_process_possible_emergency(vrp_server_t* server)
 {
 	int emergency_stop = 0;
 	DWORD io_transfered;
-	if (WSAGetOverlappedResult(server->emergency_sock, &server->emergency_io_result, &io_transfered, FALSE, &server->emergency_io_flags) && io_transfered)
+	if ((server->emergency_io_state == VRP_IO_READ) && WSAGetOverlappedResult(server->emergency_sock, &server->emergency_io_result, &io_transfered, FALSE, &server->emergency_io_flags) && io_transfered)
 	{
-		if (io_transfered >= 8 && server->emergency_io_memory[0] == 0x01 && server->emergency_io_memory[1] == 0x07 && server->emergency_io_memory[2] != server->id && server->emergency_io_memory[3] == 0x00)
+		if ((io_transfered >= 8) && (server->emergency_io_memory[0] == 0x01) && (server->emergency_io_memory[1] == 0x07) && !server->emergency_io_memory[2] && (server->emergency_io_memory[3] != server->id))
 		{
 			server->status = 0;
-			server->last_broadcast_time = 0;
+			server->broadcast_immediately = 1;
 			emergency_stop = 1;
 		}
 	}
@@ -197,26 +483,47 @@ int vrp_process_possible_emergency(vrp_server_t* server)
 	return emergency_stop;
 }
 
-size_t vrp_get_free_device_slot(vrp_server_t* server)
+size_t vrp_get_free_device_slot(const vrp_server_t* server)
 {
 	// assume slot exists
+	assert(server->device_count != VRP_MAX_DEVICE_COUNT);
+#ifndef _NDEBUG
+	for (size_t offset = ((size_t)rand() % VRP_MAX_DEVICE_COUNT), increment = 0;; ++increment)
+	{
+		assert(increment < VRP_MAX_DEVICE_COUNT);
+		size_t index = (offset + increment) % VRP_MAX_DEVICE_COUNT;
+		if (server->device_table[index].sock == INVALID_SOCKET)
+			return index;
+	}
+#else
 	for (size_t i = 0;; ++i)
+	{
+		assert(i < VRP_MAX_DEVICE_COUNT);
 		if (server->device_table[i].sock == INVALID_SOCKET)
 			return i;
+	}
+#endif
 }
 
-size_t vrp_get_device_index_by_io_event(vrp_server_t* server, HANDLE io_event)
+size_t vrp_get_device_index_by_io_event(const vrp_server_t* server, HANDLE io_event)
 {
 	// assume device exists
 	for (size_t i = 0;; ++i)
+	{
+		assert(i < VRP_MAX_DEVICE_COUNT);
 		if (server->device_table[i].io_result.hEvent == io_event)
 			return i;
+	}
 }
 
 size_t vrp_wait_for_io(vrp_server_t* server)
 {
+	server->time = NtGetTickCount();
+
 	if (!server->debug_no_emergency_listen && server->emergency_io_state == VRP_IO_IDLE)
 	{
+		assert(server->emergency_io_buffer_size >= 0x200);
+
 		server->emergency_io_flags = 0;
 		server->emergency_io_buffer.buf = (CHAR*)server->emergency_io_memory;
 		server->emergency_io_buffer.len = 0x200;
@@ -262,9 +569,15 @@ size_t vrp_wait_for_io(vrp_server_t* server)
 			++device_count;
 		}
 
-	DWORD wait_begin_time = NtGetTickCount();
-	DWORD max_wait_time = !server->debug_no_broadcast ? (((wait_begin_time - server->last_broadcast_time) < server->broadcast_delay) ? (wait_begin_time - server->last_broadcast_time) : (server->broadcast_io_state == VRP_IO_WRITE ? server->broadcast_delay : 0)) : server->broadcast_delay;
+	DWORD max_wait_time = !server->debug_no_broadcast ? (((server->time - server->last_broadcast_time) < server->broadcast_delay) ? (server->time - server->last_broadcast_time) : (server->broadcast_io_state == VRP_IO_WRITE ? server->broadcast_delay : 0)) : server->broadcast_delay;
+	DWORD next_block_expiration_time;
+	if (vrp_get_next_block_expiration_time(server, &next_block_expiration_time))
+		if (next_block_expiration_time < max_wait_time)
+			max_wait_time = next_block_expiration_time;
+
 	DWORD event_index = WaitForMultipleObjects(io_event_count, server->io_event_table, FALSE, max_wait_time);
+	
+	server->time = NtGetTickCount();
 
 	if (event_index < MAXIMUM_WAIT_OBJECTS)
 	{
@@ -321,7 +634,7 @@ BOOL vrp_set_exit_flush_handle(HANDLE handle)
 
 size_t vrp_get_page_size() { SYSTEM_INFO system_info; GetSystemInfo(&system_info); return (size_t)system_info.dwPageSize; }
 
-void vrp_server_close(vrp_server_t* server)
+void vrp_close_server_instance(vrp_server_t* server)
 {
 	if (server->device_table)
 		for (size_t i = VRP_MAX_DEVICE_COUNT; i--;)
@@ -361,48 +674,167 @@ void vrp_server_close(vrp_server_t* server)
 		server->emergency_io_result.hEvent = 0;
 	}
 	vrp_close_log(&server->log);
-	if (server->allocation_base)
-	{
-		VirtualFree(server->allocation_base, 0, MEM_RELEASE);
-		server->allocation_base = 0;
-	}
+	VirtualFree(server, 0, MEM_RELEASE);
 	WSACleanup();
 }
 
-DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
+DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** error_information_text)
 {
+#ifndef _NDEBUG
+	*server_instance = 0;
+	*error_information_text = 0;
+#endif
+
 	WSADATA wsa_data;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa_data))
 	{
-		*error_hint = __LINE__;
+		*error_information_text = "Error failed to initialize Windows socket library";
 		return ERROR_NOT_SUPPORTED;
 	}
-
-	memset(server, 0, sizeof(vrp_server_t));
-	server->log.handle = INVALID_HANDLE_VALUE;
-	server->emergency_sock = INVALID_SOCKET;
-	server->broadcast_sock = INVALID_SOCKET;
-	server->listen_sock = INVALID_SOCKET;
 
 	vrp_configuration_t* configuration;
 	DWORD error = vrp_load_master_configuration(&configuration);
 
 	if (error)
 	{
-		vrp_server_close(server);
-		*error_hint = -1;
+		WSACleanup();
+		*error_information_text = "Error failed to load server configuration json file";
 		return error;
 	}
 
 	if (configuration->block_count > VRP_MAX_BLOCK_COUNT || configuration->pickup_location_count > VRP_MAX_PICKUP_LOCATION_COUNT)
 	{
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		WSACleanup();
+		*error_information_text = "Error server configuration is invalid";
 		return ERROR_INVALID_DATA;
 	}
 
-	SetConsoleCtrlHandler(vrp_ctr_c_close_process_routine, TRUE);
+	size_t page_size = vrp_get_page_size();
+
+	size_t required_main_part_buffer_size = (sizeof(vrp_server_t) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_map_bitmap_buffer_size = ((size_t)((((size_t)configuration->map_height * (size_t)configuration->map_width) + 7) / 8) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_map_state_buffer_size = (((size_t)configuration->map_height * (size_t)configuration->map_width * sizeof(vrp_map_state_t)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_block_buffer_size = ((size_t)(VRP_MAX_BLOCK_COUNT * sizeof(vrp_block_t)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_idle_location_table_buffer_size = ((((size_t)configuration->idle_location_count * sizeof(vrp_idle_location_t)) / 8) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_pickup_location_buffer_size = ((size_t)(VRP_MAX_PICKUP_LOCATION_COUNT * sizeof(vrp_pickup_location_t)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_device_buffer_size = ((size_t)(VRP_MAX_DEVICE_COUNT * sizeof(vrp_device_t)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	size_t required_product_order_table_buffer_size = ((size_t)(VRP_MAX_PRODUCT_ORDER_COUNT * sizeof(vrp_product_order_t)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+	
+	size_t main_part_buffer_size;
+	size_t map_bitmap_buffer_size;
+	size_t map_state_buffer_size;
+	size_t block_buffer_size;
+	size_t idle_location_table_buffer_size;
+	size_t pickup_location_buffer_size;
+	size_t device_table_buffer_size;
+	size_t product_order_table_buffer_size;
+	size_t broadcast_io_buffer_size;
+	size_t emergency_io_buffer_size;
+	size_t log_entry_buffer_size;
+	size_t device_io_buffer_size;
+	size_t total_allocation_size;
+	
+	if ((required_main_part_buffer_size + required_map_bitmap_buffer_size + required_map_state_buffer_size + required_block_buffer_size + required_idle_location_table_buffer_size + required_pickup_location_buffer_size) <= page_size)
+	{
+		main_part_buffer_size = required_main_part_buffer_size;
+		map_bitmap_buffer_size = required_map_bitmap_buffer_size;
+		map_state_buffer_size = required_map_state_buffer_size;
+		block_buffer_size = required_block_buffer_size;
+		idle_location_table_buffer_size = required_idle_location_table_buffer_size;
+		pickup_location_buffer_size = page_size - (main_part_buffer_size + map_bitmap_buffer_size + map_state_buffer_size + block_buffer_size + idle_location_table_buffer_size);
+	}
+	else
+	{
+		main_part_buffer_size = (required_main_part_buffer_size + (page_size - 1)) & ~(page_size - 1);
+		map_bitmap_buffer_size = (required_map_bitmap_buffer_size + (page_size - 1)) & ~(page_size - 1);
+		map_state_buffer_size = (required_map_state_buffer_size + (page_size - 1)) & ~(page_size - 1);
+		block_buffer_size = (required_block_buffer_size + (page_size - 1)) & ~(page_size - 1);
+		idle_location_table_buffer_size = (required_idle_location_table_buffer_size + (page_size - 1)) & ~(page_size - 1);
+		pickup_location_buffer_size = (required_pickup_location_buffer_size + (page_size - 1)) & ~(page_size - 1);
+	}
+	device_table_buffer_size = (required_device_buffer_size + (page_size - 1)) & ~(page_size - 1);
+	product_order_table_buffer_size = (required_product_order_table_buffer_size + (page_size - 1)) & ~(page_size - 1);
+	if (page_size >= 0x400 + VRP_LOG_ENTRY_BUFFER_SIZE)
+	{
+		broadcast_io_buffer_size = 0x200;
+		emergency_io_buffer_size = 0x200;
+		log_entry_buffer_size = page_size - (broadcast_io_buffer_size + emergency_io_buffer_size);
+	}
+	else
+	{
+		broadcast_io_buffer_size = (0x200 + (page_size - 1)) & ~(page_size - 1);
+		emergency_io_buffer_size = (0x200 + (page_size - 1)) & ~(page_size - 1);
+		log_entry_buffer_size = (VRP_LOG_ENTRY_BUFFER_SIZE + (page_size - 1)) & ~(page_size - 1);
+	}
+	device_io_buffer_size = (VRP_DEVICE_IO_MEMORY_SIZE + (page_size - 1)) & ~(page_size - 1);
+
+	total_allocation_size =
+		main_part_buffer_size +
+		map_bitmap_buffer_size +
+		map_state_buffer_size +
+		block_buffer_size +
+		idle_location_table_buffer_size +
+		pickup_location_buffer_size +
+		device_table_buffer_size +
+		product_order_table_buffer_size +
+		broadcast_io_buffer_size +
+		emergency_io_buffer_size +
+		log_entry_buffer_size +
+		(VRP_MAX_DEVICE_COUNT * device_io_buffer_size);
+	vrp_server_t* server = (vrp_server_t*)VirtualAlloc(0, total_allocation_size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if (!server)
+	{
+		vrp_free_master_configuration(configuration);
+		WSACleanup();
+		*error_information_text = "Error memory allocation failed";
+		return ERROR_OUTOFMEMORY;
+	}
+
+	server->page_size = page_size;
+	server->main_part_buffer_size = main_part_buffer_size;
+	server->map_bitmap_buffer_size = map_bitmap_buffer_size;
+	server->map_state_buffer_size = map_state_buffer_size;
+	server->block_buffer_size = block_buffer_size;
+	server->idle_location_table_buffer_size = idle_location_table_buffer_size;
+	server->pickup_location_buffer_size = pickup_location_buffer_size;
+	server->device_table_buffer_size = device_table_buffer_size;
+	server->product_order_table_buffer_size = product_order_table_buffer_size;
+	server->broadcast_io_buffer_size = broadcast_io_buffer_size;
+	server->emergency_io_buffer_size = emergency_io_buffer_size;
+	server->log_entry_buffer_size = log_entry_buffer_size;
+	server->device_io_buffer_size = device_io_buffer_size;
+	server->total_allocation_size = total_allocation_size;
+
+	server->map_bitmap = (uint8_t*)((UINT_PTR)server + main_part_buffer_size);
+	server->map_state = (void*)((UINT_PTR)server->map_bitmap + map_bitmap_buffer_size);
+	server->block_table = (void*)((UINT_PTR)server->map_state + map_state_buffer_size);
+	server->idle_location_table = (void*)((UINT_PTR)server->block_table + block_buffer_size);
+	server->pickup_location_table = (void*)((UINT_PTR)server->idle_location_table + idle_location_table_buffer_size);
+	server->device_table = (void*)((UINT_PTR)server->pickup_location_table + pickup_location_buffer_size);
+	server->product_order_table = (void*)((UINT_PTR)server->device_table + device_table_buffer_size);
+	server->broadcast_io_memory = (uint8_t*)((UINT_PTR)server->product_order_table + product_order_table_buffer_size);
+	server->emergency_io_memory = (uint8_t*)((UINT_PTR)server->broadcast_io_memory + broadcast_io_buffer_size);
+	server->log_entry_buffer = (char*)((UINT_PTR)server->emergency_io_memory + emergency_io_buffer_size);
+	for (size_t offset = main_part_buffer_size + map_bitmap_buffer_size + map_state_buffer_size + block_buffer_size + idle_location_table_buffer_size + pickup_location_buffer_size + device_table_buffer_size + product_order_table_buffer_size + broadcast_io_buffer_size + emergency_io_buffer_size + log_entry_buffer_size, i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
+	{
+		server->device_table[i].io_memory = (uint8_t*)((UINT_PTR)server + offset + (i * device_io_buffer_size));
+#ifndef _NDEBUG
+		server->debug_device_table[i] = server->device_table + i;
+#endif
+	}
+
+#ifndef _NDEBUG
+	for (size_t i = 0; i != VRP_MAX_PRODUCT_ORDER_COUNT; ++i)
+		server->debug_product_order_table[i] = server->product_order_table + i;
+#endif
+
+	server->log.handle = INVALID_HANDLE_VALUE;
+	server->emergency_sock = INVALID_SOCKET;
+	server->broadcast_sock = INVALID_SOCKET;
+	server->listen_sock = INVALID_SOCKET;
+
+	server->broadcast_immediately = 0;
 
 	const BOOL broadcast_enable = TRUE;
 
@@ -426,89 +858,16 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	server->emergency_address.sin_port = server->broadcast_address.sin_port;
 	server->emergency_address.sin_addr.s_addr = server->server_address.sin_addr.s_addr;
 
-	server->page_size = vrp_get_page_size();
-
-	size_t required_map_bitmap_buffer_size = ((size_t)((((size_t)configuration->map_height * (size_t)configuration->map_width) + 7) / 8) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_map_state_buffer_size = (((size_t)configuration->map_height * (size_t)configuration->map_width * sizeof(*server->map_state)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_block_buffer_size = ((size_t)(VRP_MAX_BLOCK_COUNT * sizeof(*server->block_table)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_idle_location_table_buffer_size = ((((size_t)configuration->idle_location_count * sizeof(*server->idle_location_table)) / 8) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_pickup_location_buffer_size = ((size_t)(VRP_MAX_PICKUP_LOCATION_COUNT * sizeof(*server->pickup_location_table)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_device_buffer_size = ((size_t)(VRP_MAX_DEVICE_COUNT * sizeof(*server->device_table)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	size_t required_product_order_table_buffer_size = ((size_t)(VRP_MAX_PRODUCT_ORDER_COUNT * sizeof(*server->product_order_table)) + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-	if ((required_map_bitmap_buffer_size + required_map_state_buffer_size + required_block_buffer_size + required_idle_location_table_buffer_size + required_pickup_location_buffer_size) <= server->page_size)
-	{
-		server->map_bitmap_buffer_size = required_map_bitmap_buffer_size;
-		server->map_state_buffer_size = required_map_state_buffer_size;
-		server->block_buffer_size = required_block_buffer_size;
-		server->idle_location_table_buffer_size = required_idle_location_table_buffer_size;
-		server->pickup_location_buffer_size = server->page_size - (server->map_bitmap_buffer_size + server->map_state_buffer_size + server->block_buffer_size + server->idle_location_table_buffer_size);
-	}
-	else
-	{
-		server->map_bitmap_buffer_size = (required_map_bitmap_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-		server->map_state_buffer_size = (required_map_state_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-		server->block_buffer_size = (required_block_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-		server->idle_location_table_buffer_size = (required_idle_location_table_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-		server->pickup_location_buffer_size = (required_pickup_location_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-	}
-	server->device_table_buffer_size = (required_device_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-	server->product_order_table_buffer_size = (required_product_order_table_buffer_size + (server->page_size - 1)) & ~(server->page_size - 1);
-	if (server->page_size >= 0x400)
-	{
-		server->broadcast_io_buffer_size = server->page_size / 2;
-		server->emergency_io_buffer_size = server->page_size - server->broadcast_io_buffer_size;
-	}
-	else
-	{
-		server->broadcast_io_buffer_size = (0x200 + (server->page_size - 1)) & ~(server->page_size - 1);
-		server->emergency_io_buffer_size = (0x200 + (server->page_size - 1)) & ~(server->page_size - 1);
-	}
-	server->device_io_buffer_size = (VRP_DEVICE_IO_MEMORY_SIZE + (server->page_size - 1)) & ~(server->page_size - 1);
-
-	server->allocation_size =
-		server->map_bitmap_buffer_size +
-		server->map_state_buffer_size +
-		server->block_buffer_size +
-		server->idle_location_table_buffer_size +
-		server->pickup_location_buffer_size +
-		server->device_table_buffer_size +
-		server->product_order_table_buffer_size +
-		server->broadcast_io_buffer_size +
-		server->emergency_io_buffer_size +
-		(VRP_MAX_DEVICE_COUNT * server->device_io_buffer_size);
-	server->allocation_base = VirtualAlloc(0, server->allocation_size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-	if (!server->allocation_base)
-	{
-		WSACleanup();
-		*error_hint = __LINE__;
-		return ERROR_OUTOFMEMORY;
-	}
-
-	server->map_bitmap = (uint8_t*)server->allocation_base;
-	server->map_state = (void*)((UINT_PTR)server->map_bitmap + server->map_bitmap_buffer_size);
-	server->block_table = (void*)((UINT_PTR)server->map_state + server->map_state_buffer_size);
-	server->idle_location_table = (void*)((UINT_PTR)server->block_table + server->block_buffer_size);
-	server->pickup_location_table = (void*)((UINT_PTR)server->idle_location_table + server->idle_location_table_buffer_size);
-	server->device_table = (void*)((UINT_PTR)server->pickup_location_table + server->pickup_location_buffer_size);
-	server->product_order_table = (void*)((UINT_PTR)server->device_table + server->device_table_buffer_size);
-	server->broadcast_io_memory = (uint8_t*)((UINT_PTR)server->product_order_table + server->product_order_table_buffer_size);
-	server->emergency_io_memory = (uint8_t*)((UINT_PTR)server->broadcast_io_memory + server->broadcast_io_buffer_size);
-	for (size_t offset = server->map_bitmap_buffer_size + server->map_state_buffer_size + server->block_buffer_size + server->idle_location_table_buffer_size + server->pickup_location_buffer_size + server->device_table_buffer_size + server->product_order_table_buffer_size + server->broadcast_io_buffer_size + server->emergency_io_buffer_size, i = 0; i != VRP_MAX_DEVICE_COUNT; ++i)
-	{
-		server->device_table[i].io_memory = (uint8_t*)((UINT_PTR)server->allocation_base + offset + (i * server->device_io_buffer_size));
-#ifndef _NDEBUG
-		server->debug_device_table[i] = server->device_table + i;
-#endif
-	}
-
 	error = vrp_open_log_file(&server->log, 0x200000000, 0x100000, 0);
 	if (error)
 	{
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		VirtualFree(server, 0, MEM_RELEASE);
+		WSACleanup();
+		*error_information_text = "Error failed to open or create log file";
 		return error;
 	}
+	SetConsoleCtrlHandler(vrp_ctr_c_close_process_routine, TRUE);
 	vrp_set_exit_flush_handle(server->log.handle);
 
 	server->emergency_io_state = VRP_IO_IDLE;
@@ -517,8 +876,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	{
 		error = GetLastError();
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		vrp_close_server_instance(server);
+		*error_information_text = "Error failed to create system event object";
 		return error;
 	}
 
@@ -529,8 +888,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	{
 		error = GetLastError();
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		vrp_close_server_instance(server);
+		*error_information_text = "Error failed to create system event object";
 		return error;
 	}
 
@@ -539,8 +898,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	{
 		error = GetLastError();
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		vrp_close_server_instance(server);
+		*error_information_text = "Error failed to create system event object";
 		return error;
 	}
 
@@ -553,8 +912,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		{
 			error = ERROR_OPEN_FAILED;
 			vrp_free_master_configuration(configuration);
-			vrp_server_close(server);
-			*error_hint = __LINE__;
+			vrp_close_server_instance(server);
+			*error_information_text = "Error failed to create emergency UDP socket";
 			return error;
 		}
 
@@ -567,8 +926,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		{
 			error = ERROR_OPEN_FAILED;
 			vrp_free_master_configuration(configuration);
-			vrp_server_close(server);
-			*error_hint = __LINE__;
+			vrp_close_server_instance(server);
+			*error_information_text = "Error failed to initialize emergency socket";
 			return error;
 		}
 	}
@@ -582,8 +941,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		{
 			error = ERROR_OPEN_FAILED;
 			vrp_free_master_configuration(configuration);
-			vrp_server_close(server);
-			*error_hint = __LINE__;
+			vrp_close_server_instance(server);
+			*error_information_text = "Error failed to create broadcast UDP socket";
 			return error;
 		}
 
@@ -591,8 +950,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		{
 			error = ERROR_OPEN_FAILED;
 			vrp_free_master_configuration(configuration);
-			vrp_server_close(server);
-			*error_hint = __LINE__;
+			vrp_close_server_instance(server);
+			*error_information_text = "Error failed to initialize broadcast socket";
 			return error;
 		}
 	}
@@ -602,8 +961,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	{
 		error = ERROR_OPEN_FAILED;
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		vrp_close_server_instance(server);
+		*error_information_text = "Error failed to create server TCP socket";
 		return error;
 	}
 
@@ -613,8 +972,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	{
 		error = ERROR_OPEN_FAILED;
 		vrp_free_master_configuration(configuration);
-		vrp_server_close(server);
-		*error_hint = __LINE__;
+		vrp_close_server_instance(server);
+		*error_information_text = "Error failed to initialize server TCP socket";
 		return error;
 	}
 
@@ -626,8 +985,8 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		{
 			error = GetLastError();
 			vrp_free_master_configuration(configuration);
-			vrp_server_close(server);
-			*error_hint = __LINE__;
+			vrp_close_server_instance(server);
+			*error_information_text = "Error failed to create system event object";
 			return error;
 		}
 	}
@@ -646,10 +1005,18 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		server->idle_location_table[i].y = configuration->idle_location_table[i * 2 + 1];
 	}
 
-	server->system_tick_time = vrp_get_system_tick();
+	server->time_resolution = vrp_get_system_tick_resolution();
 	server->io_timeout = configuration->io_ms_timeout;
 	server->command_timeout = configuration->command_ms_timeout;
 	server->broadcast_delay = configuration->broadcast_ms_delay;
+	server->idle_status_query_delay = configuration->idle_status_query_delay;
+	server->product_pickup_status_query_delay = configuration->product_pickup_status_query_delay;
+	server->acceptable_product_mask = configuration->acceptable_product_mask;
+	server->block_expiration_time = configuration->block_expiration_time;
+	server->wait_for_path_timeout = configuration->wait_for_path_ms_timeout;
+	server->product_not_available_timeout = configuration->product_not_available_ms_timeout;
+	server->carried_product_confidence_max = configuration->carried_product_confidence_max;
+	server->carried_product_confidence_pickup_limit = configuration->carried_product_confidence_pickup_limit;
 	server->status = configuration->system_status;
 	server->id = configuration->master_id;
 	server->map_height = configuration->map_height;
@@ -662,9 +1029,44 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 	server->pickup_location_count = configuration->pickup_location_count;
 	for (size_t i = 0; i != configuration->pickup_location_count; ++i)
 	{
-		server->pickup_location_table[i].id = configuration->pickup_location_table[i * 3 + 0];
-		server->pickup_location_table[i].x = configuration->pickup_location_table[i * 3 + 1];
-		server->pickup_location_table[i].y = configuration->pickup_location_table[i * 3 + 2];
+		server->pickup_location_table[i].id = configuration->pickup_location_table[i * 4 + 0];
+		server->pickup_location_table[i].load_x = configuration->pickup_location_table[i * 4 + 1];
+		server->pickup_location_table[i].load_y = configuration->pickup_location_table[i * 4 + 2];
+		server->pickup_location_table[i].direction = configuration->pickup_location_table[i * 4 + 3];
+		if (server->pickup_location_table[i].load_x < server->map_width &&
+			server->pickup_location_table[i].load_y < server->map_height &&
+			server->pickup_location_table[i].direction < 4)
+		{
+			switch (server->pickup_location_table[i].direction)
+			{
+				case VRP_DIRECTION_RIGHT:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x - 1;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y;
+					break;
+				case VRP_DIRECTION_UP:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y - 1;
+					break;
+				case VRP_DIRECTION_LEFT:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x + 1;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y;
+					break;
+				case VRP_DIRECTION_DOWN:
+					server->pickup_location_table[i].entry_x = server->pickup_location_table[i].load_x;
+					server->pickup_location_table[i].entry_y = server->pickup_location_table[i].load_y + 1;
+					break;
+				default:
+					break;
+			}
+		}
+		else
+		{
+			server->pickup_location_table[i].load_x = VRP_COORDINATE_UNDEFINED;
+			server->pickup_location_table[i].load_y = VRP_COORDINATE_UNDEFINED;
+			server->pickup_location_table[i].direction = VRP_DIRECTION_UNDEFINED;
+			server->pickup_location_table[i].entry_x = VRP_COORDINATE_UNDEFINED;
+			server->pickup_location_table[i].entry_y = VRP_COORDINATE_UNDEFINED;
+		}
 	}
 
 	vrp_free_master_configuration(configuration);
@@ -674,18 +1076,26 @@ DWORD vrp_server_setup(vrp_server_t* server, int* error_hint)
 		((server->server_address.sin_addr.s_addr) >> 0) & 0xFF, ((server->server_address.sin_addr.s_addr) >> 8) & 0xFF, ((server->server_address.sin_addr.s_addr) >> 16) & 0xFF, ((server->server_address.sin_addr.s_addr) >> 24) & 0xFF);
 	vrp_write_log_entry(&server->log, startup_log_entry);
 
-	*error_hint = 0;
+	server->time = NtGetTickCount();
+	*server_instance = server;
+	*error_information_text = "";
+	server->broadcast_immediately = 1;
 	return 0;
 }
 
 void vrp_remove_device(vrp_server_t* server, size_t i)
 {
+	assert(server->device_table[i].sock != INVALID_SOCKET);
+	if (server->device_table[i].sock == INVALID_SOCKET)
+		return;
+	assert(server->device_count);
 	if (server->device_table[i].connection_state != VRP_CONNECTION_DISCONNECT)
 	{
 		char log_entry_buffer[128];
 		sprintf(log_entry_buffer, "Device %lu connection failed and disconnected from address %lu.%lu.%lu.%lu", server->device_table[i].id, ((server->device_table[i].ip_address) >> 24) & 0xFF, ((server->device_table[i].ip_address) >> 16) & 0xFF, ((server->device_table[i].ip_address) >> 8) & 0xFF, ((server->device_table[i].ip_address) >> 0) & 0xFF);
 		vrp_write_log_entry(&server->log, log_entry_buffer);
 	}
+	vrp_shutdown_device_connection(server, i);
 	closesocket(server->device_table[i].sock);
 	server->device_table[i].sock = INVALID_SOCKET;
 	server->device_count--;
@@ -693,6 +1103,8 @@ void vrp_remove_device(vrp_server_t* server, size_t i)
 
 size_t vrp_send_system_broadcast_message(vrp_server_t* server)
 {
+	assert(server->broadcast_io_buffer_size >= 0x200);
+
 	size_t map_size = (((size_t)server->map_height * (size_t)server->map_width) + 7) / 8;
 	size_t block_array_size = server->block_count * 2;
 	size_t device_array_size = server->device_count * 8;
@@ -744,7 +1156,8 @@ size_t vrp_send_system_broadcast_message(vrp_server_t* server)
 		WSAGetLastError() == WSA_IO_PENDING)
 	{
 		server->broadcast_io_state = VRP_IO_WRITE;
-		server->last_broadcast_time = NtGetTickCount();
+		server->last_broadcast_time = server->time;
+		server->broadcast_immediately = 0;
 		return packet_size;
 	}
 	else
@@ -783,7 +1196,8 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].remote_command_finished = 0;
 			server->device_table[i].io_begin_time = 0;
 			server->device_table[i].last_uppdate_time = 0;
-			server->device_table[i].connection_begin_time = NtGetTickCount();
+			server->device_table[i].connection_begin_time = server->time;
+			server->device_table[i].last_moved = server->time;
 			server->device_table[i].command = VRP_MESSAGE_UNDEFINED;
 			server->device_table[i].type = VRP_DEVICE_TYPE_UNDEFINED;
 			server->device_table[i].id = VRP_ID_UNDEFINED;
@@ -794,6 +1208,10 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].ip_address = ntohl(client_address.sin_addr.s_addr);
 			server->device_table[i].move_to_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].move_to_y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].home_x = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].home_y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].carried_product_confidence = 0;
+			server->device_table[i].carried_product_id = 0;
 			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
 			if (vrp_read(server, i, 0, server->device_io_buffer_size))

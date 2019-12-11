@@ -3,20 +3,12 @@
 	"server_ip_address" : null,
 	"broadcast_ip_address" : null,
 	"network_prefix_length" : null,
-	"command_execution_ms_timeout" : 60000,
 	"system_io_ms_timeout" : 16000,
-	"idle_status_query_ms_delay" : 8000,
-	"block_expiration_ms_time" : 45000,
-	"wait_for_path_ms_timeout" : 10000,
-	"product_not_available_ms_timeout" : 0,
-	"product_pickup_status_query_ms_delay" : 200,
-	"acceptable_product_mask" : 23,
-	"carried_product_confidence_max" : 4,
-	"carried_product_confidence_pickup_limit" : 3,
+	"command_execution_ms_timeout" : 60000,
 	"debug_no_emergency_listen" : false,
 	"debug_no_broadcast" : false,
 	"master_device_id" : 42,
-	"initial_system_status" : 2,
+	"initial_system_status" : 1,
 	"min_temporal_id" : 100,
 	"max_temporal_id" : 199,
 	"static_map" : [
@@ -26,6 +18,7 @@
 		[ true, true, true, true, false, true, true, true, true ],
 		[ true, true, true, true, false, true, true, true, true ],
 		[ true, true, true, true, false, true, true, true, true ] ],
-	"pickup_location_list" : [ { "id" : 0, "x" : 3, "y" : 0, "direction" : 0 }, { "id" : 1, "x" : 3, "y" : 1, "direction" : 0 }, { "id" : 2, "x" : 3, "y" : 2, "direction" : 0 } ],
-	"idle_location_list" : [ { "x" : 0, "y" : 0 }, { "x" : 0, "y" : 1 }, { "x" : 0, "y" : 2 }, { "x" : 0, "y" : 3 } ]
+	"pickup_location_list" : [ { "id" : 0, "x" : 3, "y" : 0 }, { "id" : 1, "x" : 3, "y" : 1 }, { "id" : 2, "x" : 3, "y" : 2 } ],
+	"idle_location_list" : [ { "x" : 0, "y" : 0 }, { "x" : 0, "y" : 1 }, { "x" : 0, "y" : 2 }, { "x" : 0, "y" : 3 } ],
+	"initial_block_list" : [ { "x" : 5, "y" : 0 }, { "x" : 5, "y" : 1 }, { "x" : 2, "y" : 3 } ]
 }

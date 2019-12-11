@@ -1,5 +1,6 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
 #ifndef VRP_CONFIGURATION_H
@@ -23,6 +24,14 @@ typedef struct vrp_configuration_t
 	uint32_t on_wire_broadcast_ip_address;
 	uint32_t on_wire_server_ip_address;
 	uint32_t network_prefix_length;
+	uint32_t idle_status_query_delay;
+	uint32_t product_pickup_status_query_delay;
+	uint32_t acceptable_product_mask;
+	uint32_t carried_product_confidence_max;
+	uint32_t carried_product_confidence_pickup_limit;
+	uint32_t block_expiration_time;
+	uint32_t wait_for_path_ms_timeout;
+	uint32_t product_not_available_ms_timeout;
 	uint8_t master_id;
 	uint8_t system_status;
 	uint8_t min_temporal_id;

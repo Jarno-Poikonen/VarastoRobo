@@ -1,5 +1,8 @@
 /*
-	VarastoRobo master server version 0.4.2 2019-11-20 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
+
+	This file contains code only for testing the master server.
 */
 
 #ifndef VRP_TEST_CLIENT_H
@@ -15,11 +18,10 @@ extern "C" {
 #include <ws2tcpip.h>
 #include <windows.h>
 #include "vrp_constants.h"
+#include "vrp_master_server_base.h"
 #include <stdio.h>
 
-DWORD vrp_create_test_client();
-
-DWORD vrp_run_tests(int bad_clients);
+DWORD vrp_create_test_clients(vrp_server_t* server);
 
 #ifdef __cplusplus
 }

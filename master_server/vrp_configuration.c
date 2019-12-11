@@ -1,5 +1,6 @@
 /*
-	VarastoRobo master server version 0.4.1 2019-11-19 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
 #include <Winsock2.h>
@@ -61,6 +62,33 @@ static uint32_t read_io_timeout_from_json(const jsonpl_value_t* configuration)
 	return time;
 }
 
+static uint32_t read_idle_status_query_delay_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t delay = 60000;
+	jsonpl_value_t* idle_status_query_ms_delay = find_child_by_name(configuration, "idle_status_query_ms_delay");
+	if (idle_status_query_ms_delay && idle_status_query_ms_delay->type == JSONPL_TYPE_NUMBER)
+		delay = (uint32_t)idle_status_query_ms_delay->number_value;
+	return delay;
+}
+
+static uint32_t read_acceptable_product_mask_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t mask = 0x0000001F;
+	jsonpl_value_t* acceptable_product_mask = find_child_by_name(configuration, "acceptable_product_mask");
+	if (acceptable_product_mask && acceptable_product_mask->type == JSONPL_TYPE_NUMBER)
+		mask = (uint32_t)acceptable_product_mask->number_value;
+	return mask;
+}
+
+static uint32_t read_product_pickup_status_query_delay_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t delay = 1000;
+	jsonpl_value_t* product_pickup_status_query_ms_delay = find_child_by_name(configuration, "product_pickup_status_query_ms_delay");
+	if (product_pickup_status_query_ms_delay && product_pickup_status_query_ms_delay->type == JSONPL_TYPE_NUMBER)
+		delay = (uint32_t)product_pickup_status_query_ms_delay->number_value;
+	return delay;
+}
+
 static uint32_t read_command_timeout_from_json(const jsonpl_value_t* configuration)
 {
 	uint32_t time = 60000;
@@ -95,6 +123,51 @@ static uint32_t read_network_prefix_length_from_json(const jsonpl_value_t* confi
 	if (json_network_prefix_length && json_network_prefix_length->type == JSONPL_TYPE_NUMBER)
 		network_prefix_length = (uint32_t)json_network_prefix_length->number_value;
 	return network_prefix_length;
+}
+
+static uint32_t read_carried_product_confidence_max_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t max = 15;
+	jsonpl_value_t* json_max = find_child_by_name(configuration, "carried_product_confidence_max");
+	if (json_max && json_max->type == JSONPL_TYPE_NUMBER)
+		max = (uint32_t)json_max->number_value;
+	return max;
+}
+
+static uint32_t read_carried_product_confidence_pickup_limit_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t limit = 7;
+	jsonpl_value_t* json_limit = find_child_by_name(configuration, "carried_product_confidence_pickup_limit");
+	if (json_limit && json_limit->type == JSONPL_TYPE_NUMBER)
+		limit = (uint32_t)json_limit->number_value;
+	return limit;
+}
+
+static uint32_t read_block_expiration_time_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t time = 300000;
+	jsonpl_value_t* json_time = find_child_by_name(configuration, "block_expiration_ms_time");
+	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
+		time = (uint32_t)json_time->number_value;
+	return time;
+}
+
+static uint32_t read_wait_for_path_ms_timeout_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t time = 60000;
+	jsonpl_value_t* json_time = find_child_by_name(configuration, "wait_for_path_ms_timeout");
+	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
+		time = (uint32_t)json_time->number_value;
+	return time;
+}
+
+static uint32_t read_product_not_available_ms_timeout_from_json(const jsonpl_value_t* configuration)
+{
+	uint32_t time = 60000;
+	jsonpl_value_t* json_time = find_child_by_name(configuration, "product_not_available_ms_timeout");
+	if (json_time && json_time->type == JSONPL_TYPE_NUMBER)
+		time = (uint32_t)json_time->number_value;
+	return time;
 }
 
 static uint8_t read_master_id_from_json(const jsonpl_value_t* configuration)
@@ -226,7 +299,7 @@ static size_t read_pickup_location_list_from_json(const jsonpl_value_t* configur
 			if (component && component->type == JSONPL_TYPE_NUMBER)
 				++n;
 		}
-	uint8_t* table = (uint8_t*)malloc(n ? (n * 3) : 1);
+	uint8_t* table = (uint8_t*)malloc(n ? (n * 4) : 1);
 	if (!table)
 		return 0;
 	for (size_t c = 0, i = 0; c != n; ++i)
@@ -235,17 +308,22 @@ static size_t read_pickup_location_list_from_json(const jsonpl_value_t* configur
 			jsonpl_value_t* component = find_child_by_name(list->array.table[i], "id");
 			if (component && component->type == JSONPL_TYPE_NUMBER)
 			{
-				table[c * 3 + 0] = (uint8_t)component->number_value;
+				table[c * 4 + 0] = (uint8_t)component->number_value;
 				component = find_child_by_name(list->array.table[i], "x");
 				if (component && component->type == JSONPL_TYPE_NUMBER)
-					table[c * 3 + 1] = (uint8_t)component->number_value;
+					table[c * 4 + 1] = (uint8_t)component->number_value;
 				else
-					table[c * 3 + 1] = 0xFF;
+					table[c * 4 + 1] = 0xFF;
 				component = find_child_by_name(list->array.table[i], "y");
 				if (component && component->type == JSONPL_TYPE_NUMBER)
-					table[c * 3 + 2] = (uint8_t)component->number_value;
+					table[c * 4 + 2] = (uint8_t)component->number_value;
 				else
-					table[c * 3 + 2] = 0xFF;
+					table[c * 4 + 2] = 0xFF;
+				component = find_child_by_name(list->array.table[i], "direction");
+				if (component && component->type == JSONPL_TYPE_NUMBER)
+					table[c * 4 + 3] = (uint8_t)component->number_value;
+				else
+					table[c * 4 + 3] = 0xFF;
 				++c;
 			}
 		}
@@ -266,12 +344,21 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint32_t on_wire_broadcast_ip_address = read_broadcast_ip_address_from_json(json);
 	uint32_t on_wire_server_ip_address = read_server_ip_address_from_json(json);
 	uint32_t network_prefix_length = read_network_prefix_length_from_json(json);
+	uint32_t idle_status_query_delay = read_idle_status_query_delay_from_json(json);
+	uint32_t product_pickup_status_query_delay = read_product_pickup_status_query_delay_from_json(json);
+	uint32_t acceptable_product_mask = read_acceptable_product_mask_from_json(json);
+	uint32_t carried_product_confidence_max = read_carried_product_confidence_max_from_json(json);
+	uint32_t carried_product_confidence_pickup_limit = read_carried_product_confidence_pickup_limit_from_json(json);
+	uint32_t block_expiration_time = read_block_expiration_time_from_json(json);
+	uint32_t wait_for_path_ms_timeout = read_wait_for_path_ms_timeout_from_json(json);
+	uint32_t product_not_available_ms_timeout = read_product_not_available_ms_timeout_from_json(json);
 	uint8_t system_status = read_system_status_from_json(json);
 	uint8_t master_id = read_master_id_from_json(json);
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
 	uint8_t max_temporal_id = read_max_temporal_id_from_json(json);
 	uint8_t debug_no_emergency_listen = read_debug_no_emergency_listen_from_json(json);
 	uint8_t debug_no_broadcast = read_debug_no_broadcast_from_json(json);
+
 
 	uint8_t map_height;
 	uint8_t map_width;
@@ -313,6 +400,14 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->on_wire_broadcast_ip_address = on_wire_broadcast_ip_address;
 	configuration->on_wire_server_ip_address = on_wire_server_ip_address;
 	configuration->network_prefix_length = network_prefix_length;
+	configuration->idle_status_query_delay = idle_status_query_delay;
+	configuration->product_pickup_status_query_delay = product_pickup_status_query_delay;
+	configuration->acceptable_product_mask = acceptable_product_mask;
+	configuration->carried_product_confidence_max = carried_product_confidence_max;
+	configuration->carried_product_confidence_pickup_limit = carried_product_confidence_pickup_limit;
+	configuration->block_expiration_time = block_expiration_time;
+	configuration->wait_for_path_ms_timeout = wait_for_path_ms_timeout;
+	configuration->product_not_available_ms_timeout = product_not_available_ms_timeout;
 	configuration->master_id = master_id;
 	configuration->system_status = system_status;
 	configuration->min_temporal_id = min_temporal_id;

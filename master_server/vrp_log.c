@@ -1,5 +1,6 @@
 /*
-	VarastoRobo master server version 0.3.0 2019-11-17 by Santtu Nyman.
+	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
 #include "vrp_log.h"
