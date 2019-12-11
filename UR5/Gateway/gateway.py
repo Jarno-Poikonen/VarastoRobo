@@ -9,6 +9,13 @@ MasterIP = None
 MasterPort = None
 seis = False
 
+# Funktio, jolla lähetetään seis signaali UR5:lle
+def StopUR():
+	GPIO.output(26, GPIO.HIGH)
+	sleep(5)
+	GPIO.output(26, GPIO.LOW)
+	GPIO.cleanup()
+
 # Funktio jolla tulostetaan myös viestin ajan hetki
 def Lokiin(mika, viesti):
 	print(datetime.now(), " - ", mika, ": ", viesti)
@@ -48,7 +55,7 @@ def Broadcast_communication():
 		try:
 			message, master_address = bSocket.recvfrom(512)
 		except socket.timeout:
-			Lokiin("Broad", "Timeout")
+			Lokiin("Broad", "Master IP timeout")
 			continue
 		
 		if len(message) >= 8 and message[0] == 1 and message[1] == 7 :
@@ -65,14 +72,12 @@ def Broadcast_communication():
 	while True:
 		try:
 			message, master_address = bSocket.recvfrom(512)
-		except timeout:
+		except socket.timeout:
 			Lokiin("Broad", "Timeout")
 			message = str.encode("")
+			
 		if seis:
-			GPIO.output(26, GPIO.HIGH)
-			sleep(5)
-			GPIO.output(26, GPIO.LOW)
-			GPIO.cleanup()
+			StopUR()
 			break
 		if len(message) >= 8 and message[0] == 1 and message[1] == 7 :
 			system_status = int(message[2])
@@ -80,10 +85,7 @@ def Broadcast_communication():
 				seis = True
 				Lokiin("Broad", "SEIS")
 				Lokiin("Broad", system_status)
-				GPIO.output(26, GPIO.HIGH)
-				sleep(5)
-				GPIO.output(26, GPIO.LOW)
-				GPIO.cleanup()
+				StopUR()
 				break
 
 # Luodaan WFM viesti annetuista parametreista.
