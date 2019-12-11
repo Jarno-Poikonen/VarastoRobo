@@ -25,6 +25,8 @@ paikat3= [
 	str.encode(",3.51784,-1.8909,-2.4487,-0.383809,1.59626,0.396642)")
 	]
 
+paketti = str(int(input("Anna pakettiID mitä siiretään: ")))
+
 i = 0
 
 print("Palvelin odottaa.")
@@ -44,15 +46,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			print(data)
 			if i > 2:
 				i = 0
-			if i == 0:
-				viesti = str.encode("(0,") + paikat3[i]
-			else:
-				viesti = str.encode("(1,") + paikat3[i]
+			viesti = str.encode("(" + paketti) + paikat3[i]
 			print(viesti)
 			conn.sendall(viesti)
-			
-			'''
-			conn.sendall(paikat[i])
-			print(paikat[i])
-			'''
 			i = i + 1
