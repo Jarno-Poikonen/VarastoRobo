@@ -9,6 +9,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QTimer>
 #include "systembroadcastmessage.h"
 
 QT_BEGIN_NAMESPACE
@@ -44,6 +45,8 @@ private:
     char datagram[512];
 
     SystemBroadcastMessage sbm;
+
+    QTimer timer;
 
     // Message #1 System Broadcast Message FREEZE
     char sbm_freeze_message[8] = {
@@ -190,7 +193,13 @@ private:
     quint8 device_y_coord;
     quint8 device_orientation;
     quint8 device_state;
-    quint8 extra_data[4096];    
+    quint8 extra_data[4096];
+
+    // for inner wfm
+    QString extra_data_str;
+
+    // pom
+    quint32 product_order_number;
 
     QGraphicsScene scene;
     QPixmap pixmap_white_background;
@@ -200,6 +209,10 @@ private:
     QPixmap pixmap_ur5;
     QPixmap pixmap_gopigo_list[4];
     QPixmap pixmap_obstacle_list[42];
+    QPixmap pixmap_system_state_red;
+    QPixmap pixmap_system_state_green;
+    QPixmap pixmap_system_state_blue;
+    QPixmap pixmap_system_state_grey;
 
     QGraphicsPixmapItem* graphics_item_white_background;
     QGraphicsPixmapItem* graphics_item_graphicsview_grid;
@@ -207,7 +220,31 @@ private:
     QGraphicsPixmapItem* graphics_item_gopigo_grid;
     QGraphicsPixmapItem* graphics_item_ur5;
     QGraphicsPixmapItem* graphics_item_gopigo[4];
+    QGraphicsTextItem* graphics_item_gopigo_id[4];
     QGraphicsPixmapItem* graphics_item_obstacle[42];
+    QGraphicsItem* graphics_item_system_state_red;
+    QGraphicsItem* graphics_item_system_state_green;
+    QGraphicsItem* graphics_item_system_state_blue;
+    QGraphicsItem* graphics_item_system_state_grey;
+
+    QFont gpg_id_font;
+
+    void parse_common_header();
+    void parse_message();
+    void parse_and_view_command();
+    void parse_scm();
+    void parse_wfm();
+    void parse_rlm();
+    void parse_pom();
+    void parse_rcm();
+
+    void terminal_view_scm();
+    void terminal_view_wfm();
+    void terminal_view_rlm();
+    void server_logs_view_rlm();
+    void terminal_view_pom();
+    void terminal_view_rcm();
+    void update_cursors();
 
     signals:
         void finished();
@@ -218,6 +255,7 @@ private:
         void slot_connected();
         void slot_disconnected();
         void slot_readyRead_tcp();
+        void slot_timeout();
 
     private slots:
         void on_pbSSM_clicked();

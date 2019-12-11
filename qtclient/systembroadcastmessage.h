@@ -14,14 +14,13 @@ public:
     SystemBroadcastMessage(char* datagram, qint64 datagram_size);
     ~SystemBroadcastMessage();
     void parse_datagram();
-    void gui_print();
-    void debug_print();
-    void gui_and_debug_print();
+    void reset();
     QString str;
     quint8 obstacle_count;              // max 54
     quint8 device_count;                // 4x GoPiGo, UR5, Drone, QtClient = 7 (master not included here)
     Point obstacle_list[54];            // x, y // 1, 1 [54*2]
     VarastoRoboDevice device_list[32];  // type, id, x, y, ipv4 // 1, 1, 1, 1, 4 bytes [7*8]
+    quint8 state;
 
 private:
     char* datagram;
@@ -30,7 +29,7 @@ private:
 
     // sbm
     quint16 constant;
-    quint8 state;
+    // quint8 state; #moved to public
     quint8 master_id;
     quint8 map_height;      // 0-5 (6)
     quint8 map_width;       // 0-8 (9)
