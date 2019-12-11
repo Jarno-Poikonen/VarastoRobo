@@ -100,7 +100,7 @@ def Luo_NCM(tyyppi, id, tila):
 	for b in viestin_loppu:
 		viesti.append(b)
 	
-	Lokiin("NCM", viesti)
+	Lokiin("NCM -> Master", viesti)
 	
 	return viesti
 
@@ -116,7 +116,7 @@ def Luo_WFM(vastaukseksi, virhe, suoritus, tila):
 	for b in viestin_loppu:
 		viesti.append(b)
 	
-	Lokiin("WFM", viesti)
+	Lokiin("WFM -> Master", viesti)
 	
 	return viesti
 
@@ -176,7 +176,7 @@ if __name__ == "__main__":
 	while not seis:
 		Lokiin("Main", "Odotetaan Masterin viestejä.")
 		MasterData = MasterSocket.recv(512)
-		Lokiin("Main", MasterData)
+		Lokiin("Main <- Master", MasterData)
 		try:
 			if MasterData[0] == 3:		# Setup Connection Message
 				Lokiin("Main", "Setup Connection Message saatu")
