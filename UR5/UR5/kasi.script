@@ -1,5 +1,4 @@
 def kasi():
-  set_gravity([0.0, 0.0, 9.82])
   set_standard_analog_input_domain(0, 1)
   set_standard_analog_input_domain(1, 1)
   set_tool_analog_input_domain(0, 1)
@@ -9,8 +8,9 @@ def kasi():
   set_input_actions_to_default()
   set_tcp(p[0.0,0.0,0.16,0.0,0.0,0.0])
   set_payload(1.0)
-  set_tool_voltage(0)
+  set_gravity([0.0, 0.0, 9.82])
   set_safety_mode_transition_hardness(0)
+  set_tool_voltage(0)
   global Point_1_testi=p[0.011307543329326633,-0.4329792195140464,-0.23023840319885622,0.08254189564057625,3.016025720752259,-0.8432913481773383]
   global corner1=p[0.0,0.0,0.0,0.0,0.0,0.0]
   global corner2=p[0.0,0.0,0.0,0.0,0.0,0.0]
@@ -442,7 +442,7 @@ def kasi():
   xmlrpc_server=rpc_factory("xmlrpc","http://127.0.0.1:4242")
   
   # Open connection with visual offset monitor
-  visual_offset_monitor=rpc_factory("xmlrpc","http://127.0.0.1:33191")
+  visual_offset_monitor=rpc_factory("xmlrpc","http://127.0.0.1:35442")
   
   #######Vision urcap preamble end##########
   ###########################################
@@ -1874,12 +1874,12 @@ def kasi():
   set_open_mm(50.0, 4)
   rq_set_gripper_max_cur(0, "1")
   # end: URCap Installation Node
-  global capt_60514= True 
-  global capt_93116= True 
+  global capt_13664= True 
+  global capt_54879= True 
   $ 1 "BeforeStart"
   $ 2 "MoveJ"
   $ 3 "aloitus"
-  movej(get_inverse_kin(p[.011313115436, -.432964818756, -.230251608295, .082528829055, 3.016076628622, -.843237048281], qnear=[5.1216301918029785, -2.6720340887652796, -2.5018308798419397, 0.9673894643783569, 1.364126205444336, 0.406497061252594]), a=1.3962634015954636, v=1.0471975511965976)
+  movej(get_inverse_kin(p[.002713073516, -.470778711581, -.194927219581, .001104177047, -3.038349082550, .791671915468], qnear=[5.040826320648193, -2.463754479085104, -2.453442637120382, 0.6915305852890015, 1.4170653820037842, 0.2841617166996002]), a=1.3962634015954636, v=1.0471975511965976)
   $ 4 "mData≔socket_open('192.168.100.11', 30000)"
   global mData=socket_open("192.168.100.11", 30000)
   $ 67 "Thread_2"
@@ -1888,7 +1888,6 @@ def kasi():
       while (get_standard_analog_in(0) < 3.0):
         sync()
       end
-      popup("Seis", "Warning", True, False, blocking=True)
       halt
     end
   end
@@ -1908,8 +1907,8 @@ def kasi():
     while (kasky[0] != 7):
       $ 12 "kasky≔socket_read_ascii_float(7)"
       global kasky=socket_read_ascii_float(7)
-      $ 13 "socket_send_string('Odottaa')"
-      socket_send_string("Odottaa")
+      $ 13 "socket_send_string('O')"
+      socket_send_string("O")
       $ 14 "Wait: 1.0"
       sleep(1.0)
     end
@@ -1931,21 +1930,21 @@ def kasi():
       
       f=[0,0.0,0.0,0.0,0.0,0.0,0.0,0]
       object_location=p[0.0,0.0,0.0,0.0,0.0,0.0]
-      feature_pose_to_restore_60514 = Point_1_testi
-      if (capt_60514):
+      feature_pose_to_restore_54879 = Point_1_testi
+      if (capt_54879):
         movej([5.0408501625061035, -2.463754479085104, -2.453430716191427, 0.6915425062179565, 1.4171133041381836, 0.2841976583003998])
         # Offset in translation only.
         snapshot_position_offset[3] = 0
         snapshot_position_offset[4] = 0
         snapshot_position_offset[5] = 0
         T_camera_in_flange = p[0, 0, 0, 0, 0, 0] # enlever une fois que l'enseignement du modele sera fait en faisant un movetool avec la pose de la camera dans le repere de la flange. Pour l'instant, on suppose que la camera est situee directement sur la flange.
-        tool_60514 = get_T_in_base_from_flange(T_camera_in_flange)
-        textmsg("actual tool flange : ", tool_60514)
-        tool_60514 = pose_sub(tool_60514, snapshot_position_offset)
-        textmsg("tool after offset : ", tool_60514)
+        tool_54879 = get_T_in_base_from_flange(T_camera_in_flange)
+        textmsg("actual tool flange : ", tool_54879)
+        tool_54879 = pose_sub(tool_54879, snapshot_position_offset)
+        textmsg("tool after offset : ", tool_54879)
         snapshot_position = p[0.00297792, -0.392704, -0.0552701, 0.001101, -3.03841, 0.791703]
         textmsg("expected snapshot position : ", snapshot_position)
-        diff = pose_sub(tool_60514, snapshot_position)
+        diff = pose_sub(tool_54879, snapshot_position)
         textmsg("diff = ", diff)
         textmsg("norm([diff[0], diff[1], diff[2]]) = ", norm([diff[0], diff[1], diff[2]]))
         textmsg("norm([diff[3], diff[4], diff[5]]) = ", norm([diff[3], diff[4], diff[5]]))
@@ -1959,32 +1958,32 @@ def kasi():
           popup("Robot is not at Snapshot Position. Add Move instruction to Snapshot Position before Camera Locate node.. Error code: [UCC-8]", warning = False, error = True)
           halt
         end
-        global f_60514 = xmlrpc_server.findmodel("contextName-60514", tool_60514[0], tool_60514[1], tool_60514[2], tool_60514[3], tool_60514[4], tool_60514[5])
+        global f_54879 = xmlrpc_server.findmodel("contextName-54879", tool_54879[0], tool_54879[1], tool_54879[2], tool_54879[3], tool_54879[4], tool_54879[5])
         canSaveImage = True
-        logging_service.publish("FIND_MODEL", f_60514)
-        global i_60514=0
+        logging_service.publish("FIND_MODEL", f_54879)
+        global i_54879=0
       end
       # begin: URCap Program Node
       #   Source: Robotiq_Wrist_Camera, 1.9.1, Robotiq Inc.
       #   Type: Cam Locate Loop
       $ 21 "For next object"
-      object_teaching_location_60514 = p[0.08722742684158319, -0.31201357239816624, -0.48424018277058856, -0.029879894860498857, -3.1354746960167668, -0.009381145987504669]
-      feature_teaching_location_60514 = p[0.011307543329326633, -0.4329792195140464, -0.23023840319885622, 0.08254189564057625, 3.016025720752259, -0.8432913481773383]
-      if (i_60514 < f_60514[0]):
-        current_object_location_60514 = p[f_60514[8*i_60514+1],f_60514[8*i_60514+2],f_60514[8*i_60514+3],f_60514[8*i_60514+4],f_60514[8*i_60514+5],f_60514[8*i_60514+6]]
-        object_location = current_object_location_60514
-        f[0] = f_60514[0]
-        f[1] = f_60514[8*i_60514+1]
-        f[2] = f_60514[8*i_60514+2]
-        f[3] = f_60514[8*i_60514+3]
-        f[4] = f_60514[8*i_60514+4]
-        f[5] = f_60514[8*i_60514+5]
-        f[6] = f_60514[8*i_60514+6]
-        f[7] = f_60514[8*i_60514+7]
-        textmsg("current_object_location before offset = ", current_object_location_60514)
-        current_object_location_60514 = pose_add(current_object_location_60514, snapshot_position_offset)
-        textmsg("current_object_location after offset = ", current_object_location_60514)
-        Point_1_testi = pose_trans(current_object_location_60514, pose_trans(pose_inv(object_teaching_location_60514), feature_teaching_location_60514))
+      object_teaching_location_54879 = p[0.08722742684158319, -0.31201357239816624, -0.48424018277058856, -0.029879894860498857, -3.1354746960167668, -0.009381145987504669]
+      feature_teaching_location_54879 = p[0.011307543329326633, -0.4329792195140464, -0.23023840319885622, 0.08254189564057625, 3.016025720752259, -0.8432913481773383]
+      if (i_54879 < f_54879[0]):
+        current_object_location_54879 = p[f_54879[8*i_54879+1],f_54879[8*i_54879+2],f_54879[8*i_54879+3],f_54879[8*i_54879+4],f_54879[8*i_54879+5],f_54879[8*i_54879+6]]
+        object_location = current_object_location_54879
+        f[0] = f_54879[0]
+        f[1] = f_54879[8*i_54879+1]
+        f[2] = f_54879[8*i_54879+2]
+        f[3] = f_54879[8*i_54879+3]
+        f[4] = f_54879[8*i_54879+4]
+        f[5] = f_54879[8*i_54879+5]
+        f[6] = f_54879[8*i_54879+6]
+        f[7] = f_54879[8*i_54879+7]
+        textmsg("current_object_location before offset = ", current_object_location_54879)
+        current_object_location_54879 = pose_add(current_object_location_54879, snapshot_position_offset)
+        textmsg("current_object_location after offset = ", current_object_location_54879)
+        Point_1_testi = pose_trans(current_object_location_54879, pose_trans(pose_inv(object_teaching_location_54879), feature_teaching_location_54879))
         $ 22 "MoveL"
         $ 23 "Waypoint_2"
         movel(pose_trans(Point_1_testi, p[-0.06709056001509517,0.18659856594922122,0.06883480698486288,-0.5507589192137587,-0.051156025439756565,-0.287922718869466]), a=1.2, v=0.25)
@@ -2097,15 +2096,15 @@ def kasi():
         $ 36 "Waypoint_4"
         movej(get_inverse_kin(p[-.192263677957, -.296193533416, .023603137594, -2.212251806615, -2.192342923896, .055123900424], qnear=[4.486325740814209, -1.395273510609762, -2.4152470270739954, -0.8860285917865198, 1.5261240005493164, 1.3472789525985718]), a=1.3962634015954636, v=1.0471975511965976, r=0.05)
         $ 37 "aloitus"
-        movej(get_inverse_kin(p[.011313115436, -.432964818756, -.230251608295, .082528829055, 3.016076628622, -.843237048281], qnear=[5.1216301918029785, -2.6720340887652796, -2.5018308798419397, 0.9673894643783569, 1.364126205444336, 0.406497061252594]), a=1.3962634015954636, v=1.0471975511965976)
-        i_60514 = i_60514 + 1
+        movej(get_inverse_kin(p[.002713073516, -.470778711581, -.194927219581, .001104177047, -3.038349082550, .791671915468], qnear=[5.040826320648193, -2.463754479085104, -2.453442637120382, 0.6915305852890015, 1.4170653820037842, 0.2841617166996002]), a=1.3962634015954636, v=1.0471975511965976)
+        i_54879 = i_54879 + 1
       end
       # end: URCap Program Node
       # begin: URCap Program Node
       #   Source: Robotiq_Wrist_Camera, 1.9.1, Robotiq Inc.
       #   Type: If no object found in Camera Locate
       $ 38 "If no object found"
-      if (f_60514[0] == 0):
+      if (f_54879[0] == 0):
         f[0] = 0
         $ 39 "socket_send_string('Fail')"
         socket_send_string("Fail")
@@ -2113,19 +2112,19 @@ def kasi():
         # 'No rectangles detected'
       end
       # end: URCap Program Node
-      capt_60514 = i_60514== f_60514[0]
+      capt_54879 = i_54879== f_54879[0]
       # Restore feature pose
-      Point_1_testi = feature_pose_to_restore_60514
+      Point_1_testi = feature_pose_to_restore_54879
       
       #######VisionLocate node end########
       ###########################################
       
       # end: URCap Program Node
     else:
-      $ 41 "ElseIf tuote≟1"
-      if (tuote == 1):
-        $ 42 "'Cylinder=1'"
-        # 'Cylinder=1'
+      $ 41 "ElseIf tuote≟2"
+      if (tuote == 2):
+        $ 42 "'RPiCamera=2'"
+        # 'RPiCamera=2'
         # begin: URCap Program Node
         #   Source: Robotiq_Wrist_Camera, 1.9.1, Robotiq Inc.
         #   Type: Cam Locate
@@ -2136,21 +2135,21 @@ def kasi():
         
         f=[0,0.0,0.0,0.0,0.0,0.0,0.0,0]
         object_location=p[0.0,0.0,0.0,0.0,0.0,0.0]
-        feature_pose_to_restore_93116 = Point_1_testi
-        if (capt_93116):
+        feature_pose_to_restore_13664 = Point_1_testi
+        if (capt_13664):
           movej([5.0408501625061035, -2.463754479085104, -2.453430716191427, 0.6915425062179565, 1.4171133041381836, 0.2841976583003998])
           # Offset in translation only.
           snapshot_position_offset[3] = 0
           snapshot_position_offset[4] = 0
           snapshot_position_offset[5] = 0
           T_camera_in_flange = p[0, 0, 0, 0, 0, 0] # enlever une fois que l'enseignement du modele sera fait en faisant un movetool avec la pose de la camera dans le repere de la flange. Pour l'instant, on suppose que la camera est situee directement sur la flange.
-          tool_93116 = get_T_in_base_from_flange(T_camera_in_flange)
-          textmsg("actual tool flange : ", tool_93116)
-          tool_93116 = pose_sub(tool_93116, snapshot_position_offset)
-          textmsg("tool after offset : ", tool_93116)
+          tool_13664 = get_T_in_base_from_flange(T_camera_in_flange)
+          textmsg("actual tool flange : ", tool_13664)
+          tool_13664 = pose_sub(tool_13664, snapshot_position_offset)
+          textmsg("tool after offset : ", tool_13664)
           snapshot_position = p[0.00297792, -0.392704, -0.0552701, 0.001101, -3.03841, 0.791703]
           textmsg("expected snapshot position : ", snapshot_position)
-          diff = pose_sub(tool_93116, snapshot_position)
+          diff = pose_sub(tool_13664, snapshot_position)
           textmsg("diff = ", diff)
           textmsg("norm([diff[0], diff[1], diff[2]]) = ", norm([diff[0], diff[1], diff[2]]))
           textmsg("norm([diff[3], diff[4], diff[5]]) = ", norm([diff[3], diff[4], diff[5]]))
@@ -2164,39 +2163,39 @@ def kasi():
             popup("Robot is not at Snapshot Position. Add Move instruction to Snapshot Position before Camera Locate node.. Error code: [UCC-8]", warning = False, error = True)
             halt
           end
-          global f_93116 = xmlrpc_server.findmodel("contextName-93116", tool_93116[0], tool_93116[1], tool_93116[2], tool_93116[3], tool_93116[4], tool_93116[5])
+          global f_13664 = xmlrpc_server.findmodel("contextName-13664", tool_13664[0], tool_13664[1], tool_13664[2], tool_13664[3], tool_13664[4], tool_13664[5])
           canSaveImage = True
-          logging_service.publish("FIND_MODEL", f_93116)
-          global i_93116=0
+          logging_service.publish("FIND_MODEL", f_13664)
+          global i_13664=0
         end
         # begin: URCap Program Node
         #   Source: Robotiq_Wrist_Camera, 1.9.1, Robotiq Inc.
         #   Type: Cam Locate Loop
         $ 44 "For next object"
-        object_teaching_location_93116 = p[0.03956809607876666, -0.327318429792688, -0.48905140580028167, -0.02987989486078906, -3.1354746960167623, -0.009381145987593088]
-        feature_teaching_location_93116 = p[0.011307543329326633, -0.4329792195140464, -0.23023840319885622, 0.08254189564057625, 3.016025720752259, -0.8432913481773383]
-        if (i_93116 < f_93116[0]):
-          current_object_location_93116 = p[f_93116[8*i_93116+1],f_93116[8*i_93116+2],f_93116[8*i_93116+3],f_93116[8*i_93116+4],f_93116[8*i_93116+5],f_93116[8*i_93116+6]]
-          object_location = current_object_location_93116
-          f[0] = f_93116[0]
-          f[1] = f_93116[8*i_93116+1]
-          f[2] = f_93116[8*i_93116+2]
-          f[3] = f_93116[8*i_93116+3]
-          f[4] = f_93116[8*i_93116+4]
-          f[5] = f_93116[8*i_93116+5]
-          f[6] = f_93116[8*i_93116+6]
-          f[7] = f_93116[8*i_93116+7]
-          textmsg("current_object_location before offset = ", current_object_location_93116)
-          current_object_location_93116 = pose_add(current_object_location_93116, snapshot_position_offset)
-          textmsg("current_object_location after offset = ", current_object_location_93116)
-          Point_1_testi = pose_trans(current_object_location_93116, pose_trans(pose_inv(object_teaching_location_93116), feature_teaching_location_93116))
-          $ 46 "MoveL"
-          $ 47 "Approach_Poin_1"
-          movel(pose_trans(Point_1_testi, p[-0.020130374574291413,0.1734946302554771,0.08115658398200065,-0.5508262769375615,0.0200849362786059,-0.036383601272100004]), a=1.2, v=0.25)
+        object_teaching_location_13664 = p[0.03508035672653253, -0.3574202480530021, -0.49220683783775365, -0.02987989486049903, -3.1354746960167668, -0.009381145987504145]
+        feature_teaching_location_13664 = p[0.011307543329326633, -0.4329792195140464, -0.23023840319885622, 0.08254189564057625, 3.016025720752259, -0.8432913481773383]
+        if (i_13664 < f_13664[0]):
+          current_object_location_13664 = p[f_13664[8*i_13664+1],f_13664[8*i_13664+2],f_13664[8*i_13664+3],f_13664[8*i_13664+4],f_13664[8*i_13664+5],f_13664[8*i_13664+6]]
+          object_location = current_object_location_13664
+          f[0] = f_13664[0]
+          f[1] = f_13664[8*i_13664+1]
+          f[2] = f_13664[8*i_13664+2]
+          f[3] = f_13664[8*i_13664+3]
+          f[4] = f_13664[8*i_13664+4]
+          f[5] = f_13664[8*i_13664+5]
+          f[6] = f_13664[8*i_13664+6]
+          f[7] = f_13664[8*i_13664+7]
+          textmsg("current_object_location before offset = ", current_object_location_13664)
+          current_object_location_13664 = pose_add(current_object_location_13664, snapshot_position_offset)
+          textmsg("current_object_location after offset = ", current_object_location_13664)
+          Point_1_testi = pose_trans(current_object_location_13664, pose_trans(pose_inv(object_teaching_location_13664), feature_teaching_location_13664))
+          $ 45 "MoveL"
+          $ 46 "Approach_Point"
+          movel(pose_trans(Point_1_testi, p[-0.01703327948093287,0.14919321687819842,0.09948866864968053,-0.5508573633400116,0.019346815510709606,-0.038995965664544927]), a=1.2, v=0.25)
           # begin: URCap Program Node
           #   Source: Robotiq_Grippers, 1.7.1.2, Robotiq Inc.
           #   Type: Gripper
-          $ 48 "Gripper Open (1)"
+          $ 47 "Gripper Open (1)"
           gripper_1_used = True
           if (connectivity_checked[0] != 1):
             gripper_id_ascii = rq_gripper_id_to_ascii("1")
@@ -2224,12 +2223,12 @@ def kasi():
           gripper_3_used = False
           gripper_4_used = False
           # end: URCap Program Node
-          $ 49 "Pick_Point_1"
-          movel(pose_trans(Point_1_testi, p[-0.01724564833558389,0.22578278007264058,0.1663482956869874,-0.5508262769375607,0.02008493627862911,-0.03638360127196348]), a=1.2, v=0.25)
+          $ 48 "Pick_Point"
+          movel(pose_trans(Point_1_testi, p[-0.014148553242225338,0.20148136669536199,0.18468038035466727,-0.5508573633400116,0.019346815510709606,-0.038995965664544927]), a=1.2, v=0.25)
           # begin: URCap Program Node
           #   Source: Robotiq_Grippers, 1.7.1.2, Robotiq Inc.
           #   Type: Gripper
-          $ 50 "Gripper Close (1)"
+          $ 49 "Gripper Close (1)"
           gripper_1_used = True
           if (connectivity_checked[0] != 1):
             gripper_id_ascii = rq_gripper_id_to_ascii("1")
@@ -2257,18 +2256,18 @@ def kasi():
           gripper_3_used = False
           gripper_4_used = False
           # end: URCap Program Node
-          $ 51 "Retract_Point_1"
-          movel(pose_trans(Point_1_testi, p[-0.020130374574291413,0.1734946302554771,0.08115658398200065,-0.5508262769375615,0.0200849362786059,-0.036383601272100004]), a=1.2, v=0.25)
-          $ 52 "MoveJ"
-          $ 53 "Waypoint_4"
+          $ 50 "Retract_Point"
+          movel(pose_trans(Point_1_testi, p[-0.01703327948093287,0.14919321687819842,0.09948866864968053,-0.5508573633400116,0.019346815510709606,-0.038995965664544927]), a=1.2, v=0.25)
+          $ 51 "MoveJ"
+          $ 52 "Waypoint_4"
           movej(get_inverse_kin(p[-.192263677957, -.296193533416, .023603137594, -2.212251806615, -2.192342923896, .055123900424], qnear=[4.486325740814209, -1.395273510609762, -2.4152470270739954, -0.8860285917865198, 1.5261240005493164, 1.3472789525985718]), a=1.3962634015954636, v=1.0471975511965976, r=0.05)
-          $ 54 "MoveJ"
-          $ 55 "asento"
+          $ 53 "MoveJ"
+          $ 54 "asento"
           movej(asento, a=1.3962634015954636, v=1.0471975511965976)
           # begin: URCap Program Node
           #   Source: Robotiq_Grippers, 1.7.1.2, Robotiq Inc.
           #   Type: Gripper
-          $ 56 "Gripper Open (1)"
+          $ 55 "Gripper Open (1)"
           gripper_1_used = True
           if (connectivity_checked[0] != 1):
             gripper_id_ascii = rq_gripper_id_to_ascii("1")
@@ -2296,36 +2295,38 @@ def kasi():
           gripper_3_used = False
           gripper_4_used = False
           # end: URCap Program Node
-          $ 57 "socket_send_string('Valmis')"
+          $ 56 "socket_send_string('Valmis')"
           socket_send_string("Valmis")
-          $ 58 "MoveJ"
-          $ 60 "Waypoint_4"
+          $ 57 "MoveJ"
+          $ 59 "Waypoint_4"
           movej(get_inverse_kin(p[-.192263677957, -.296193533416, .023603137594, -2.212251806615, -2.192342923896, .055123900424], qnear=[4.486325740814209, -1.395273510609762, -2.4152470270739954, -0.8860285917865198, 1.5261240005493164, 1.3472789525985718]), a=1.3962634015954636, v=1.0471975511965976, r=0.05)
-          $ 61 "aloitus"
-          movej(get_inverse_kin(p[.011313115436, -.432964818756, -.230251608295, .082528829055, 3.016076628622, -.843237048281], qnear=[5.1216301918029785, -2.6720340887652796, -2.5018308798419397, 0.9673894643783569, 1.364126205444336, 0.406497061252594]), a=1.3962634015954636, v=1.0471975511965976)
-          i_93116 = i_93116 + 1
+          $ 60 "aloitus"
+          movej(get_inverse_kin(p[.002713073516, -.470778711581, -.194927219581, .001104177047, -3.038349082550, .791671915468], qnear=[5.040826320648193, -2.463754479085104, -2.453442637120382, 0.6915305852890015, 1.4170653820037842, 0.2841617166996002]), a=1.3962634015954636, v=1.0471975511965976)
+          i_13664 = i_13664 + 1
         end
         # end: URCap Program Node
         # begin: URCap Program Node
         #   Source: Robotiq_Wrist_Camera, 1.9.1, Robotiq Inc.
         #   Type: If no object found in Camera Locate
-        $ 62 "If no object found"
-        if (f_93116[0] == 0):
+        $ 61 "If no object found"
+        if (f_13664[0] == 0):
           f[0] = 0
-          $ 63 "socket_send_string('Fail')"
+          $ 62 "socket_send_string('Fail')"
           socket_send_string("Fail")
-          $ 64 "'No cylinder detected'"
-          # 'No cylinder detected'
         end
         # end: URCap Program Node
-        capt_93116 = i_93116== f_93116[0]
+        capt_13664 = i_13664== f_13664[0]
         # Restore feature pose
-        Point_1_testi = feature_pose_to_restore_93116
+        Point_1_testi = feature_pose_to_restore_13664
         
         #######VisionLocate node end########
         ###########################################
         
         # end: URCap Program Node
+      else:
+        $ 63 "Else"
+        $ 64 "socket_send_string('Fail')"
+        socket_send_string("Fail")
       end
     end
   end

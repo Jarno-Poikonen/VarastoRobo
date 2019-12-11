@@ -11,7 +11,7 @@
      kasky≔socket_read_ascii_float(7)
      Loop kasky[0]≠7
        kasky≔socket_read_ascii_float(7)
-       socket_send_string("Odottaa")
+       socket_send_string("O")
        Wait: 1.0
      'Popup'
      tuote≔kasky[1]
@@ -39,17 +39,16 @@
          If no object found
            socket_send_string("Fail")
            'No rectangles detected'
-     ElseIf tuote≟1
-       'Cylinder=1'
+     ElseIf tuote≟2
+       'RPiCamera=2'
        Cam Locate
          For next object
-           'MoveL'
            MoveL
-             Approach_Poin_1
+             Approach_Point
              Gripper Open (1)
-             Pick_Point_1
+             Pick_Point
              Gripper Close (1)
-             Retract_Point_1
+             Retract_Point
            MoveJ
              Waypoint_4
            MoveJ
@@ -62,10 +61,11 @@
              aloitus
          If no object found
            socket_send_string("Fail")
-           'No cylinder detected'
+     Else
+       socket_send_string("Fail")
      'Loop'
    'Thread_1'
    Thread_2
      Wait AI[0]>3.0
-     Popup
+     'Popup'
      Halt
