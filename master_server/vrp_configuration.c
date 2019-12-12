@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
@@ -179,6 +179,15 @@ static uint8_t read_master_id_from_json(const jsonpl_value_t* configuration)
 	return id;
 }
 
+static uint8_t read_trust_lost_device_from_json(const jsonpl_value_t* configuration)
+{
+	uint8_t value = 1;
+	jsonpl_value_t* json_value = find_child_by_name(configuration, "trust_lost_devices");
+	if (json_value && json_value->type == JSONPL_TYPE_BOOLEAN)
+		value = (uint8_t)json_value->boolean_value;
+	return value;
+}
+
 static uint8_t read_system_status_from_json(const jsonpl_value_t* configuration)
 {
 	uint8_t status = 1;
@@ -352,6 +361,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	uint32_t block_expiration_time = read_block_expiration_time_from_json(json);
 	uint32_t wait_for_path_ms_timeout = read_wait_for_path_ms_timeout_from_json(json);
 	uint32_t product_not_available_ms_timeout = read_product_not_available_ms_timeout_from_json(json);
+	uint8_t trust_lost_device = read_trust_lost_device_from_json(json);
 	uint8_t system_status = read_system_status_from_json(json);
 	uint8_t master_id = read_master_id_from_json(json);
 	uint8_t min_temporal_id = read_min_temporal_id_from_json(json);
@@ -409,6 +419,7 @@ DWORD vrp_load_master_configuration(vrp_configuration_t** master_configuration)
 	configuration->wait_for_path_ms_timeout = wait_for_path_ms_timeout;
 	configuration->product_not_available_ms_timeout = product_not_available_ms_timeout;
 	configuration->master_id = master_id;
+	configuration->trust_lost_device = trust_lost_device;
 	configuration->system_status = system_status;
 	configuration->min_temporal_id = min_temporal_id;
 	configuration->max_temporal_id = max_temporal_id;

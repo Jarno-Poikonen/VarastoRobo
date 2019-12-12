@@ -15,6 +15,7 @@
 	"carried_product_confidence_pickup_limit" : 3,
 	"debug_no_emergency_listen" : false,
 	"debug_no_broadcast" : false,
+	"trust_lost_devices" : false,
 	"master_device_id" : 42,
 	"initial_system_status" : 2,
 	"min_temporal_id" : 100,

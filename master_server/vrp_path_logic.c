@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
@@ -212,29 +212,35 @@ int vrp_calculate_direction_to_coordinate(int base_x, int base_y, int target_x, 
 
 void vrp_calculate_coordinate_form_direction(int base_x, int base_y, int direction, uint8_t* x, uint8_t* y)
 {
-	switch (direction)
+	if (base_x == VRP_COORDINATE_UNDEFINED || base_y == VRP_COORDINATE_UNDEFINED || direction == VRP_DIRECTION_UNDEFINED)
 	{
-		case VRP_DIRECTION_RIGHT:
-			*x = (uint8_t)base_x + 1;
-			*y = (uint8_t)base_y;
-			return;
-		case VRP_DIRECTION_LEFT:
-			*x = (uint8_t)base_x - 1;
-			*y = (uint8_t)base_y;
-			return;
-		case VRP_DIRECTION_UP:
-			*x = (uint8_t)base_x;
-			*y = (uint8_t)base_y + 1;
-			return;
-		case VRP_DIRECTION_DOWN:
-			*x = (uint8_t)base_x;
-			*y = (uint8_t)base_y - 1;
-			return;
-		default:
-			*x = (uint8_t)base_x;
-			*y = (uint8_t)base_y;
-			return;
+		*x = VRP_COORDINATE_UNDEFINED;
+		*y = VRP_COORDINATE_UNDEFINED;
 	}
+	else
+		switch (direction)
+		{
+			case VRP_DIRECTION_RIGHT:
+				*x = (uint8_t)base_x + 1;
+				*y = (uint8_t)base_y;
+				return;
+			case VRP_DIRECTION_LEFT:
+				*x = (uint8_t)base_x - 1;
+				*y = (uint8_t)base_y;
+				return;
+			case VRP_DIRECTION_UP:
+				*x = (uint8_t)base_x;
+				*y = (uint8_t)base_y + 1;
+				return;
+			case VRP_DIRECTION_DOWN:
+				*x = (uint8_t)base_x;
+				*y = (uint8_t)base_y - 1;
+				return;
+			default:
+				*x = (uint8_t)base_x;
+				*y = (uint8_t)base_y;
+				return;
+		}
 }
 
 int vrp_calculate_immediate_path_to_target(vrp_server_t* server, size_t device_index)

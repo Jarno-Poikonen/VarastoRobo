@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
@@ -32,6 +32,7 @@ typedef struct vrp_configuration_t
 	uint32_t block_expiration_time;
 	uint32_t wait_for_path_ms_timeout;
 	uint32_t product_not_available_ms_timeout;
+	uint8_t trust_lost_device;
 	uint8_t master_id;
 	uint8_t system_status;
 	uint8_t min_temporal_id;
