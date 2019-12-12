@@ -11,11 +11,11 @@ QtClient::QtClient(QWidget *parent, quint16 tcp_port_to_master, quint16 udp_port
     ui->spinBox_mode->setMaximum(1);
     ui->spinBox_mode->setValue(1);
     ui->spinBox_row_count->setMinimum(1);
-    ui->spinBox_row_count->setMaximum(256);
+    ui->spinBox_row_count->setMaximum(255);
     ui->spinBox_row_count->setValue(11);
     ui->spinBox_beginning_row->setMinimum(0);
     ui->spinBox_beginning_row->setMaximum(255);
-    ui->spinBox_beginning_row->setValue(11);
+    ui->spinBox_beginning_row->setValue(10);
 
     // pom
     ui->spinBox_product_id->setMinimum(0);
@@ -711,7 +711,6 @@ void QtClient::parse_and_view_command()
     if(command_number == 10) // RLM
     {
         parse_rlm();
-        terminal_view_rlm();
         server_logs_view_rlm();
     }
     else if(command_number == 11) // POM
@@ -807,11 +806,6 @@ void QtClient::terminal_view_wfm()
     ui->terminal->append(QString("  device_state: ")        + QString::number(device_state)        + QString(","));
     ui->terminal->append(QString("  extra_data: {\n")       + extra_data_str);
     ui->terminal->append(QString("}\n"));
-}
-
-void QtClient::terminal_view_rlm()
-{
-
 }
 
 void QtClient::server_logs_view_rlm()

@@ -171,7 +171,7 @@ private:
     };
 
     qint64 sent_bytes;
-    char tcp_read_buffer[4096];
+    char tcp_read_buffer[32768];
 
     bool is_common_header_read = false;
 
@@ -193,7 +193,7 @@ private:
     quint8 device_y_coord;
     quint8 device_orientation;
     quint8 device_state;
-    quint8 extra_data[4096];
+    quint8 extra_data[32768];
 
     // for inner wfm
     QString extra_data_str;
@@ -240,7 +240,6 @@ private:
 
     void terminal_view_scm();
     void terminal_view_wfm();
-    void terminal_view_rlm();
     void server_logs_view_rlm();
     void terminal_view_pom();
     void terminal_view_rcm();
