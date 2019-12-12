@@ -91,3 +91,10 @@ void SystemBroadcastMessage::parse_datagram()
     str += devices_str;
 }
 
+void SystemBroadcastMessage::reset()
+{
+    str = "";
+    obstacle_count = 0;
+    device_count = 0;
+    state = 3;
+}

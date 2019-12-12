@@ -6,20 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1600</width>
-    <height>900</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1600</width>
-    <height>900</height>
+    <width>1280</width>
+    <height>720</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1600</width>
-    <height>900</height>
+    <width>1280</width>
+    <height>750</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -36,42 +42,83 @@
 QMenu, QAction {
 	background-color: Orange;
 	color: black;
+}
+
+QCheckBox {
+	padding-left: 6px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
     <size>
-     <width>1600</width>
-     <height>900</height>
+     <width>1280</width>
+     <height>720</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>1600</width>
-     <height>900</height>
+     <width>1280</width>
+     <height>720</height>
     </size>
    </property>
    <widget class="QTextEdit" name="terminal">
     <property name="geometry">
      <rect>
-      <x>1360</x>
+      <x>970</x>
       <y>0</y>
-      <width>240</width>
-      <height>510</height>
+      <width>310</width>
+      <height>490</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>200</width>
+      <height>490</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>310</width>
+      <height>490</height>
+     </size>
+    </property>
     <property name="styleSheet">
-     <string notr="true">background-color: black;</string>
+     <string notr="true">background-color: black;
+font-size: 14px;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbRLM">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>810</y>
-      <width>240</width>
-      <height>60</height>
+      <y>640</y>
+      <width>270</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>270</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>270</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton::hover {
@@ -91,11 +138,29 @@ Read Log Message</string>
    <widget class="QSpinBox" name="spinBox_mode">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>630</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>490</y>
+      <width>108</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox::hover {
@@ -106,16 +171,37 @@ Read Log Message</string>
 QSpinBox {
 	background-color: brown;
 }</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_row_count">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>690</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>540</y>
+      <width>108</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox::hover {
@@ -126,16 +212,37 @@ QSpinBox {
 QSpinBox {
 	background-color: brown;
 }</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_beginning_row">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>750</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>590</y>
+      <width>108</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox::hover {
@@ -146,16 +253,37 @@ QSpinBox {
 QSpinBox {
 	background-color: brown;
 }</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="label_mode">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>630</y>
-      <width>160</width>
-      <height>60</height>
+      <y>490</y>
+      <width>162</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:  brown;</string>
@@ -163,15 +291,36 @@ QSpinBox {
     <property name="text">
      <string>mode</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="label_row_count">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>690</y>
-      <width>160</width>
-      <height>60</height>
+      <y>540</y>
+      <width>162</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:  brown;</string>
@@ -179,15 +328,36 @@ QSpinBox {
     <property name="text">
      <string>row count</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="label_beginning_row">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>750</y>
-      <width>160</width>
-      <height>60</height>
+      <y>590</y>
+      <width>162</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:  brown;</string>
@@ -195,15 +365,36 @@ QSpinBox {
     <property name="text">
      <string>beginning row</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pbSBMfreeze">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>690</y>
-      <width>240</width>
-      <height>180</height>
+      <x>970</x>
+      <y>640</y>
+      <width>310</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>200</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>310</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">::hover {
@@ -222,36 +413,61 @@ STOP</string>
    <widget class="QTextEdit" name="server_logs">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>630</y>
-      <width>1120</width>
-      <height>240</height>
+      <x>270</x>
+      <y>490</y>
+      <width>700</width>
+      <height>200</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="minimumSize">
      <size>
-      <width>1120</width>
-      <height>240</height>
+      <width>700</width>
+      <height>200</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>1120</width>
-      <height>240</height>
+      <width>700</width>
+      <height>200</height>
      </size>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: black;</string>
+     <string notr="true">background-color: black;
+font-size: 14px;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbSSM">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>570</y>
-      <width>240</width>
-      <height>60</height>
+      <x>970</x>
+      <y>540</y>
+      <width>310</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>200</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>310</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">::hover {
@@ -272,11 +488,29 @@ System Startup Message</string>
    <widget class="QPushButton" name="pbSHM">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>630</y>
-      <width>240</width>
-      <height>60</height>
+      <x>970</x>
+      <y>590</y>
+      <width>310</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>200</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>310</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">::hover {
@@ -295,11 +529,29 @@ System Shutdown Message</string>
    <widget class="QPushButton" name="pbUFM">
     <property name="geometry">
      <rect>
-      <x>1360</x>
-      <y>510</y>
-      <width>240</width>
-      <height>60</height>
+      <x>970</x>
+      <y>490</y>
+      <width>310</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>200</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>310</width>
+      <height>50</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton::hover {
@@ -320,22 +572,28 @@ UnFreeze Message</string>
    <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>270</x>
       <y>0</y>
-      <width>1120</width>
-      <height>630</height>
+      <width>700</width>
+      <height>490</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="minimumSize">
      <size>
-      <width>1120</width>
-      <height>630</height>
+      <width>700</width>
+      <height>490</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>1120</width>
-      <height>630</height>
+      <width>700</width>
+      <height>490</height>
      </size>
     </property>
     <property name="styleSheet">
@@ -349,31 +607,64 @@ border-width:0;
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>270</y>
-      <width>160</width>
-      <height>60</height>
+      <y>194</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: teal;</string>
     </property>
     <property name="text">
-     <string>product_id</string>
+     <string>product id</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pbMCM">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>210</y>
-      <width>240</width>
-      <height>60</height>
+      <y>144</y>
+      <width>270</width>
+      <height>50</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="minimumSize">
      <size>
-      <width>0</width>
-      <height>0</height>
+      <width>270</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>270</width>
+      <height>50</height>
      </size>
     </property>
     <property name="styleSheet">
@@ -395,42 +686,102 @@ Move Cell Message</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>450</y>
-      <width>160</width>
-      <height>60</height>
+      <y>338</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: teal;</string>
     </property>
     <property name="text">
-     <string>Send Order To</string>
+     <string>send to</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="label_send_order_to_3">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>510</y>
-      <width>160</width>
-      <height>60</height>
+      <y>386</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: teal;</string>
     </property>
     <property name="text">
-     <string>Send Order To</string>
+     <string>send to</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_order_destination_8_2">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>450</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>338</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QCheckBox::hover {
@@ -450,11 +801,29 @@ QCheckBox {
    <widget class="QSpinBox" name="spinBox_direction">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>140</y>
-      <width>80</width>
-      <height>70</height>
+      <x>162</x>
+      <y>96</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox:hover {
@@ -468,15 +837,36 @@ QSpinBox {
 
 </string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pbPOM">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>570</y>
-      <width>240</width>
-      <height>60</height>
+      <y>434</y>
+      <width>270</width>
+      <height>56</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>270</width>
+      <height>56</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>270</width>
+      <height>56</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton::hover {
@@ -496,16 +886,28 @@ Product Order Message</string>
    <widget class="QCheckBox" name="checkBox_order_destination_8_3">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>510</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>386</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="minimumSize">
      <size>
-      <width>0</width>
-      <height>0</height>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
      </size>
     </property>
     <property name="styleSheet">
@@ -533,10 +935,28 @@ QCheckBox {
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>140</y>
-      <width>160</width>
-      <height>70</height>
+      <y>96</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:  purple;</string>
@@ -544,15 +964,36 @@ QCheckBox {
     <property name="text">
      <string>direction</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="label_control_flag">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>70</y>
-      <width>160</width>
-      <height>70</height>
+      <y>48</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:  purple;</string>
@@ -560,47 +1001,110 @@ QCheckBox {
     <property name="text">
      <string>control flag</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="label_send_order_to_1">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>390</y>
-      <width>160</width>
-      <height>60</height>
+      <y>290</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: teal;</string>
     </property>
     <property name="text">
-     <string>Send Order To</string>
+     <string>send to</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="label_send_order_to_0">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>330</y>
-      <width>160</width>
-      <height>60</height>
+      <y>242</y>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: teal;</string>
     </property>
     <property name="text">
-     <string>Send Order To</string>
+     <string>send to</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_order_destination_8_1">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>390</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>290</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QCheckBox::hover {
@@ -622,9 +1126,27 @@ QCheckBox {
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>160</width>
-      <height>70</height>
+      <width>162</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>162</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:  purple;</string>
@@ -632,15 +1154,36 @@ QCheckBox {
     <property name="text">
      <string>device id</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_control_device_id">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>162</x>
       <y>0</y>
-      <width>80</width>
-      <height>70</height>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox:hover {
@@ -655,15 +1198,36 @@ QSpinBox {
 
 </string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_product_id">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>270</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>194</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox::hover {
@@ -675,15 +1239,36 @@ QSpinBox {
 }
 </string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_control_flag">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>70</y>
-      <width>80</width>
-      <height>70</height>
+      <x>162</x>
+      <y>48</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QSpinBox:hover {
@@ -697,15 +1282,36 @@ QSpinBox {
 
 </string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_order_destination_8_0">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>330</y>
-      <width>80</width>
-      <height>60</height>
+      <x>162</x>
+      <y>242</y>
+      <width>108</width>
+      <height>48</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>108</width>
+      <height>48</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QCheckBox::hover {
@@ -730,7 +1336,7 @@ QCheckBox {
    <zorder>spinBox_beginning_row</zorder>
    <zorder>label_mode</zorder>
    <zorder>label_row_count</zorder>
-   <zorder>label_4</zorder>
+   <zorder>label_beginning_row</zorder>
    <zorder>pbSBMfreeze</zorder>
    <zorder>pbSSM</zorder>
    <zorder>pbSHM</zorder>
@@ -763,19 +1369,19 @@ QCheckBox {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1600</width>
+     <width>1280</width>
      <height>30</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>1600</width>
+     <width>1280</width>
      <height>30</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>1600</width>
+     <width>1280</width>
      <height>30</height>
     </size>
    </property>
