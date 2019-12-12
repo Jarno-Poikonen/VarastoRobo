@@ -1,3 +1,0 @@
-
-2019-12-12 18:45:02 Server started with status 2 and id 42 at address 10.4.2.28
-2019-12-12 18:47:54 Server started with status 2 and id 42 at address 10.4.2.28
