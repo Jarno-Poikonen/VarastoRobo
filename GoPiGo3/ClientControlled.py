@@ -139,13 +139,14 @@ def Forward(dir):
     block = False
     
     try:
+        startTime = time.time()
         while True:
             line_val = my_linefollower.read(representation="bivariate")
             #print(line_val) #Prints linereader values
             if(line_val[0] == 0): left = True
             if(line_val[len(line_val)-1] == 0): right = True
             
-            if(left or right):
+            if((left or right) and time.time() - startTime > 1):
                 left = False
                 right = False
                 
