@@ -52,20 +52,20 @@ public:
     QPushButton *pbMCM;
     QLabel *label_send_order_to_2;
     QLabel *label_send_order_to_3;
-    QCheckBox *checkBox_order_destination_8_2;
+    QCheckBox *checkBox_order_destination_9_1;
     QSpinBox *spinBox_direction;
     QPushButton *pbPOM;
-    QCheckBox *checkBox_order_destination_8_3;
+    QCheckBox *checkBox_order_destination_9_0;
     QLabel *label_direction;
     QLabel *label_control_flag;
     QLabel *label_send_order_to_1;
     QLabel *label_send_order_to_0;
-    QCheckBox *checkBox_order_destination_8_1;
+    QCheckBox *checkBox_order_destination_9_2;
     QLabel *label_control_device_id;
     QSpinBox *spinBox_control_device_id;
     QSpinBox *spinBox_product_id;
     QSpinBox *spinBox_control_flag;
-    QCheckBox *checkBox_order_destination_8_0;
+    QCheckBox *checkBox_order_destination_9_3;
     QMenuBar *menubar;
     QMenu *Broadcast;
     QMenu *menuConnection;
@@ -122,11 +122,11 @@ public:
 "font-size: 14px;"));
         pbRLM = new QPushButton(centralwidget);
         pbRLM->setObjectName(QString::fromUtf8("pbRLM"));
-        pbRLM->setGeometry(QRect(0, 640, 270, 50));
+        pbRLM->setGeometry(QRect(0, 640, 200, 50));
         sizePolicy.setHeightForWidth(pbRLM->sizePolicy().hasHeightForWidth());
         pbRLM->setSizePolicy(sizePolicy);
-        pbRLM->setMinimumSize(QSize(270, 50));
-        pbRLM->setMaximumSize(QSize(270, 50));
+        pbRLM->setMinimumSize(QSize(200, 50));
+        pbRLM->setMaximumSize(QSize(200, 50));
         pbRLM->setStyleSheet(QString::fromUtf8("QPushButton::hover {\n"
 "	background-color: white;\n"
 "	color: brown;\n"
@@ -137,11 +137,11 @@ public:
 ""));
         spinBox_mode = new QSpinBox(centralwidget);
         spinBox_mode->setObjectName(QString::fromUtf8("spinBox_mode"));
-        spinBox_mode->setGeometry(QRect(162, 490, 108, 50));
+        spinBox_mode->setGeometry(QRect(120, 490, 80, 50));
         sizePolicy.setHeightForWidth(spinBox_mode->sizePolicy().hasHeightForWidth());
         spinBox_mode->setSizePolicy(sizePolicy);
-        spinBox_mode->setMinimumSize(QSize(108, 50));
-        spinBox_mode->setMaximumSize(QSize(108, 50));
+        spinBox_mode->setMinimumSize(QSize(80, 50));
+        spinBox_mode->setMaximumSize(QSize(80, 50));
         spinBox_mode->setStyleSheet(QString::fromUtf8("QSpinBox::hover {\n"
 "	background-color: white;\n"
 "	color: brown;\n"
@@ -153,11 +153,11 @@ public:
         spinBox_mode->setAlignment(Qt::AlignCenter);
         spinBox_row_count = new QSpinBox(centralwidget);
         spinBox_row_count->setObjectName(QString::fromUtf8("spinBox_row_count"));
-        spinBox_row_count->setGeometry(QRect(162, 540, 108, 50));
+        spinBox_row_count->setGeometry(QRect(120, 540, 80, 50));
         sizePolicy.setHeightForWidth(spinBox_row_count->sizePolicy().hasHeightForWidth());
         spinBox_row_count->setSizePolicy(sizePolicy);
-        spinBox_row_count->setMinimumSize(QSize(108, 50));
-        spinBox_row_count->setMaximumSize(QSize(108, 50));
+        spinBox_row_count->setMinimumSize(QSize(80, 50));
+        spinBox_row_count->setMaximumSize(QSize(80, 50));
         spinBox_row_count->setStyleSheet(QString::fromUtf8("QSpinBox::hover {\n"
 "	background-color: white;\n"
 "	color: brown;\n"
@@ -169,11 +169,11 @@ public:
         spinBox_row_count->setAlignment(Qt::AlignCenter);
         spinBox_beginning_row = new QSpinBox(centralwidget);
         spinBox_beginning_row->setObjectName(QString::fromUtf8("spinBox_beginning_row"));
-        spinBox_beginning_row->setGeometry(QRect(162, 590, 108, 50));
+        spinBox_beginning_row->setGeometry(QRect(120, 590, 80, 50));
         sizePolicy.setHeightForWidth(spinBox_beginning_row->sizePolicy().hasHeightForWidth());
         spinBox_beginning_row->setSizePolicy(sizePolicy);
-        spinBox_beginning_row->setMinimumSize(QSize(108, 50));
-        spinBox_beginning_row->setMaximumSize(QSize(108, 50));
+        spinBox_beginning_row->setMinimumSize(QSize(80, 50));
+        spinBox_beginning_row->setMaximumSize(QSize(80, 50));
         spinBox_beginning_row->setStyleSheet(QString::fromUtf8("QSpinBox::hover {\n"
 "	background-color: white;\n"
 "	color: brown;\n"
@@ -185,29 +185,29 @@ public:
         spinBox_beginning_row->setAlignment(Qt::AlignCenter);
         label_mode = new QLabel(centralwidget);
         label_mode->setObjectName(QString::fromUtf8("label_mode"));
-        label_mode->setGeometry(QRect(0, 490, 162, 50));
+        label_mode->setGeometry(QRect(0, 490, 120, 50));
         sizePolicy.setHeightForWidth(label_mode->sizePolicy().hasHeightForWidth());
         label_mode->setSizePolicy(sizePolicy);
-        label_mode->setMinimumSize(QSize(162, 50));
-        label_mode->setMaximumSize(QSize(162, 50));
+        label_mode->setMinimumSize(QSize(120, 50));
+        label_mode->setMaximumSize(QSize(120, 50));
         label_mode->setStyleSheet(QString::fromUtf8("background-color:  brown;"));
         label_mode->setAlignment(Qt::AlignCenter);
         label_row_count = new QLabel(centralwidget);
         label_row_count->setObjectName(QString::fromUtf8("label_row_count"));
-        label_row_count->setGeometry(QRect(0, 540, 162, 50));
+        label_row_count->setGeometry(QRect(0, 540, 120, 50));
         sizePolicy.setHeightForWidth(label_row_count->sizePolicy().hasHeightForWidth());
         label_row_count->setSizePolicy(sizePolicy);
-        label_row_count->setMinimumSize(QSize(162, 50));
-        label_row_count->setMaximumSize(QSize(162, 50));
+        label_row_count->setMinimumSize(QSize(120, 50));
+        label_row_count->setMaximumSize(QSize(120, 50));
         label_row_count->setStyleSheet(QString::fromUtf8("background-color:  brown;"));
         label_row_count->setAlignment(Qt::AlignCenter);
         label_beginning_row = new QLabel(centralwidget);
         label_beginning_row->setObjectName(QString::fromUtf8("label_beginning_row"));
-        label_beginning_row->setGeometry(QRect(0, 590, 162, 50));
+        label_beginning_row->setGeometry(QRect(0, 590, 120, 50));
         sizePolicy.setHeightForWidth(label_beginning_row->sizePolicy().hasHeightForWidth());
         label_beginning_row->setSizePolicy(sizePolicy);
-        label_beginning_row->setMinimumSize(QSize(162, 50));
-        label_beginning_row->setMaximumSize(QSize(162, 50));
+        label_beginning_row->setMinimumSize(QSize(120, 50));
+        label_beginning_row->setMaximumSize(QSize(120, 50));
         label_beginning_row->setStyleSheet(QString::fromUtf8("background-color:  brown;"));
         label_beginning_row->setAlignment(Qt::AlignCenter);
         pbSBMfreeze = new QPushButton(centralwidget);
@@ -226,11 +226,11 @@ public:
 "}"));
         server_logs = new QTextEdit(centralwidget);
         server_logs->setObjectName(QString::fromUtf8("server_logs"));
-        server_logs->setGeometry(QRect(270, 490, 700, 200));
+        server_logs->setGeometry(QRect(200, 490, 770, 200));
         sizePolicy.setHeightForWidth(server_logs->sizePolicy().hasHeightForWidth());
         server_logs->setSizePolicy(sizePolicy);
-        server_logs->setMinimumSize(QSize(700, 200));
-        server_logs->setMaximumSize(QSize(700, 200));
+        server_logs->setMinimumSize(QSize(770, 200));
+        server_logs->setMaximumSize(QSize(770, 200));
         server_logs->setStyleSheet(QString::fromUtf8("background-color: black;\n"
 "font-size: 14px;"));
         pbSSM = new QPushButton(centralwidget);
@@ -281,31 +281,33 @@ public:
 ""));
         graphicsView = new QGraphicsView(centralwidget);
         graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
-        graphicsView->setGeometry(QRect(270, 0, 700, 490));
+        graphicsView->setGeometry(QRect(200, 0, 770, 490));
         sizePolicy.setHeightForWidth(graphicsView->sizePolicy().hasHeightForWidth());
         graphicsView->setSizePolicy(sizePolicy);
-        graphicsView->setMinimumSize(QSize(700, 490));
-        graphicsView->setMaximumSize(QSize(700, 490));
+        graphicsView->setMinimumSize(QSize(770, 490));
+        graphicsView->setMaximumSize(QSize(770, 490));
         graphicsView->setStyleSheet(QString::fromUtf8("QGraphicsView {\n"
 "	background-color: darkgrey;\n"
 "border-width:0;\n"
 "}"));
+        graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         label_product_id = new QLabel(centralwidget);
         label_product_id->setObjectName(QString::fromUtf8("label_product_id"));
-        label_product_id->setGeometry(QRect(0, 194, 162, 48));
+        label_product_id->setGeometry(QRect(0, 194, 120, 48));
         sizePolicy.setHeightForWidth(label_product_id->sizePolicy().hasHeightForWidth());
         label_product_id->setSizePolicy(sizePolicy);
-        label_product_id->setMinimumSize(QSize(162, 48));
-        label_product_id->setMaximumSize(QSize(162, 48));
+        label_product_id->setMinimumSize(QSize(120, 48));
+        label_product_id->setMaximumSize(QSize(120, 48));
         label_product_id->setStyleSheet(QString::fromUtf8("background-color: teal;"));
         label_product_id->setAlignment(Qt::AlignCenter);
         pbMCM = new QPushButton(centralwidget);
         pbMCM->setObjectName(QString::fromUtf8("pbMCM"));
-        pbMCM->setGeometry(QRect(0, 144, 270, 50));
+        pbMCM->setGeometry(QRect(0, 144, 200, 50));
         sizePolicy.setHeightForWidth(pbMCM->sizePolicy().hasHeightForWidth());
         pbMCM->setSizePolicy(sizePolicy);
-        pbMCM->setMinimumSize(QSize(270, 50));
-        pbMCM->setMaximumSize(QSize(270, 50));
+        pbMCM->setMinimumSize(QSize(200, 50));
+        pbMCM->setMaximumSize(QSize(200, 50));
         pbMCM->setStyleSheet(QString::fromUtf8("QPushButton:hover {\n"
 "	background-color: white;\n"
 "	color: purple;\n"
@@ -316,30 +318,30 @@ public:
 "}"));
         label_send_order_to_2 = new QLabel(centralwidget);
         label_send_order_to_2->setObjectName(QString::fromUtf8("label_send_order_to_2"));
-        label_send_order_to_2->setGeometry(QRect(0, 338, 162, 48));
+        label_send_order_to_2->setGeometry(QRect(0, 338, 120, 48));
         sizePolicy.setHeightForWidth(label_send_order_to_2->sizePolicy().hasHeightForWidth());
         label_send_order_to_2->setSizePolicy(sizePolicy);
-        label_send_order_to_2->setMinimumSize(QSize(162, 48));
-        label_send_order_to_2->setMaximumSize(QSize(162, 48));
+        label_send_order_to_2->setMinimumSize(QSize(120, 48));
+        label_send_order_to_2->setMaximumSize(QSize(120, 48));
         label_send_order_to_2->setStyleSheet(QString::fromUtf8("background-color: teal;"));
         label_send_order_to_2->setAlignment(Qt::AlignCenter);
         label_send_order_to_3 = new QLabel(centralwidget);
         label_send_order_to_3->setObjectName(QString::fromUtf8("label_send_order_to_3"));
-        label_send_order_to_3->setGeometry(QRect(0, 386, 162, 48));
+        label_send_order_to_3->setGeometry(QRect(0, 386, 120, 48));
         sizePolicy.setHeightForWidth(label_send_order_to_3->sizePolicy().hasHeightForWidth());
         label_send_order_to_3->setSizePolicy(sizePolicy);
-        label_send_order_to_3->setMinimumSize(QSize(162, 48));
-        label_send_order_to_3->setMaximumSize(QSize(162, 48));
+        label_send_order_to_3->setMinimumSize(QSize(120, 48));
+        label_send_order_to_3->setMaximumSize(QSize(120, 48));
         label_send_order_to_3->setStyleSheet(QString::fromUtf8("background-color: teal;"));
         label_send_order_to_3->setAlignment(Qt::AlignCenter);
-        checkBox_order_destination_8_2 = new QCheckBox(centralwidget);
-        checkBox_order_destination_8_2->setObjectName(QString::fromUtf8("checkBox_order_destination_8_2"));
-        checkBox_order_destination_8_2->setGeometry(QRect(162, 338, 108, 48));
-        sizePolicy.setHeightForWidth(checkBox_order_destination_8_2->sizePolicy().hasHeightForWidth());
-        checkBox_order_destination_8_2->setSizePolicy(sizePolicy);
-        checkBox_order_destination_8_2->setMinimumSize(QSize(108, 48));
-        checkBox_order_destination_8_2->setMaximumSize(QSize(108, 48));
-        checkBox_order_destination_8_2->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
+        checkBox_order_destination_9_1 = new QCheckBox(centralwidget);
+        checkBox_order_destination_9_1->setObjectName(QString::fromUtf8("checkBox_order_destination_9_1"));
+        checkBox_order_destination_9_1->setGeometry(QRect(120, 338, 80, 48));
+        sizePolicy.setHeightForWidth(checkBox_order_destination_9_1->sizePolicy().hasHeightForWidth());
+        checkBox_order_destination_9_1->setSizePolicy(sizePolicy);
+        checkBox_order_destination_9_1->setMinimumSize(QSize(80, 48));
+        checkBox_order_destination_9_1->setMaximumSize(QSize(80, 48));
+        checkBox_order_destination_9_1->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
 "	background-color: white;\n"
 "	color: teal;\n"
 "}\n"
@@ -350,11 +352,11 @@ public:
 ""));
         spinBox_direction = new QSpinBox(centralwidget);
         spinBox_direction->setObjectName(QString::fromUtf8("spinBox_direction"));
-        spinBox_direction->setGeometry(QRect(162, 96, 108, 48));
+        spinBox_direction->setGeometry(QRect(120, 96, 80, 48));
         sizePolicy.setHeightForWidth(spinBox_direction->sizePolicy().hasHeightForWidth());
         spinBox_direction->setSizePolicy(sizePolicy);
-        spinBox_direction->setMinimumSize(QSize(108, 48));
-        spinBox_direction->setMaximumSize(QSize(108, 48));
+        spinBox_direction->setMinimumSize(QSize(80, 48));
+        spinBox_direction->setMaximumSize(QSize(80, 48));
         spinBox_direction->setStyleSheet(QString::fromUtf8("QSpinBox:hover {\n"
 "	background-color: white;\n"
 "	color:  purple;\n"
@@ -368,11 +370,11 @@ public:
         spinBox_direction->setAlignment(Qt::AlignCenter);
         pbPOM = new QPushButton(centralwidget);
         pbPOM->setObjectName(QString::fromUtf8("pbPOM"));
-        pbPOM->setGeometry(QRect(0, 434, 270, 56));
+        pbPOM->setGeometry(QRect(0, 434, 200, 56));
         sizePolicy.setHeightForWidth(pbPOM->sizePolicy().hasHeightForWidth());
         pbPOM->setSizePolicy(sizePolicy);
-        pbPOM->setMinimumSize(QSize(270, 56));
-        pbPOM->setMaximumSize(QSize(270, 56));
+        pbPOM->setMinimumSize(QSize(200, 56));
+        pbPOM->setMaximumSize(QSize(200, 56));
         pbPOM->setStyleSheet(QString::fromUtf8("QPushButton::hover {\n"
 "	background-color: white;\n"
 "	color: teal;\n"
@@ -381,14 +383,14 @@ public:
 "	background-color: teal;\n"
 "}\n"
 ""));
-        checkBox_order_destination_8_3 = new QCheckBox(centralwidget);
-        checkBox_order_destination_8_3->setObjectName(QString::fromUtf8("checkBox_order_destination_8_3"));
-        checkBox_order_destination_8_3->setGeometry(QRect(162, 386, 108, 48));
-        sizePolicy.setHeightForWidth(checkBox_order_destination_8_3->sizePolicy().hasHeightForWidth());
-        checkBox_order_destination_8_3->setSizePolicy(sizePolicy);
-        checkBox_order_destination_8_3->setMinimumSize(QSize(108, 48));
-        checkBox_order_destination_8_3->setMaximumSize(QSize(108, 48));
-        checkBox_order_destination_8_3->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
+        checkBox_order_destination_9_0 = new QCheckBox(centralwidget);
+        checkBox_order_destination_9_0->setObjectName(QString::fromUtf8("checkBox_order_destination_9_0"));
+        checkBox_order_destination_9_0->setGeometry(QRect(120, 386, 80, 48));
+        sizePolicy.setHeightForWidth(checkBox_order_destination_9_0->sizePolicy().hasHeightForWidth());
+        checkBox_order_destination_9_0->setSizePolicy(sizePolicy);
+        checkBox_order_destination_9_0->setMinimumSize(QSize(80, 48));
+        checkBox_order_destination_9_0->setMaximumSize(QSize(80, 48));
+        checkBox_order_destination_9_0->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
 "	background-color: white;\n"
 "	color: teal;\n"
 "}\n"
@@ -397,51 +399,51 @@ public:
 "	background-color: teal;\n"
 "}\n"
 ""));
-        checkBox_order_destination_8_3->setIconSize(QSize(20, 20));
+        checkBox_order_destination_9_0->setIconSize(QSize(20, 20));
         label_direction = new QLabel(centralwidget);
         label_direction->setObjectName(QString::fromUtf8("label_direction"));
-        label_direction->setGeometry(QRect(0, 96, 162, 48));
+        label_direction->setGeometry(QRect(0, 96, 120, 48));
         sizePolicy.setHeightForWidth(label_direction->sizePolicy().hasHeightForWidth());
         label_direction->setSizePolicy(sizePolicy);
-        label_direction->setMinimumSize(QSize(162, 48));
-        label_direction->setMaximumSize(QSize(162, 48));
+        label_direction->setMinimumSize(QSize(120, 48));
+        label_direction->setMaximumSize(QSize(120, 48));
         label_direction->setStyleSheet(QString::fromUtf8("background-color:  purple;"));
         label_direction->setAlignment(Qt::AlignCenter);
         label_control_flag = new QLabel(centralwidget);
         label_control_flag->setObjectName(QString::fromUtf8("label_control_flag"));
-        label_control_flag->setGeometry(QRect(0, 48, 162, 48));
+        label_control_flag->setGeometry(QRect(0, 48, 120, 48));
         sizePolicy.setHeightForWidth(label_control_flag->sizePolicy().hasHeightForWidth());
         label_control_flag->setSizePolicy(sizePolicy);
-        label_control_flag->setMinimumSize(QSize(162, 48));
-        label_control_flag->setMaximumSize(QSize(162, 48));
+        label_control_flag->setMinimumSize(QSize(120, 48));
+        label_control_flag->setMaximumSize(QSize(120, 48));
         label_control_flag->setStyleSheet(QString::fromUtf8("background-color:  purple;"));
         label_control_flag->setAlignment(Qt::AlignCenter);
         label_send_order_to_1 = new QLabel(centralwidget);
         label_send_order_to_1->setObjectName(QString::fromUtf8("label_send_order_to_1"));
-        label_send_order_to_1->setGeometry(QRect(0, 290, 162, 48));
+        label_send_order_to_1->setGeometry(QRect(0, 290, 120, 48));
         sizePolicy.setHeightForWidth(label_send_order_to_1->sizePolicy().hasHeightForWidth());
         label_send_order_to_1->setSizePolicy(sizePolicy);
-        label_send_order_to_1->setMinimumSize(QSize(162, 48));
-        label_send_order_to_1->setMaximumSize(QSize(162, 48));
+        label_send_order_to_1->setMinimumSize(QSize(120, 48));
+        label_send_order_to_1->setMaximumSize(QSize(120, 48));
         label_send_order_to_1->setStyleSheet(QString::fromUtf8("background-color: teal;"));
         label_send_order_to_1->setAlignment(Qt::AlignCenter);
         label_send_order_to_0 = new QLabel(centralwidget);
         label_send_order_to_0->setObjectName(QString::fromUtf8("label_send_order_to_0"));
-        label_send_order_to_0->setGeometry(QRect(0, 242, 162, 48));
+        label_send_order_to_0->setGeometry(QRect(0, 242, 120, 48));
         sizePolicy.setHeightForWidth(label_send_order_to_0->sizePolicy().hasHeightForWidth());
         label_send_order_to_0->setSizePolicy(sizePolicy);
-        label_send_order_to_0->setMinimumSize(QSize(162, 48));
-        label_send_order_to_0->setMaximumSize(QSize(162, 48));
+        label_send_order_to_0->setMinimumSize(QSize(120, 48));
+        label_send_order_to_0->setMaximumSize(QSize(120, 48));
         label_send_order_to_0->setStyleSheet(QString::fromUtf8("background-color: teal;"));
         label_send_order_to_0->setAlignment(Qt::AlignCenter);
-        checkBox_order_destination_8_1 = new QCheckBox(centralwidget);
-        checkBox_order_destination_8_1->setObjectName(QString::fromUtf8("checkBox_order_destination_8_1"));
-        checkBox_order_destination_8_1->setGeometry(QRect(162, 290, 108, 48));
-        sizePolicy.setHeightForWidth(checkBox_order_destination_8_1->sizePolicy().hasHeightForWidth());
-        checkBox_order_destination_8_1->setSizePolicy(sizePolicy);
-        checkBox_order_destination_8_1->setMinimumSize(QSize(108, 48));
-        checkBox_order_destination_8_1->setMaximumSize(QSize(108, 48));
-        checkBox_order_destination_8_1->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
+        checkBox_order_destination_9_2 = new QCheckBox(centralwidget);
+        checkBox_order_destination_9_2->setObjectName(QString::fromUtf8("checkBox_order_destination_9_2"));
+        checkBox_order_destination_9_2->setGeometry(QRect(120, 290, 80, 48));
+        sizePolicy.setHeightForWidth(checkBox_order_destination_9_2->sizePolicy().hasHeightForWidth());
+        checkBox_order_destination_9_2->setSizePolicy(sizePolicy);
+        checkBox_order_destination_9_2->setMinimumSize(QSize(80, 48));
+        checkBox_order_destination_9_2->setMaximumSize(QSize(80, 48));
+        checkBox_order_destination_9_2->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
 "	background-color: white;\n"
 "	color: teal;\n"
 "}\n"
@@ -452,20 +454,20 @@ public:
 ""));
         label_control_device_id = new QLabel(centralwidget);
         label_control_device_id->setObjectName(QString::fromUtf8("label_control_device_id"));
-        label_control_device_id->setGeometry(QRect(0, 0, 162, 48));
+        label_control_device_id->setGeometry(QRect(0, 0, 120, 48));
         sizePolicy.setHeightForWidth(label_control_device_id->sizePolicy().hasHeightForWidth());
         label_control_device_id->setSizePolicy(sizePolicy);
-        label_control_device_id->setMinimumSize(QSize(162, 48));
-        label_control_device_id->setMaximumSize(QSize(162, 48));
+        label_control_device_id->setMinimumSize(QSize(120, 48));
+        label_control_device_id->setMaximumSize(QSize(120, 48));
         label_control_device_id->setStyleSheet(QString::fromUtf8("background-color:  purple;"));
         label_control_device_id->setAlignment(Qt::AlignCenter);
         spinBox_control_device_id = new QSpinBox(centralwidget);
         spinBox_control_device_id->setObjectName(QString::fromUtf8("spinBox_control_device_id"));
-        spinBox_control_device_id->setGeometry(QRect(162, 0, 108, 48));
+        spinBox_control_device_id->setGeometry(QRect(120, 0, 80, 48));
         sizePolicy.setHeightForWidth(spinBox_control_device_id->sizePolicy().hasHeightForWidth());
         spinBox_control_device_id->setSizePolicy(sizePolicy);
-        spinBox_control_device_id->setMinimumSize(QSize(108, 48));
-        spinBox_control_device_id->setMaximumSize(QSize(108, 48));
+        spinBox_control_device_id->setMinimumSize(QSize(80, 48));
+        spinBox_control_device_id->setMaximumSize(QSize(80, 48));
         spinBox_control_device_id->setStyleSheet(QString::fromUtf8("QSpinBox:hover {\n"
 "	background-color: white;\n"
 "	color:  purple;\n"
@@ -480,11 +482,11 @@ public:
         spinBox_control_device_id->setAlignment(Qt::AlignCenter);
         spinBox_product_id = new QSpinBox(centralwidget);
         spinBox_product_id->setObjectName(QString::fromUtf8("spinBox_product_id"));
-        spinBox_product_id->setGeometry(QRect(162, 194, 108, 48));
+        spinBox_product_id->setGeometry(QRect(120, 194, 80, 48));
         sizePolicy.setHeightForWidth(spinBox_product_id->sizePolicy().hasHeightForWidth());
         spinBox_product_id->setSizePolicy(sizePolicy);
-        spinBox_product_id->setMinimumSize(QSize(108, 48));
-        spinBox_product_id->setMaximumSize(QSize(108, 48));
+        spinBox_product_id->setMinimumSize(QSize(80, 48));
+        spinBox_product_id->setMaximumSize(QSize(80, 48));
         spinBox_product_id->setStyleSheet(QString::fromUtf8("QSpinBox::hover {\n"
 "	background-color: white;\n"
 "	color: teal;\n"
@@ -496,11 +498,11 @@ public:
         spinBox_product_id->setAlignment(Qt::AlignCenter);
         spinBox_control_flag = new QSpinBox(centralwidget);
         spinBox_control_flag->setObjectName(QString::fromUtf8("spinBox_control_flag"));
-        spinBox_control_flag->setGeometry(QRect(162, 48, 108, 48));
+        spinBox_control_flag->setGeometry(QRect(120, 48, 80, 48));
         sizePolicy.setHeightForWidth(spinBox_control_flag->sizePolicy().hasHeightForWidth());
         spinBox_control_flag->setSizePolicy(sizePolicy);
-        spinBox_control_flag->setMinimumSize(QSize(108, 48));
-        spinBox_control_flag->setMaximumSize(QSize(108, 48));
+        spinBox_control_flag->setMinimumSize(QSize(80, 48));
+        spinBox_control_flag->setMaximumSize(QSize(80, 48));
         spinBox_control_flag->setStyleSheet(QString::fromUtf8("QSpinBox:hover {\n"
 "	background-color: white;\n"
 "	color:  purple;\n"
@@ -512,14 +514,14 @@ public:
 "\n"
 ""));
         spinBox_control_flag->setAlignment(Qt::AlignCenter);
-        checkBox_order_destination_8_0 = new QCheckBox(centralwidget);
-        checkBox_order_destination_8_0->setObjectName(QString::fromUtf8("checkBox_order_destination_8_0"));
-        checkBox_order_destination_8_0->setGeometry(QRect(162, 242, 108, 48));
-        sizePolicy.setHeightForWidth(checkBox_order_destination_8_0->sizePolicy().hasHeightForWidth());
-        checkBox_order_destination_8_0->setSizePolicy(sizePolicy);
-        checkBox_order_destination_8_0->setMinimumSize(QSize(108, 48));
-        checkBox_order_destination_8_0->setMaximumSize(QSize(108, 48));
-        checkBox_order_destination_8_0->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
+        checkBox_order_destination_9_3 = new QCheckBox(centralwidget);
+        checkBox_order_destination_9_3->setObjectName(QString::fromUtf8("checkBox_order_destination_9_3"));
+        checkBox_order_destination_9_3->setGeometry(QRect(120, 242, 80, 48));
+        sizePolicy.setHeightForWidth(checkBox_order_destination_9_3->sizePolicy().hasHeightForWidth());
+        checkBox_order_destination_9_3->setSizePolicy(sizePolicy);
+        checkBox_order_destination_9_3->setMinimumSize(QSize(80, 48));
+        checkBox_order_destination_9_3->setMaximumSize(QSize(80, 48));
+        checkBox_order_destination_9_3->setStyleSheet(QString::fromUtf8("QCheckBox::hover {\n"
 "	background-color: white;\n"
 "	color: teal;\n"
 "}\n"
@@ -544,16 +546,15 @@ public:
         label_product_id->raise();
         label_send_order_to_2->raise();
         label_send_order_to_3->raise();
-        checkBox_order_destination_8_2->raise();
+        checkBox_order_destination_9_1->raise();
         spinBox_direction->raise();
-        checkBox_order_destination_8_3->raise();
+        checkBox_order_destination_9_0->raise();
         label_direction->raise();
         label_send_order_to_1->raise();
         label_send_order_to_0->raise();
-        checkBox_order_destination_8_1->raise();
+        checkBox_order_destination_9_2->raise();
         spinBox_product_id->raise();
         spinBox_control_flag->raise();
-        checkBox_order_destination_8_0->raise();
         pbPOM->raise();
         label_control_flag->raise();
         label_control_device_id->raise();
@@ -561,6 +562,7 @@ public:
         spinBox_control_device_id->raise();
         server_logs->raise();
         pbUFM->raise();
+        checkBox_order_destination_9_3->raise();
         menubar = new QMenuBar(QtClient);
         menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setEnabled(true);
@@ -617,17 +619,17 @@ public:
 "Move Cell Message", nullptr));
         label_send_order_to_2->setText(QCoreApplication::translate("QtClient", "send to", nullptr));
         label_send_order_to_3->setText(QCoreApplication::translate("QtClient", "send to", nullptr));
-        checkBox_order_destination_8_2->setText(QCoreApplication::translate("QtClient", "(8, 2)", nullptr));
+        checkBox_order_destination_9_1->setText(QCoreApplication::translate("QtClient", "(9, 1)", nullptr));
         pbPOM->setText(QCoreApplication::translate("QtClient", "Send (POM)\n"
 "Product Order Message", nullptr));
-        checkBox_order_destination_8_3->setText(QCoreApplication::translate("QtClient", "(8, 3)", nullptr));
+        checkBox_order_destination_9_0->setText(QCoreApplication::translate("QtClient", "(9, 0)", nullptr));
         label_direction->setText(QCoreApplication::translate("QtClient", "direction", nullptr));
         label_control_flag->setText(QCoreApplication::translate("QtClient", "control flag", nullptr));
         label_send_order_to_1->setText(QCoreApplication::translate("QtClient", "send to", nullptr));
         label_send_order_to_0->setText(QCoreApplication::translate("QtClient", "send to", nullptr));
-        checkBox_order_destination_8_1->setText(QCoreApplication::translate("QtClient", "(8, 1)", nullptr));
+        checkBox_order_destination_9_2->setText(QCoreApplication::translate("QtClient", "(9, 2)", nullptr));
         label_control_device_id->setText(QCoreApplication::translate("QtClient", "device id", nullptr));
-        checkBox_order_destination_8_0->setText(QCoreApplication::translate("QtClient", "(8, 0)", nullptr));
+        checkBox_order_destination_9_3->setText(QCoreApplication::translate("QtClient", "(9, 3)", nullptr));
         Broadcast->setTitle(QCoreApplication::translate("QtClient", "Broadcast", nullptr));
         menuConnection->setTitle(QCoreApplication::translate("QtClient", "Connection", nullptr));
     } // retranslateUi

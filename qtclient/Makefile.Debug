@@ -121,7 +121,6 @@ debug/qrc_images.cpp: images.qrc \
 		C:/Qt/5.13.0/mingw73_32/bin/rcc.exe \
 		images/system_state_grey.png \
 		images/graphicsview_grid.png \
-		images/tables.png \
 		images/obstacle.png \
 		images/system_state_green.png \
 		images/gopigo.png \
@@ -289,7 +288,7 @@ debug/moc_qtclient.cpp: qtclient.h \
 		ipv4address.h \
 		debug/moc_predefs.h \
 		C:/Qt/5.13.0/mingw73_32/bin/moc.exe
-	'C:\Qt\5.13.0\mingw73_32\bin\moc.exe' $(DEFINES) --include 'C:/Users/Jarno Poikonen/Desktop/backup2/qtclient/debug/moc_predefs.h' -IC:/Qt/5.13.0/mingw73_32/mkspecs/win32-g++ -I'C:/Users/Jarno Poikonen/Desktop/backup2/qtclient' -IC:/Qt/5.13.0/mingw73_32/include -IC:/Qt/5.13.0/mingw73_32/include/QtWidgets -IC:/Qt/5.13.0/mingw73_32/include/QtGui -IC:/Qt/5.13.0/mingw73_32/include/QtANGLE -IC:/Qt/5.13.0/mingw73_32/include/QtNetwork -IC:/Qt/5.13.0/mingw73_32/include/QtCore -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_32/i686-w64-mingw32/include qtclient.h -o debug/moc_qtclient.cpp
+	'C:\Qt\5.13.0\mingw73_32\bin\moc.exe' $(DEFINES) --include 'C:/Users/Jarno Poikonen/Desktop/backup3/qtclient/debug/moc_predefs.h' -IC:/Qt/5.13.0/mingw73_32/mkspecs/win32-g++ -I'C:/Users/Jarno Poikonen/Desktop/backup3/qtclient' -IC:/Qt/5.13.0/mingw73_32/include -IC:/Qt/5.13.0/mingw73_32/include/QtWidgets -IC:/Qt/5.13.0/mingw73_32/include/QtGui -IC:/Qt/5.13.0/mingw73_32/include/QtANGLE -IC:/Qt/5.13.0/mingw73_32/include/QtNetwork -IC:/Qt/5.13.0/mingw73_32/include/QtCore -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Tools/mingw730_32/i686-w64-mingw32/include qtclient.h -o debug/moc_qtclient.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
