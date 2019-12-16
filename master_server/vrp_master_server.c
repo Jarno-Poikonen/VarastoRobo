@@ -1,19 +1,21 @@
 /*
-	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
-#define VRP_MASTER_SERVER_VERSION "1.0.0 2019-12-10"
+#define VRP_MASTER_SERVER_VERSION "1.1.0 2019-12-12"
 
 //#define VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 //#define VRP_DEBUG_AUTO_FINISH_TRANSPORT
 //#define VRP_DEBUG_IGNORE_MISSING_TRANPORT_DEVICE
 
+#include "vrp_master_server_types.h"
 #include "vrp_master_server_base.h"
 #include "vrp_path_logic.h"
 #ifdef VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 #include "vrp_test_client.h"
 #endif
+#include <stdio.h>
 
 int vrp_process_gopigo_idle(vrp_server_t* server, size_t i);
 
@@ -378,15 +380,37 @@ int vrp_process_gopigo_wfm(vrp_server_t* server, size_t i, size_t total_message_
 	if ((server->device_table[i].x != server->device_table[i].io_memory[8]) || (server->device_table[i].y != server->device_table[i].io_memory[9]))
 		server->broadcast_immediately = 1;
 
-	server->device_table[i].x = x;
-	server->device_table[i].y = y;
-	server->device_table[i].direction = direction;
+	if (x == VRP_COORDINATE_UNDEFINED || y == VRP_COORDINATE_UNDEFINED || direction == VRP_DIRECTION_UNDEFINED || error == VRP_ERROR_PATH_NOT_FOUND)
+	{
+		server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
+		server->device_table[i].is_lost = 1;
+	}
+	else
+	{
+		if (server->device_table[i].is_lost && !server->trust_lost_device)
+		{
+			server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
+			server->device_table[i].direction = VRP_DIRECTION_UNDEFINED;
+		}
+		else
+		{
+			server->device_table[i].x = x;
+			server->device_table[i].y = y;
+			server->device_table[i].direction = direction;
+		}
+	}
 
 	if (server->device_table[i].command == VRP_MESSAGE_MCM)
 	{
 		assert(server->device_table[i].immediate_path_length);
 
-		if (!error && (server->device_table[i].x == server->device_table[i].immediate_path[0].x) && (server->device_table[i].y == server->device_table[i].immediate_path[0].y))
+		if (!error && !server->device_table[i].is_lost && (server->device_table[i].x == server->device_table[i].immediate_path[0].x) && (server->device_table[i].y == server->device_table[i].immediate_path[0].y))
 		{
 			server->device_table[i].last_moved = server->time;
 
@@ -399,19 +423,13 @@ int vrp_process_gopigo_wfm(vrp_server_t* server, size_t i, size_t total_message_
 
 			if (error == VRP_ERROR_UNABLE_TO_USE_PATH)
 			{
+
+
 				vrp_add_block(server, server->device_table[i].move_to_x, server->device_table[i].move_to_y);
 			}
 		}
 	}
-
-	if (error == VRP_ERROR_PATH_NOT_FOUND)
-	{
-		server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
-		server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
-		server->device_table[i].destination_x = VRP_COORDINATE_UNDEFINED;
-		server->device_table[i].destination_y = VRP_COORDINATE_UNDEFINED;
-	}
-
+	
 	server->device_table[i].move_to_x = VRP_COORDINATE_UNDEFINED;
 	server->device_table[i].move_to_y = VRP_COORDINATE_UNDEFINED;
 
@@ -601,21 +619,7 @@ int vrp_process_wfm(vrp_server_t* server, size_t i, size_t total_message_size)
 			return 0;
 	}
 
-	if ((server->device_table[i].type == VRP_DEVICE_TYPE_GOPIGO) && (error != VRP_ERROR_PATH_NOT_FOUND))
-	{
-		if ((x != VRP_COORDINATE_UNDEFINED) && (y != VRP_COORDINATE_UNDEFINED))
-		{
-			server->device_table[i].x = x;
-			server->device_table[i].y = y;
-		}
-		else
-		{
-			server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
-			server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
-		}
-		server->device_table[i].direction = direction;
-	}
-	else
+	if (server->device_table[i].type != VRP_DEVICE_TYPE_GOPIGO)
 	{
 		server->device_table[i].x = VRP_COORDINATE_UNDEFINED;
 		server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
@@ -1076,7 +1080,7 @@ int vrp_process_device(vrp_server_t* server, size_t i)
 				if (server->device_table[i].command == VRP_MESSAGE_MCM)
 				{
 					vrp_calculate_coordinate_form_direction(server->device_table[i].x, server->device_table[i].y,
-						server->device_table[controller_index].io_memory[5],
+						server->device_table[controller_index].io_memory[7 + 5],
 						&server->device_table[i].move_to_x, &server->device_table[i].move_to_y);
 					server->device_table[i].immediate_path[0].x = server->device_table[i].move_to_x;
 					server->device_table[i].immediate_path[0].y = server->device_table[i].move_to_y;

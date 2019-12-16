@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 1.0.0 2019-12-10 by Santtu Nyman.
+	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
@@ -674,7 +674,8 @@ void vrp_close_server_instance(vrp_server_t* server)
 		server->emergency_io_result.hEvent = 0;
 	}
 	vrp_close_log(&server->log);
-	VirtualFree(server, 0, MEM_RELEASE);
+	CloseHandle(server->header.server_file_mapping_handle);
+	UnmapViewOfFile(server);
 	WSACleanup();
 }
 
@@ -782,6 +783,8 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 		emergency_io_buffer_size +
 		log_entry_buffer_size +
 		(VRP_MAX_DEVICE_COUNT * device_io_buffer_size);
+
+	/*
 	vrp_server_t* server = (vrp_server_t*)VirtualAlloc(0, total_allocation_size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if (!server)
 	{
@@ -790,6 +793,31 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 		*error_information_text = "Error memory allocation failed";
 		return ERROR_OUTOFMEMORY;
 	}
+	*/
+
+	HANDLE file_mapping_handle = CreateFileMappingW(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, (DWORD)((total_allocation_size >> 32) & 0xFFFFFFFF), (DWORD)(total_allocation_size & 0xFFFFFFFF), L"Local\\VRP_MASTER_SERVER");
+	if (!file_mapping_handle)
+	{
+		vrp_free_master_configuration(configuration);
+		WSACleanup();
+		*error_information_text = "Error memory allocation failed (CreateFileMappingW)";
+		return ERROR_OUTOFMEMORY;
+	}
+
+	vrp_server_t* server = (vrp_server_t*)MapViewOfFile(file_mapping_handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, total_allocation_size);
+	if (!server)
+	{
+		CloseHandle(file_mapping_handle);
+		vrp_free_master_configuration(configuration);
+		WSACleanup();
+		*error_information_text = "Error memory allocation failed (MapViewOfFile)";
+		return ERROR_OUTOFMEMORY;
+	}
+
+	server->header.file_mapping_address = server;
+	server->header.file_mapping_size = total_allocation_size;
+	server->header.server_process_id = GetCurrentProcessId();
+	server->header.server_file_mapping_handle = file_mapping_handle;
 
 	server->page_size = page_size;
 	server->main_part_buffer_size = main_part_buffer_size;
@@ -862,7 +890,8 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	if (error)
 	{
 		vrp_free_master_configuration(configuration);
-		VirtualFree(server, 0, MEM_RELEASE);
+		CloseHandle(server->header.server_file_mapping_handle);
+		UnmapViewOfFile(server);
 		WSACleanup();
 		*error_information_text = "Error failed to open or create log file";
 		return error;
@@ -1019,6 +1048,7 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 	server->carried_product_confidence_pickup_limit = configuration->carried_product_confidence_pickup_limit;
 	server->status = configuration->system_status;
 	server->id = configuration->master_id;
+	server->trust_lost_device = configuration->trust_lost_device;
 	server->map_height = configuration->map_height;
 	server->map_width = configuration->map_width;
 	server->min_temporal_id = configuration->min_temporal_id;
@@ -1206,6 +1236,7 @@ int vrp_accept_incoming_connection(vrp_server_t* server)
 			server->device_table[i].y = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].direction = VRP_DIRECTION_UNDEFINED;
 			server->device_table[i].ip_address = ntohl(client_address.sin_addr.s_addr);
+			server->device_table[i].is_lost = 0;
 			server->device_table[i].move_to_x = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].move_to_y = VRP_COORDINATE_UNDEFINED;
 			server->device_table[i].home_x = VRP_COORDINATE_UNDEFINED;
