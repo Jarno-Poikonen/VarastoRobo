@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     bitmap.cpp \
+    graphics.cpp \
     ipv4address.cpp \
     main.cpp \
     point.cpp \
@@ -26,7 +27,9 @@ SOURCES += \
 
 HEADERS += \
     bitmap.h \
+    graphics.h \
     ipv4address.h \
+    message.h \
     point.h \
     qtclient.h \
     systembroadcastmessage.h \

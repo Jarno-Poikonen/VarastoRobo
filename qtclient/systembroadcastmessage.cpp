@@ -7,7 +7,7 @@ SystemBroadcastMessage::SystemBroadcastMessage()
 
 SystemBroadcastMessage::SystemBroadcastMessage(char* datagram, qint64 datagram_size) : datagram(datagram), datagram_size(datagram_size)
 {
-    
+    parse_datagram();
 }
 
 SystemBroadcastMessage::~SystemBroadcastMessage()
@@ -96,5 +96,35 @@ void SystemBroadcastMessage::reset()
     str = "";
     obstacle_count = 0;
     device_count = 0;
-    state = 3;
+    state = 4;
+}
+
+QString SystemBroadcastMessage::get_str()
+{
+    return str;
+}
+
+quint8 SystemBroadcastMessage::get_state()
+{
+    return state;
+}
+
+quint8 SystemBroadcastMessage::get_obstacle_count()
+{
+    return obstacle_count;
+}
+
+Point* SystemBroadcastMessage::get_obstacle_list()
+{
+    return obstacle_list;
+}
+
+quint8 SystemBroadcastMessage::get_device_count()
+{
+    return device_count;
+}
+
+VarastoRoboDevice* SystemBroadcastMessage::get_device_list()
+{
+    return device_list;
 }

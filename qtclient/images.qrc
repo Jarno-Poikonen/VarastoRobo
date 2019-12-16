@@ -1,14 +1,14 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>images/system_state_blue.png</file>
-    <file>images/system_state_green.png</file>
-    <file>images/system_state_red.png</file>
-    <file>images/system_state_grey.png</file>
-    <file>images/graphicsview_grid.png</file>
-    <file>images/tables.png</file>
-    <file>images/gopigo_grid.png</file>
-    <file>images/ur5.png</file>
-    <file>images/obstacle.png</file>
-    <file>images/gopigo.png</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>images/system_state_blue.png</file>
+        <file>images/system_state_green.png</file>
+        <file>images/system_state_red.png</file>
+        <file>images/system_state_grey.png</file>
+        <file>images/graphicsview_grid.png</file>
+        <file>images/gopigo_grid.png</file>
+        <file>images/ur5.png</file>
+        <file>images/obstacle.png</file>
+        <file>images/gopigo.png</file>
+        <file>images/remote_controlled.png</file>
+    </qresource>
 </RCC>
