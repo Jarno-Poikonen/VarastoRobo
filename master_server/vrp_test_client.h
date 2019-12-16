@@ -1,5 +1,5 @@
 /*
-	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
+	VarastoRobo master server version 1.1.1 2019-12-16 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 
 	This file contains code only for testing the master server.
