@@ -1,9 +1,10 @@
 /*
-	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
+	VarastoRobo master server version 1.1.1 2019-12-16 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
 #include "vrp_master_server_base.h"
+#include <stdio.h>
 
 uint64_t vrp_get_valid_device_entries(const vrp_server_t* server)
 {
@@ -884,7 +885,7 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 
 	server->emergency_address.sin_family = AF_INET;
 	server->emergency_address.sin_port = server->broadcast_address.sin_port;
-	server->emergency_address.sin_addr.s_addr = server->server_address.sin_addr.s_addr;
+	server->emergency_address.sin_addr.s_addr = INADDR_ANY;
 
 	error = vrp_open_log_file(&server->log, 0x200000000, 0x100000, 0);
 	if (error)
@@ -947,8 +948,11 @@ DWORD vrp_create_server_instance(vrp_server_t** server_instance, const char** er
 		}
 
 		const BOOL reuse_address_enable = TRUE;
-		setsockopt(server->emergency_sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse_address_enable, sizeof(BOOL));
-		// this is not needed to be successful, but helps when running clients on same machine
+		if (setsockopt(server->emergency_sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse_address_enable, sizeof(BOOL)))
+		{
+			printf("warning failed to enable SO_REUSEADDR on emergency socket");
+			// this is not needed to be successful, but helps when running clients on same machine
+		}
 
 		if (setsockopt(server->emergency_sock, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(BOOL)) ||
 			bind(server->emergency_sock, (struct sockaddr*)&server->emergency_address, sizeof(struct sockaddr_in)))

@@ -1,9 +1,9 @@
 /*
-	VarastoRobo master server version 1.1.0 2019-12-12 by Santtu Nyman.
+	VarastoRobo master server version 1.1.1 2019-12-16 by Santtu Nyman.
 	github repository https://github.com/Jarno-Poikonen/VarastoRobo
 */
 
-#define VRP_MASTER_SERVER_VERSION "1.1.0 2019-12-12"
+#define VRP_MASTER_SERVER_VERSION "1.1.1 2019-12-16"
 
 //#define VRP_DEBUG_RUN_VIRTUAL_ROBOTS
 //#define VRP_DEBUG_AUTO_FINISH_TRANSPORT
@@ -1242,11 +1242,9 @@ int main(int argc, char* argv)
 #ifndef _NDEBUG
 	srand((int)(GetCurrentThreadId() ^ NtGetTickCount()));
 #endif
-
 	vrp_server_t* server;
 	if (vrp_run_setup(&server))
 		return EXIT_FAILURE;
-
 	for (;;)
 	{
 #ifndef _NDEBUG
@@ -1263,7 +1261,7 @@ int main(int argc, char* argv)
 		{
 			int io_type;
 			size_t total_transfered = vrp_finish_io(server, i, &io_type);
-			size_t continue_size = total_transfered != (size_t)~0 ? continue_size = vrp_message_transfer_incomplete(server, i, io_type) : (size_t)~0;
+			size_t continue_size = total_transfered != (size_t)~0 ? vrp_message_transfer_incomplete(server, i, io_type) : (size_t)~0;
 			if (continue_size && continue_size < (size_t)~0)
 			{
 				if (io_type == VRP_IO_READ)
@@ -1294,7 +1292,9 @@ int main(int argc, char* argv)
 				}
 				else
 				{
-					sprintf(server->log_entry_buffer, "Product order %08X was lost in transport", server->product_order_table[j].order_number);
+					// remove lost product order
+					sprintf(server->log_entry_buffer, "Product order %08X was lost in transport",
+						server->product_order_table[j].order_number);
 					vrp_write_log_entry(&server->log, server->log_entry_buffer);
 
 					vrp_remove_product_order(server, server->product_order_table[j].order_number);
