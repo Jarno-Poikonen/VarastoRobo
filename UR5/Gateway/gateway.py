@@ -140,9 +140,9 @@ if __name__ == "__main__":
 	# Käsien paikat.
 	# Ensimämisenä tuotteen numero, sen jälkeen 6 float arvoa servojen asennoille.
 	paikat = [
-	str.encode(",4.25055,-2.26264,-1.68326,-0.763072,1.57923,1.09164)"),
-	str.encode(",3.9939,-2.01335,-2.21448,-0.482631,1.59763,0.872768)"),
-	str.encode(",3.51784,-1.8909,-2.4487,-0.383809,1.59626,0.396642)")
+	str.encode(",4.23932,-247179,-1.31964,-0.908956,1.5553,1.06779)"),
+	str.encode(",3.965,-2.11616,-2.05918,-0.526054,1.55791,0.797925)"),
+	str.encode(",3.42745,-1.99363,-2.32193,-0.3814,1-56627,0.255482)")
 	]
 	
 	broadcast_saie = threading.Thread(target=Broadcast_communication, args=())
